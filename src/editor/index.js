@@ -20,7 +20,7 @@ const messages = defineMessages({
 
 export default function install(config) {
   const opts = {
-    elementType: FOOTNOTE,
+    elementType: 'footnote',
     pluginId: FOOTNOTE,
     isInlineElement: true,
     editSchema: FootnoteEditorSchema,
@@ -33,6 +33,14 @@ export default function install(config) {
   };
   const [installFootnoteEditor] = makeInlineElementPlugin(opts);
   config = installFootnoteEditor(config);
+
+  const { slate } = config.settings;
+
+  slate.toolbarButtons = [...(slate.toolbarButtons || []), 'footnote'];
+  slate.expandedToolbarButtons = [
+    ...(slate.expandedToolbarButtons || []),
+    'footnote',
+  ];
 
   return config;
 }

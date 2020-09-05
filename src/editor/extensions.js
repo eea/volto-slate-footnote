@@ -3,12 +3,11 @@ import { nanoid } from 'volto-slate/utils';
 import { Transforms } from 'slate';
 
 export const withFootnote = (editor) => {
-  const { normalizeNode } = editor;
+  const { normalizeNode, isInline } = editor;
 
-  // isInline,
-  //   editor.isInline = (element) => {
-  //     return element.type === FOOTNOTE ? true : isInline(element);
-  //   };
+  editor.isInline = (element) => {
+    return element.type === FOOTNOTE ? true : isInline(element);
+  };
 
   editor.normalizeNode = (entry) => {
     const [node, path] = entry;
