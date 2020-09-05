@@ -1,9 +1,8 @@
 import codeSVG from '@plone/volto/icons/code.svg';
 
-import FootnotesBlockView from './Blocks/Footnote/FootnotesBlockView';
-import FootnotesBlockEdit from './Blocks/Footnote/FootnotesBlockEdit';
-import { FOOTNOTE } from './constants';
-import installFootnoteEditor from './editor';
+import FootnotesBlockView from './FootnotesBlockView';
+import FootnotesBlockEdit from './FootnotesBlockEdit';
+import { FOOTNOTE } from 'volto-slate/constants';
 
 /**
  * @summary Called from Volto to configure new or existing Volto block types.
@@ -13,7 +12,7 @@ import installFootnoteEditor from './editor';
 export default function install(config) {
   config.blocks.blocksConfig.slateFootnotes = {
     id: 'slateFootnotes',
-    title: 'Footnotes list',
+    title: 'Slate Footnotes',
     icon: codeSVG,
     group: 'text',
     view: FootnotesBlockView,
@@ -29,8 +28,5 @@ export default function install(config) {
   };
 
   config.settings.footnotes = [...(config.settings.footnotes || []), FOOTNOTE];
-
-  config = installFootnoteEditor(config);
-
   return config;
 }
