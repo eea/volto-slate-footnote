@@ -1,5 +1,5 @@
-# volto-addon-template
-[![Releases](https://img.shields.io/github/v/release/eea/volto-addon-template)](https://github.com/eea/volto-addon-template/releases)
+# volto-slate-footnote
+[![Releases](https://img.shields.io/github/v/release/eea/volto-slate-footnote)](https://github.com/eea/volto-slate-footnote/releases)
 
 [Volto](https://github.com/plone/volto) add-on
 
@@ -21,11 +21,11 @@ Demo GIF
 1. Update `package.json`:
     ``` JSON
     "addons": [
-        "@eeacms/volto-addon-template"
+        "@eeacms/volto-slate-footnote"
     ],
 
     "dependencies": {
-        "@eeacms/volto-addon-template": "github:eea/volto-addon-template#0.1.0"
+        "@eeacms/volto-slate-footnote": "github:eea/volto-slate-footnote#0.1.0"
     }
     ```
 

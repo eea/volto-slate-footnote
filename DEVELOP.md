@@ -1,4 +1,4 @@
-# volto-addon-template
+# volto-slate-footnote
 
 ## Develop
 
@@ -25,16 +25,16 @@ Before starting make sure your development environment is properly set. See [Vol
             },
 
             "addons": [
-                "@eeacms/volto-addon-template"
+                "@eeacms/volto-slate-footnote"
             ],
         }
 
 1. Add the following to `mrs.developer.json`:
 
         {
-            "volto-addon-template": {
-                "url": "https://github.com/eea/volto-addon-template.git",
-                "package": "@eeacms/volto-addon-template",
+            "volto-slate-footnote": {
+                "url": "https://github.com/eea/volto-slate-footnote.git",
+                "package": "@eeacms/volto-slate-footnote",
                 "branch": "develop",
                 "path": "src"
             }
@@ -63,4 +63,4 @@ Before starting make sure your development environment is properly set. See [Vol
 
 1. Happy hacking!
 
-        $ cd src/addons/volto-addon-template/
+        $ cd src/addons/volto-slate-footnote/
