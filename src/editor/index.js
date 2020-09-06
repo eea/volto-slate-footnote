@@ -20,15 +20,13 @@ const messages = defineMessages({
 
 export default function install(config) {
   const opts = {
-    elementType: 'footnote',
     pluginId: FOOTNOTE,
+    elementType: FOOTNOTE,
+    element: FootnoteElement,
     isInlineElement: true,
     editSchema: FootnoteEditorSchema,
     extensions: [withFootnote],
     hasValue: (formData) => !!formData.footnote,
-    elements: {
-      footnote: FootnoteElement,
-    },
     messages,
   };
   const [installFootnoteEditor] = makeInlineElementPlugin(opts);
