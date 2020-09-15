@@ -19,7 +19,7 @@ export default function install(config) {
     view: FootnotesBlockView,
     edit: FootnotesBlockEdit,
     restricted: false,
-    mostUsed: true,
+    mostUsed: false,
     blockHasOwnFocusManagement: false,
     sidebarTab: 1,
     security: {
