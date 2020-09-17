@@ -33,7 +33,6 @@ export default function install(config) {
     extensions: [withFootnote],
     hasValue: (formData) => !!formData.footnote,
     afterElementIsInserted: (editor, formContext, data) => {
-      console.log('afterElementIsInserted data is', data);
       const fd = formContext.contextData.formData;
       const bfn = getBlocksFieldname(fd);
       const blfn = getBlocksLayoutFieldname(fd);
@@ -41,7 +40,6 @@ export default function install(config) {
       const blocks = fd[bfn];
       const blocks_layout = fd[blfn];
 
-      // console.log('log', { blocks, blocks_layout });
       let footnotesBlockExists = false;
       for (const b in blocks) {
         const bb = blocks[b];
@@ -52,43 +50,23 @@ export default function install(config) {
       }
 
       if (!footnotesBlockExists) {
-        const nb = {
-          '@type': 'slateFootnotes',
-          title: 'Footnotes',
-        };
-        const nbWithId = {
-          '@type': 'slateFootnotes',
-          '@id': uuid(),
-          title: 'Footnotes',
-        };
-        const obj = {
-          formData: {
-            blocks: { ...blocks, [nbWithId['@id']]: nb },
-            blocks_layout: {
-              items: [...blocks_layout.items, nbWithId['@id']],
-            },
-          },
-        };
-        formContext.setContextData(obj);
-        // console.log('AFTER formContext:', formContext);
+        editor
+          .getBlockProps()
+          .onAddBlock('slateFootnotes', blocks_layout.items.length)
+          .then((id) => {
+            console.log('ID', id);
+            const nb = {
+              '@type': 'slateFootnotes',
+              title: 'Footnotes',
+            };
+            editor
+              .getBlockProps()
+              .onChangeBlock(id, nb)
+              .then(() => {
+                console.log('props', editor.getBlockProps());
+              });
+          });
       }
-
-      console.log(
-        'JUST LOGGING AROUND',
-        formContext /*editor.getBlockProps() */,
-      );
-      // function createSlateBlock(value, { index, onChangeBlock, onAddBlock }) {
-      //   return new Promise((resolve) => {
-      //     onAddBlock('slate', index + 1).then((id) => {
-      //       const options = {
-      //         '@type': 'slate',
-      //         value: JSON.parse(JSON.stringify(value)),
-      //         plaintext: serializeNodesToText(value),
-      //       };
-      //       onChangeBlock(id, options).then(() => resolve(id));
-      //     });
-      //   });
-      // }
     },
     messages,
   };
