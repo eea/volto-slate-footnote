@@ -50,22 +50,24 @@ export default function install(config) {
       }
 
       if (!footnotesBlockExists) {
-        editor
-          .getBlockProps()
-          .onAddBlock('slateFootnotes', blocks_layout.items.length)
-          .then((id) => {
-            console.log('ID', id);
-            const nb = {
-              '@type': 'slateFootnotes',
-              title: 'Footnotes',
-            };
-            editor
-              .getBlockProps()
-              .onChangeBlock(id, nb)
-              .then(() => {
-                console.log('props', editor.getBlockProps());
-              });
-          });
+        const nb = {
+          '@type': 'slateFootnotes',
+          title: 'Footnotes',
+        };
+        const nbWithId = {
+          '@type': 'slateFootnotes',
+          '@id': uuid(),
+          title: 'Footnotes',
+        };
+        const obj = {
+          formData: {
+            blocks: { ...blocks, [nbWithId['@id']]: nb },
+            blocks_layout: {
+              items: [...blocks_layout.items, nbWithId['@id']],
+            },
+          },
+        };
+        formContext.setContextData(obj);
       }
     },
     messages,
