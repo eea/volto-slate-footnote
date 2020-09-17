@@ -2,6 +2,7 @@ import { makeInlineElementPlugin } from 'volto-slate/components/ElementEditor';
 import { FootnoteEditorSchema } from './schema';
 import { withFootnote } from './extensions';
 import { FOOTNOTE } from '../constants';
+import { _insertElement } from 'volto-slate/components/ElementEditor/utils';
 import { FootnoteElement } from './render';
 import { defineMessages } from 'react-intl'; // , defineMessages
 import { v4 as uuid } from 'uuid';
@@ -32,8 +33,12 @@ export default function install(config) {
     editSchema: FootnoteEditorSchema,
     extensions: [withFootnote],
     hasValue: (formData) => !!formData.footnote,
-    afterElementIsInserted: (editor, formContext, data) => {
-      const fd = formContext.contextData.formData;
+    insertElement: (editor, data) => {
+      if (!_insertElement(FOOTNOTE)(editor, data)) {
+        return;
+      }
+
+      const fd = editor.formContext.contextData.formData;
       const bfn = getBlocksFieldname(fd);
       const blfn = getBlocksLayoutFieldname(fd);
 
@@ -67,7 +72,7 @@ export default function install(config) {
             },
           },
         };
-        formContext.setContextData(obj);
+        editor.formContext.setContextData(obj);
       }
     },
     messages,
