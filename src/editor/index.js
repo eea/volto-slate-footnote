@@ -34,17 +34,21 @@ export default function install(config) {
     extensions: [withFootnote],
     hasValue: (formData) => !!formData.footnote,
     insertElement: (editor, data) => {
+      // the default behavior is _insertElement,
+      // it returns whether an element was possibly inserted
       if (!_insertElement(FOOTNOTE)(editor, data)) {
         return;
       }
 
       const fd = editor.formContext.contextData.formData;
+
+      // the usual functions used to work with the form state data
       const bfn = getBlocksFieldname(fd);
       const blfn = getBlocksLayoutFieldname(fd);
-
       const blocks = fd[bfn];
       const blocks_layout = fd[blfn];
 
+      // whether the footnotes block exists already
       let footnotesBlockExists = false;
       for (const b in blocks) {
         const bb = blocks[b];
@@ -54,21 +58,18 @@ export default function install(config) {
         }
       }
 
+      // if not, create it
       if (!footnotesBlockExists) {
+        const id = uuid();
         const nb = {
           '@type': 'slateFootnotes',
           title: 'Footnotes',
         };
-        const nbWithId = {
-          '@type': 'slateFootnotes',
-          '@id': uuid(),
-          title: 'Footnotes',
-        };
         const obj = {
           formData: {
-            blocks: { ...blocks, [nbWithId['@id']]: nb },
+            blocks: { ...blocks, [id]: nb },
             blocks_layout: {
-              items: [...blocks_layout.items, nbWithId['@id']],
+              items: [...blocks_layout.items, id],
             },
           },
         };
