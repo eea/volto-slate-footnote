@@ -65,15 +65,13 @@ export default function install(config) {
           '@type': 'slateFootnotes',
           title: 'Footnotes',
         };
-        const obj = {
-          formData: {
-            blocks: { ...blocks, [id]: nb },
-            blocks_layout: {
-              items: [...blocks_layout.items, id],
-            },
+        const formData = {
+          blocks: { ...blocks, [id]: nb },
+          blocks_layout: {
+            items: [...blocks_layout.items, id],
           },
         };
-        editor.formContext.setContextData(obj);
+        editor.formContext.setContextData({ formData });
       }
     },
     messages,

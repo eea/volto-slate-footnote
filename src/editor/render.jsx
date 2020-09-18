@@ -1,7 +1,13 @@
 import React from 'react';
 import { Popup } from 'semantic-ui-react';
 
-export const FootnoteElement = ({ attributes, children, element, mode }) => {
+export const FootnoteElement = ({
+  attributes,
+  children,
+  element,
+  mode,
+  ...rest
+}) => {
   const { data = {} } = element;
   const { uid = 'undefined' } = data;
 
@@ -12,6 +18,7 @@ export const FootnoteElement = ({ attributes, children, element, mode }) => {
           href={`#footnote-${uid}`}
           id={`ref-${uid}`}
           aria-describedby="footnote-label"
+          {...rest}
         >
           {children}
         </a>
