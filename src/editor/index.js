@@ -1,15 +1,16 @@
-import { makeInlineElementPlugin } from 'volto-slate/components/ElementEditor';
-import { FootnoteEditorSchema } from './schema';
-import { withFootnote } from './extensions';
-import { FOOTNOTE } from '../constants';
-import { _insertElement } from 'volto-slate/components/ElementEditor/utils';
-import { FootnoteElement } from './render';
+import ReactDOM from 'react-dom';
 import { defineMessages } from 'react-intl'; // , defineMessages
 import { v4 as uuid } from 'uuid';
 import {
   getBlocksFieldname,
   getBlocksLayoutFieldname,
 } from '@plone/volto/helpers';
+import { makeInlineElementPlugin } from 'volto-slate/components/ElementEditor';
+import { _insertElement } from 'volto-slate/components/ElementEditor/utils';
+import { FootnoteEditorSchema } from './schema';
+import { withFootnote } from './extensions';
+import { FOOTNOTE } from '../constants';
+import { FootnoteElement } from './render';
 
 import './styles.less';
 
@@ -40,13 +41,16 @@ export default function install(config) {
         return;
       }
 
-      const fd = editor.formContext.contextData.formData;
+      if (!editor.getBlockProps) return;
+
+      const { properties, onChangeField } = editor.getBlockProps();
 
       // the usual functions used to work with the form state data
-      const bfn = getBlocksFieldname(fd);
-      const blfn = getBlocksLayoutFieldname(fd);
-      const blocks = fd[bfn];
-      const blocks_layout = fd[blfn];
+      const blocksFieldname = getBlocksFieldname(properties);
+      const blocksLayoutFieldname = getBlocksLayoutFieldname(properties);
+
+      const blocks = properties[blocksFieldname];
+      const blocks_layout = properties[blocksLayoutFieldname];
 
       // whether the footnotes block exists already
       let footnotesBlockExists = false;
@@ -71,7 +75,10 @@ export default function install(config) {
             items: [...blocks_layout.items, id],
           },
         };
-        editor.formContext.setContextData({ formData });
+        ReactDOM.unstable_batchedUpdates(() => {
+          onChangeField(blocksFieldname, formData[blocksFieldname]);
+          onChangeField(blocksLayoutFieldname, formData[blocksLayoutFieldname]);
+        });
       }
     },
     messages,
