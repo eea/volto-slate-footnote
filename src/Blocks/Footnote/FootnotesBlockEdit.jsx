@@ -3,7 +3,6 @@ import FootnotesBlockView from './FootnotesBlockView';
 import InlineForm from 'volto-slate/futurevolto/InlineForm';
 import { FootnoteBlockSchema as schema } from './schema';
 import { SidebarPortal } from '@plone/volto/components';
-import { useFormStateContext } from '@plone/volto/components/manage/Form/FormContext';
 
 /**
  * @summary The React component that allows the footnotes block view to be
@@ -12,12 +11,10 @@ import { useFormStateContext } from '@plone/volto/components/manage/Form/FormCon
  * registered Volto block: `selected`, `block`, `data`, `onChangeBlock` etc.
  */
 const FootnotesBlockEdit = (props) => {
-  const { selected, block, data, onChangeBlock } = props;
-  const { contextData } = useFormStateContext();
-  const { formData } = contextData;
+  const { selected, block, data, onChangeBlock, properties } = props;
   return (
     <>
-      <FootnotesBlockView {...props} properties={formData} />
+      <FootnotesBlockView {...props} properties={properties} />
       <SidebarPortal selected={selected}>
         <InlineForm
           schema={schema}
