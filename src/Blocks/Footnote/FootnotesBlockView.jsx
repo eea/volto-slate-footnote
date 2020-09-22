@@ -4,7 +4,6 @@ import {
   getBlocksFieldname,
   getBlocksLayoutFieldname
 } from '@plone/volto/helpers';
-import React from 'react';
 import { settings } from '~/config';
 import './less/public.less';
 
