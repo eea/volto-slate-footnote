@@ -2,10 +2,17 @@ import React from 'react';
 import { Node } from 'slate';
 import {
   getBlocksFieldname,
-  getBlocksLayoutFieldname,
+  getBlocksLayoutFieldname
 } from '@plone/volto/helpers';
-import './less/public.less';
+import React from 'react';
 import { settings } from '~/config';
+import './less/public.less';
+
+const makeFootnote = (footnote) => {
+  const free = footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
+
+  return free;
+};
 
 /**
  * @param {object} properties A prop received by the View component
@@ -53,14 +60,18 @@ const FootnotesBlockView = (props) => {
 
   return (
     <div className="footnotes-listing-block">
-      <h3>{title}</h3>
+      <h3>References: {title}</h3>
       {notes && (
         <ol>
           {notes.map(({ data }) => {
             const { uid, footnote } = data;
             return (
               <li key={uid} id={`footnote-${uid}`}>
-                {footnote}
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: makeFootnote(footnote),
+                  }}
+                />
                 <a href={`#ref-${uid}`} aria-label="Back to content">
                   ↵
                 </a>
