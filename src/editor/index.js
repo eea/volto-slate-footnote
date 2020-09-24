@@ -27,6 +27,7 @@ const messages = defineMessages({
 
 export default function install(config) {
   const opts = {
+    title: 'Footnote',
     pluginId: FOOTNOTE,
     elementType: FOOTNOTE,
     element: FootnoteElement,
