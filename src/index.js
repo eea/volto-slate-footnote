@@ -1,4 +1,4 @@
-import codeSVG from '@plone/volto/icons/code.svg';
+import codeSVG from '@plone/volto/icons/blog-entry.svg';
 
 import FootnotesBlockView from './Blocks/Footnote/FootnotesBlockView';
 import FootnotesBlockEdit from './Blocks/Footnote/FootnotesBlockEdit';
@@ -13,7 +13,7 @@ import installFootnoteEditor from './editor';
 export default function install(config) {
   config.blocks.blocksConfig.slateFootnotes = {
     id: 'slateFootnotes',
-    title: 'Footnotes list',
+    title: 'Footnotes',
     icon: codeSVG,
     group: 'text',
     view: FootnotesBlockView,
@@ -26,6 +26,7 @@ export default function install(config) {
       addPermission: [],
       view: [],
     },
+    autoAdd: false,
   };
 
   config.settings.footnotes = [...(config.settings.footnotes || []), FOOTNOTE];

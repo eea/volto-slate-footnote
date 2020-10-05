@@ -27,6 +27,7 @@ const messages = defineMessages({
 
 export default function install(config) {
   const opts = {
+    title: 'Footnote',
     pluginId: FOOTNOTE,
     elementType: FOOTNOTE,
     element: FootnoteElement,
@@ -52,33 +53,39 @@ export default function install(config) {
       const blocks = properties[blocksFieldname];
       const blocks_layout = properties[blocksLayoutFieldname];
 
-      // whether the footnotes block exists already
-      let footnotesBlockExists = false;
-      for (const b in blocks) {
-        const bb = blocks[b];
-        if (bb['@type'] === 'slateFootnotes') {
-          footnotesBlockExists = true;
-          break;
+      // Auto-add footnote block
+      if (config?.blocks?.blocksConfig?.slateFootnotes?.autoAdd) {
+        // whether the footnotes block exists already
+        let footnotesBlockExists = false;
+        for (const b in blocks) {
+          const bb = blocks[b];
+          if (bb['@type'] === 'slateFootnotes') {
+            footnotesBlockExists = true;
+            break;
+          }
         }
-      }
 
-      // if not, create it
-      if (!footnotesBlockExists) {
-        const id = uuid();
-        const nb = {
-          '@type': 'slateFootnotes',
-          title: 'Footnotes',
-        };
-        const formData = {
-          blocks: { ...blocks, [id]: nb },
-          blocks_layout: {
-            items: [...blocks_layout.items, id],
-          },
-        };
-        ReactDOM.unstable_batchedUpdates(() => {
-          onChangeField(blocksFieldname, formData[blocksFieldname]);
-          onChangeField(blocksLayoutFieldname, formData[blocksLayoutFieldname]);
-        });
+        // if not, create it
+        if (!footnotesBlockExists) {
+          const id = uuid();
+          const nb = {
+            '@type': 'slateFootnotes',
+            title: 'Footnotes',
+          };
+          const formData = {
+            blocks: { ...blocks, [id]: nb },
+            blocks_layout: {
+              items: [...blocks_layout.items, id],
+            },
+          };
+          ReactDOM.unstable_batchedUpdates(() => {
+            onChangeField(blocksFieldname, formData[blocksFieldname]);
+            onChangeField(
+              blocksLayoutFieldname,
+              formData[blocksLayoutFieldname],
+            );
+          });
+        }
       }
     },
     messages,
