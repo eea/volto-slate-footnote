@@ -70,7 +70,7 @@ const FootnotesBlockView = (props) => {
 
   return (
     <div className="footnotes-listing-block">
-      <h3>References: {title}</h3>
+      <h3>{title}</h3>
       {notes && (
         <ol>
           {notes.map(({ data }) => {
