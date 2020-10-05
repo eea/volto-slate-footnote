@@ -10,8 +10,7 @@ export const FootnoteBlockSchema = {
   properties: {
     title: {
       title: 'Block title',
-      default: 'Footnotes',
     },
   },
-  required: ['title'],
+  required: [],
 };
