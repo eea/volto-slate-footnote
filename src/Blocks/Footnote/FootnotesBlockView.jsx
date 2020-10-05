@@ -13,12 +13,22 @@ import { settings } from '~/config';
  * `getBlocksLayoutFieldname` Volto helpers to produce the return value.
  * @returns {Array} The blocks data taken from the Volto form.
  */
-const getBlocks = (properties) => {
+const getBlocks = (properties, blocks) => {
   const blocksFieldName = getBlocksFieldname(properties);
   const blocksLayoutFieldname = getBlocksLayoutFieldname(properties);
-  return properties[blocksLayoutFieldname].items.map(
-    (n) => properties[blocksFieldName][n],
-  );
+
+  for (const n of properties[blocksLayoutFieldname].items) {
+    const block = properties[blocksFieldName][n];
+    // TODO Make this configurable via block config getBlocks
+    if (
+      block?.data?.[blocksLayoutFieldname] &&
+      block?.data?.[blocksFieldName]
+    ) {
+      getBlocks(block.data, blocks);
+    }
+    blocks.push(block);
+  }
+  return blocks;
 };
 
 /**
@@ -33,7 +43,8 @@ const FootnotesBlockView = (props) => {
   const { footnotes } = settings;
 
   // console.log(properties);
-  const blocks = getBlocks(properties);
+  const blocks = [];
+  getBlocks(properties, blocks);
   const notes = [];
   // TODO: slice the blocks according to existing footnote listing blocks. A
   // footnote listing block should reset the counter of the footnotes above it
