@@ -1,36 +1,41 @@
 /*  Based on https://www.sitepoint.com/accessible-footnotes-css/ */
 
-// TODO: use LESS variables
-
 body {
-  counter-reset: footnotes;
+	counter-reset: footnotes;
 }
-
 a[aria-describedby='footnote-label'] {
-  color: inherit;
-  counter-increment: footnotes;
-  // counter-reset: none;
-  cursor: default;
-  outline: none;
-  text-decoration: none;
+	color: inherit;
+	cursor: default;
+	outline: none;
+	text-decoration: none;
+	&:focus {
+		&::after {
+			outline: thin dotted;
+			outline-offset: 2px;
+		}
+	}
 }
-
-a[aria-describedby='footnote-label']::after {
-  margin-left: 2px;
-  color: blue;
-  content: '[' counter(footnotes) ']';
-  cursor: pointer;
-  font-size: 0.8em;
-  text-decoration: underline;
-  // vertical-align: super;
+.citation-indice {
+	color: inherit;
+	counter-increment: footnotes;
+	cursor: default;
+	outline: none;
+	text-decoration: none;
+	&::after {
+		margin-left: 2px;
+		color: blue;
+		content: '[' counter(footnotes) ']';
+		cursor: pointer;
+		font-size: 0.8em;
+		text-decoration: underline;
+	}
+	&:focus {
+		&::after {
+			outline: thin dotted;
+			outline-offset: 2px;
+		}
+	}
 }
-
-a[aria-describedby='footnote-label']:focus::after {
-  outline: thin dotted;
-  outline-offset: 2px;
-}
-
-// Editor styles
 .footnote-edit-node {
-  background-color: #e6f3ff;
+	background-color: #e6f3ff;
 }
