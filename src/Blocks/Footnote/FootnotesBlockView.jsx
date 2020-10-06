@@ -2,7 +2,7 @@ import React from 'react';
 import { Node } from 'slate';
 import {
   getBlocksFieldname,
-  getBlocksLayoutFieldname
+  getBlocksLayoutFieldname,
 } from '@plone/volto/helpers';
 import { settings } from '~/config';
 import './less/public.less';
@@ -51,7 +51,7 @@ const FootnotesBlockView = (props) => {
 
   // console.log(properties);
   const blocks = [];
-  if(global) {
+  if (global) {
     getBlocks(metadata, blocks);
   } else {
     getBlocks(properties, blocks);
