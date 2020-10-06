@@ -45,12 +45,17 @@ const getBlocks = (properties, blocks) => {
  */
 const FootnotesBlockView = (props) => {
   const { data, properties } = props;
-  const { title } = data;
+  const { title, global } = data;
   const { footnotes } = settings;
+  const metadata = props.metadata || properties;
 
   // console.log(properties);
   const blocks = [];
-  getBlocks(properties, blocks);
+  if(global) {
+    getBlocks(metadata, blocks);
+  } else {
+    getBlocks(properties, blocks);
+  }
   const notes = [];
   // TODO: slice the blocks according to existing footnote listing blocks. A
   // footnote listing block should reset the counter of the footnotes above it
