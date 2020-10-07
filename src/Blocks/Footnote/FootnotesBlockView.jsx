@@ -31,6 +31,8 @@ const getBlocks = (properties, blocks) => {
       block?.data?.[blocksFieldName]
     ) {
       getBlocks(block.data, blocks);
+    } else if (block?.[blocksLayoutFieldname] && block?.[blocksFieldName]) {
+      getBlocks(block, blocks);
     }
     blocks.push(block);
   }
