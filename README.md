@@ -21,11 +21,14 @@ Demo GIF
 1. Update `package.json`:
     ``` JSON
     "addons": [
+        "volto-slate:asDefault",
         "@eeacms/volto-slate-footnote"
     ],
 
     "dependencies": {
-        "@eeacms/volto-slate-footnote": "github:eea/volto-slate-footnote#0.1.0"
+        "@plone/volto": "8.2.0",
+        "volto-slate": "github:eea/volto-slate#0.8.2",
+        "@eeacms/volto-slate-footnote": "github:eea/volto-slate-footnote#0.4.0"
     }
     ```
 

@@ -25,8 +25,14 @@ Before starting make sure your development environment is properly set. See [Vol
             },
 
             "addons": [
+                "volto-slate:asDefault",
                 "@eeacms/volto-slate-footnote"
             ],
+
+            "dependencies": [
+                "@plone/volto": "8.2.0",
+                "volto-slate": "github:eea/volto-slate#0.8.2"
+            ]
         }
 
 1. Add the following to `mrs.developer.json`:
