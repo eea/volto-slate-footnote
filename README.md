@@ -1,42 +1,48 @@
 # volto-slate-footnote
 [![Releases](https://img.shields.io/github/v/release/eea/volto-slate-footnote)](https://github.com/eea/volto-slate-footnote/releases)
+[![Pipeline](https://ci.eionet.europa.eu/buildStatus/icon?job=volto-addons%2Fvolto-slate-footnote%2Fmaster&subject=master)](https://ci.eionet.europa.eu/view/Github/job/volto-addons/job/volto-slate-footnote/job/master/display/redirect)
+[![Pipeline](https://ci.eionet.europa.eu/buildStatus/icon?job=volto-addons%2Fvolto-slate-footnote%2Fdevelop&subject=develop)](https://ci.eionet.europa.eu/view/Github/job/volto-addons/job/volto-slate-footnote/job/develop/display/redirect)
 
-[Volto](https://github.com/plone/volto) add-on
+[Volto Slate](https://github.com/eea/volto-slate/tree/develop) Footnotes
 
 ## Features
 
-###
+### Easily annotate text within [Volto Slate](https://github.com/eea/volto-slate/tree/develop) text editor
 
-Demo GIF
+![Insert footnotes](https://github.com/eea/volto-slate-footnote/raw/docs/docs/volto-slate-footnote.gif)
 
 ## Getting started
 
 1. Create new volto project if you don't already have one:
-    ```
-    $ npm install -g @plone/create-volto-app
-    $ create-volto-app my-volto-project
-    $ cd my-volto-project
-    ```
 
-1. Update `package.json`:
-    ``` JSON
-    "addons": [
-        "volto-slate:asDefault",
-        "@eeacms/volto-slate-footnote"
-    ],
+   ```
+   $ npm install -g yo @plone/generator-volto
+   $ yo @plone/volto my-volto-project --addon volto-slate @eeacms/volto-slate-footnote
 
-    "dependencies": {
-        "@plone/volto": "8.2.0",
-        "volto-slate": "github:eea/volto-slate#0.8.2",
-        "@eeacms/volto-slate-footnote": "github:eea/volto-slate-footnote#0.4.0"
-    }
-    ```
+   $ cd my-volto-project
+   $ yarn add -W volto-slate @eeacms/volto-slate-footnote
+   ```
+
+1. If you already have a volto project, just update `package.json`:
+
+   ```JSON
+   "addons": [
+      "volto-slate:asDefault",
+      "@eeacms/volto-slate-footnote"
+   ],
+
+   "dependencies": {
+      "volto-slate": "^1.0.0",
+      "@eeacms/volto-slate-footnote": "^1.0.0"
+   }
+   ```
 
 1. Install new add-ons and restart Volto:
-    ```
-    $ yarn
-    $ yarn start
-    ```
+
+   ```
+   $ yarn
+   $ yarn start
+   ```
 
 1. Go to http://localhost:3000
 

@@ -1,41 +1,47 @@
 /*  Based on https://www.sitepoint.com/accessible-footnotes-css/ */
 
 body {
-	counter-reset: footnotes;
+  counter-reset: footnotes;
 }
+
 a[aria-describedby='footnote-label'] {
-	color: inherit;
-	cursor: default;
-	outline: none;
-	text-decoration: none;
-	&:focus {
-		&::after {
-			outline: thin dotted;
-			outline-offset: 2px;
-		}
-	}
+  color: inherit;
+  cursor: default;
+  outline: none;
+  text-decoration: none;
+
+  &:focus {
+    &::after {
+      outline: thin dotted;
+      outline-offset: 2px;
+    }
+  }
 }
+
 .citation-indice {
-	color: inherit;
-	counter-increment: footnotes;
-	cursor: default;
-	outline: none;
-	text-decoration: none;
-	&::after {
-		margin-left: 2px;
-		color: blue;
-		content: '[' counter(footnotes) ']';
-		cursor: pointer;
-		font-size: 0.8em;
-		text-decoration: underline;
-	}
-	&:focus {
-		&::after {
-			outline: thin dotted;
-			outline-offset: 2px;
-		}
-	}
+  color: inherit;
+  counter-increment: footnotes;
+  cursor: default;
+  outline: none;
+  text-decoration: none;
+
+  &::after {
+    margin-left: 2px;
+    color: blue;
+    content: '[' counter(footnotes) ']';
+    cursor: pointer;
+    font-size: 0.8em;
+    text-decoration: underline;
+  }
+
+  &:focus {
+    &::after {
+      outline: thin dotted;
+      outline-offset: 2px;
+    }
+  }
 }
+
 .footnote-edit-node {
-	background-color: #e6f3ff;
+  background-color: #e6f3ff;
 }
