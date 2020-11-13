@@ -17,10 +17,12 @@
 
    ```
    $ npm install -g yo @plone/generator-volto
-   $ yo @plone/volto my-volto-project --addon volto-slate @eeacms/volto-slate-footnote
+   $ yo @plone/volto my-volto-project \
+                     --addon volto-slate:asDefault \
+                     --addon @eeacms/volto-slate-footnote
 
    $ cd my-volto-project
-   $ yarn add -W volto-slate @eeacms/volto-slate-footnote
+   $ yarn add -W @eeacms/volto-slate-footnote
    ```
 
 1. If you already have a volto project, just update `package.json`:
@@ -32,7 +34,6 @@
    ],
 
    "dependencies": {
-      "volto-slate": "^1.0.0",
       "@eeacms/volto-slate-footnote": "^1.0.0"
    }
    ```

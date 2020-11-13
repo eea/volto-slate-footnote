@@ -12,9 +12,11 @@ Before starting make sure your development environment is properly set. See [Vol
 
 1.  Create new volto app
 
-        $ yo @plone/volto my-volto-project --addon volto-slate:asDefault @eeacms/volto-slate-footnote
+        $ yo @plone/volto my-volto-project \
+                          --workspace src/addons/volto-slate-footnote \
+                          --addon volto-slate:asDefault \
+                          --addon @eeacms/volto-slate-footnote
         $ cd my-volto-project
-        $ yarn add -W volto-slate
 
 1.  Add the following to `mrs.developer.json`:
 
