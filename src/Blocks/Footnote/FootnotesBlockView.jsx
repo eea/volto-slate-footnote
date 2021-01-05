@@ -1,6 +1,6 @@
 import {
   getBlocksFieldname,
-  getBlocksLayoutFieldname
+  getBlocksLayoutFieldname,
 } from '@plone/volto/helpers';
 import React from 'react';
 import { Node } from 'slate';
