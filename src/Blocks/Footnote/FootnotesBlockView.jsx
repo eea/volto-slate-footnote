@@ -1,9 +1,9 @@
-import React from 'react';
-import { Node } from 'slate';
 import {
   getBlocksFieldname,
-  getBlocksLayoutFieldname,
+  getBlocksLayoutFieldname
 } from '@plone/volto/helpers';
+import React from 'react';
+import { Node } from 'slate';
 import { settings } from '~/config';
 import './less/public.less';
 
@@ -69,7 +69,13 @@ const FootnotesBlockView = (props) => {
       if (!value) return;
 
       Array.from(Node.elements(value[0])).forEach(([node]) => {
-        if (footnotes.includes(node.type)) {
+        if (
+          footnotes.includes(node.type) &&
+          // do not add duplicates coming from copy/paste of notes
+          notes.filter((note) => {
+            return node.data && note.data.uid === node.data.uid;
+          }).length === 0
+        ) {
           notes.push(node);
         }
       });
