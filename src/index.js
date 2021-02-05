@@ -4,6 +4,7 @@ import FootnotesBlockView from './Blocks/Footnote/FootnotesBlockView';
 import FootnotesBlockEdit from './Blocks/Footnote/FootnotesBlockEdit';
 import { FOOTNOTE } from './constants';
 import installFootnoteEditor from './editor';
+import { defaultPlaintextSerializerForInlineChildren } from 'volto-slate/editor/render';
 
 /**
  * @summary Called from Volto to configure new or existing Volto block types.
@@ -11,6 +12,15 @@ import installFootnoteEditor from './editor';
  * configuration for all the blocks.
  */
 export default function install(config) {
+  const oldDeserializer =
+    config.settings.slate.plaintextSerializers[FOOTNOTE] ||
+    defaultPlaintextSerializerForInlineChildren;
+  config.settings.slate.plaintextSerializers[FOOTNOTE] = (editor, element) => {
+    return (
+      oldDeserializer(editor, element) + ' (' + element.data.footnote + ')'
+    );
+  };
+
   config.blocks.blocksConfig.slateFootnotes = {
     id: 'slateFootnotes',
     title: 'Footnotes',
