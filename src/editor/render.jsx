@@ -46,7 +46,10 @@ export const FootnoteElement = ({
         <Popup
           position="bottom left"
           trigger={
-            <span {...attributes} className="footnote zotero-edit-node">
+            <span
+              {...attributes}
+              className="footnote-edit-node zotero-edit-node"
+            >
               {children}
             </span>
           }
