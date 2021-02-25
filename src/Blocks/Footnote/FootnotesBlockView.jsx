@@ -4,7 +4,7 @@ import {
 } from '@plone/volto/helpers';
 import React from 'react';
 import { Node } from 'slate';
-import { settings } from '~/config';
+import config from '@plone/volto/registry';
 import './less/public.less';
 
 const makeFootnote = (footnote) => {
@@ -48,7 +48,7 @@ const getBlocks = (properties, blocks) => {
 const FootnotesBlockView = (props) => {
   const { data, properties } = props;
   const { title, global } = data;
-  const { footnotes } = settings;
+  const { footnotes } = config.settings;
   const metadata = props.metadata || properties;
 
   // console.log(properties);
