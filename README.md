@@ -34,7 +34,7 @@
    ],
 
    "dependencies": {
-      "@eeacms/volto-slate-footnote": "^1.0.0"
+      "@eeacms/volto-slate-footnote": "^2.0.0"
    }
    ```
 
