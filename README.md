@@ -18,8 +18,10 @@
    ```
    $ npm install -g yo @plone/generator-volto
    $ yo @plone/volto my-volto-project \
-                     --addon volto-slate:asDefault \
-                     --addon @eeacms/volto-slate-footnote
+      --addon @eeacms/volto-slate-footnote \
+      --no-interactive \
+      --skip-install
+
 
    $ cd my-volto-project
    $ yarn add -W @eeacms/volto-slate-footnote
@@ -29,7 +31,6 @@
 
    ```JSON
    "addons": [
-      "volto-slate:asDefault",
       "@eeacms/volto-slate-footnote"
    ],
 
