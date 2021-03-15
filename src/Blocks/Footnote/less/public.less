@@ -4,8 +4,13 @@
   }
 }
 
-#page-edit {
+.slateFootnotes {
   .footnotes-listing-block {
-    min-height: 1em;
+    h3:empty {
+      &::after {
+        content: "Footnotes";
+        opacity: 0.333;
+      }
+    }
   }
 }
