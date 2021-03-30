@@ -10,6 +10,8 @@ export const FootnoteBlockSchema = {
   properties: {
     title: {
       title: 'Block title',
+      description: 'Friendly name to be displayed as block title',
+      type: 'string',
     },
     global: {
       title: 'Entire document',

@@ -19,6 +19,8 @@ const Schema = {
   properties: {
     title: {
       title: 'Block title',
+      description: 'Friendly name to be displayed as block title',
+      type: 'string',
     },
     placeholder: {
       title: 'Helper text',

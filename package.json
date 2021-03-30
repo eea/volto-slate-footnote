@@ -19,7 +19,7 @@
     "url": "git@github.com:eea/volto-slate-footnote.git"
   },
   "addons": [
-    "volto-slate"
+    "volto-slate:asDefault"
   ],
   "dependencies": {
     "volto-slate": "^2.0.0"
