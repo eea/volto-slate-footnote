@@ -54,7 +54,7 @@ const Schema = {
     },
     readOnlySettings: {
       title: 'Read-only settings',
-      description: 'Disable editing on section block settings',
+      description: 'Disable editing on block settings',
       type: 'boolean',
     },
   },
