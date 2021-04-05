@@ -1,8 +1,9 @@
 import React from 'react';
 import FootnotesBlockView from './FootnotesBlockView';
-import InlineForm from 'volto-slate/futurevolto/InlineForm';
+import { InlineForm } from '@plone/volto/components';
 import { FootnoteBlockSchema as schema } from './schema';
 import { SidebarPortal } from '@plone/volto/components';
+import { Segment } from 'semantic-ui-react';
 
 /**
  * @summary The React component that allows the footnotes block view to be
@@ -12,21 +13,33 @@ import { SidebarPortal } from '@plone/volto/components';
  */
 const FootnotesBlockEdit = (props) => {
   const { selected, block, data, onChangeBlock, properties } = props;
+  // Get editing instructions from block settings or props
+  let instructions = data?.instructions?.data || data?.instructions;
+  if (!instructions || instructions === '<p><br/></p>') {
+    instructions = props.formDescription;
+  }
   return (
     <>
       <FootnotesBlockView {...props} properties={properties} />
       <SidebarPortal selected={selected}>
-        <InlineForm
-          schema={schema}
-          title={schema.title}
-          onChangeField={(id, value) => {
-            onChangeBlock(block, {
-              ...data,
-              [id]: value,
-            });
-          }}
-          formData={data}
-        />
+        {instructions && (
+          <Segment attached>
+            <div dangerouslySetInnerHTML={{ __html: instructions }} />
+          </Segment>
+        )}
+        {!data?.readOnlySettings && (
+          <InlineForm
+            schema={schema}
+            title={schema.title}
+            onChangeField={(id, value) => {
+              onChangeBlock(block, {
+                ...data,
+                [id]: value,
+              });
+            }}
+            formData={data}
+          />
+        )}
       </SidebarPortal>
     </>
   );

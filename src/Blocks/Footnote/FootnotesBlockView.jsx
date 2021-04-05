@@ -47,7 +47,7 @@ const getBlocks = (properties, blocks) => {
  */
 const FootnotesBlockView = (props) => {
   const { data, properties } = props;
-  const { title, global } = data;
+  const { title, global, placeholder = 'Footnotes' } = data;
   const { footnotes } = config.settings;
   const metadata = props.metadata || properties;
 
@@ -83,7 +83,7 @@ const FootnotesBlockView = (props) => {
 
   return (
     <div className="footnotes-listing-block">
-      <h3>{title}</h3>
+      <h3 title={placeholder}>{title}</h3>
       {notes && (
         <ol>
           {notes.map(({ data }) => {

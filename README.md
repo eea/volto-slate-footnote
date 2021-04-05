@@ -13,19 +13,35 @@
 
 ## Getting started
 
-1. Create new volto project if you don't already have one:
+### Try volto-slate-footnote with Docker
+
+1. Get the latest Docker images
 
    ```
-   $ npm install -g yo @plone/generator-volto
-   $ yo @plone/volto my-volto-project \
-      --addon @eeacms/volto-slate-footnote \
-      --no-interactive \
-      --skip-install
-
-
-   $ cd my-volto-project
-   $ yarn add -W @eeacms/volto-slate-footnote
+   docker pull plone
+   docker pull plone/volto
    ```
+
+1. Start Plone backend
+   ```
+   docker run -d --name plone -p 8080:8080 -e SITE=Plone -e PROFILES="profile-plone.restapi:blocks" plone
+   ```
+
+1. Start Volto frontend
+
+   ```
+   docker run -it --rm -p 3000:3000 --link plone -e ADDONS="@eeacms/volto-slate-footnote" plone/volto
+   ```
+
+1. Go to http://localhost:3000
+
+1. Login with **admin:admin**
+
+1. Create a new **Page** and add a new **Footnotes** block.
+
+1. Add a new **Text** block, type some text, select it and add your **footnote** annotation.
+
+### Add volto-slate-footnote to your Volto project
 
 1. If you already have a volto project, just update `package.json`:
 
@@ -39,11 +55,20 @@
    }
    ```
 
+1. If not, create one:
+
+   ```
+   npm install -g yo @plone/generator-volto
+   yo @plone/volto my-volto-project --addon @eeacms/volto-slate-footnote
+   cd my-volto-project
+   ```
+
+
 1. Install new add-ons and restart Volto:
 
    ```
-   $ yarn
-   $ yarn start
+   yarn
+   yarn start
    ```
 
 1. Go to http://localhost:3000

@@ -2,6 +2,7 @@ import codeSVG from '@plone/volto/icons/blog-entry.svg';
 
 import FootnotesBlockView from './Blocks/Footnote/FootnotesBlockView';
 import FootnotesBlockEdit from './Blocks/Footnote/FootnotesBlockEdit';
+import FootnotesBlockSchema from './Blocks/Footnote/FootnotesBlockSchema';
 import { FOOTNOTE } from './constants';
 import installFootnoteEditor from './editor';
 
@@ -18,6 +19,7 @@ export default function install(config) {
     group: 'text',
     view: FootnotesBlockView,
     edit: FootnotesBlockEdit,
+    schema: FootnotesBlockSchema,
     restricted: false,
     mostUsed: false,
     blockHasOwnFocusManagement: false,
