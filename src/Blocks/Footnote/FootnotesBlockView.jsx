@@ -1,42 +1,13 @@
-import {
-  getBlocksFieldname,
-  getBlocksLayoutFieldname,
-} from '@plone/volto/helpers';
 import React from 'react';
 import { Node } from 'slate';
 import config from '@plone/volto/registry';
+import { getAllBlocks } from 'volto-slate/utils';
 import './less/public.less';
 
 const makeFootnote = (footnote) => {
   const free = footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
 
   return free;
-};
-
-/**
- * @param {object} properties A prop received by the View component
- * `FootnotesBlockView` which is read by the `getBlocksFieldname` and
- * `getBlocksLayoutFieldname` Volto helpers to produce the return value.
- * @returns {Array} The blocks data taken from the Volto form.
- */
-const getBlocks = (properties, blocks) => {
-  const blocksFieldName = getBlocksFieldname(properties);
-  const blocksLayoutFieldname = getBlocksLayoutFieldname(properties);
-
-  for (const n of properties[blocksLayoutFieldname].items) {
-    const block = properties[blocksFieldName][n];
-    // TODO Make this configurable via block config getBlocks
-    if (
-      block?.data?.[blocksLayoutFieldname] &&
-      block?.data?.[blocksFieldName]
-    ) {
-      getBlocks(block.data, blocks);
-    } else if (block?.[blocksLayoutFieldname] && block?.[blocksFieldName]) {
-      getBlocks(block, blocks);
-    }
-    blocks.push(block);
-  }
-  return blocks;
 };
 
 /**
@@ -54,9 +25,9 @@ const FootnotesBlockView = (props) => {
   // console.log(properties);
   const blocks = [];
   if (global) {
-    getBlocks(metadata, blocks);
+    getAllBlocks(metadata, blocks);
   } else {
-    getBlocks(properties, blocks);
+    getAllBlocks(properties, blocks);
   }
   const notes = [];
   // TODO: slice the blocks according to existing footnote listing blocks. A

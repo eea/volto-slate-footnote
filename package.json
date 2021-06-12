@@ -1,6 +1,6 @@
 {
   "name": "@eeacms/volto-slate-footnote",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "description": "volto-slate-footnote: Volto add-on",
   "main": "src/index.js",
   "author": "European Environment Agency: IDM2 A-Team",
@@ -22,7 +22,7 @@
     "volto-slate:asDefault"
   ],
   "dependencies": {
-    "volto-slate": "^2.0.0"
+    "volto-slate": ">=2.6.4"
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.5",
