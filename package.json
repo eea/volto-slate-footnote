@@ -22,7 +22,7 @@
     "volto-slate:asDefault"
   ],
   "dependencies": {
-    "volto-slate": ">=2.6.4"
+    "volto-slate": "*"
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.5",
