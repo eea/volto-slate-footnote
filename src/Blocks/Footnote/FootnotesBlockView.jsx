@@ -1,74 +1,75 @@
-import React from 'react';
-import { Node } from 'slate';
-import config from '@plone/volto/registry';
+import React, { useEffect, useState } from 'react';
 import { getAllBlocks } from 'volto-slate/utils';
 import './less/public.less';
+import {
+  makeFootnoteListOfUniqueItems,
+  makeFootnote,
+} from '../../editor/utils';
 
-const makeFootnote = (footnote) => {
-  const free = footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
-
-  return free;
-};
+const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 
 /**
  * @summary The React component that displays the list of footnotes inserted
  * before in the current page.
- * @param {object} props Contains the properties `data` and `properties` as
+ * Will show an indice for the footnote/citation but also numbers to indicate each
+ * text that has same reference
+ * @param {Object} props Contains the properties `data` and `properties` as
  * received from the Volto form.
  */
 const FootnotesBlockView = (props) => {
   const { data, properties } = props;
   const { title, global, placeholder = 'Footnotes' } = data;
-  const { footnotes } = config.settings;
   const metadata = props.metadata || properties;
+  const [notesObj, setNodesObjs] = useState(null);
 
-  // console.log(properties);
-  const blocks = [];
-  if (global) {
-    getAllBlocks(metadata, blocks);
-  } else {
-    getAllBlocks(properties, blocks);
-  }
-  const notes = [];
-  // TODO: slice the blocks according to existing footnote listing blocks. A
-  // footnote listing block should reset the counter of the footnotes above it
-  // If so, then it should only include the footnotes between the last footnotes
-  // listing block and this block
-  blocks
-    .filter((b) => b['@type'] === 'slate')
-    .forEach(({ value }) => {
-      if (!value) return;
+  useEffect(() => {
+    if (properties) {
+      const blocks = [];
 
-      Array.from(Node.elements(value[0])).forEach(([node]) => {
-        if (
-          footnotes.includes(node.type) &&
-          // do not add duplicates coming from copy/paste of notes
-          notes.filter((note) => {
-            return node.data && note.data.uid === node.data.uid;
-          }).length === 0
-        ) {
-          notes.push(node);
-        }
-      });
-    });
+      if (global) {
+        getAllBlocks(metadata, blocks);
+      } else {
+        getAllBlocks(properties, blocks);
+      }
+      const notesObjResult = makeFootnoteListOfUniqueItems(blocks);
+
+      setNodesObjs(notesObjResult);
+    }
+  }, [properties]); // eslint-disable-line
 
   return (
     <div className="footnotes-listing-block">
       <h3 title={placeholder}>{title}</h3>
-      {notes && (
+      {notesObj && (
         <ol>
-          {notes.map(({ data }) => {
-            const { uid, footnote } = data;
+          {Object.keys(notesObj).map((noteId) => {
+            const note = notesObj[noteId];
+            const { uid, footnote, zoteroId } = note;
+            const { refs } = note;
+            const refsList = refs ? Object.keys(refs) : null;
+
             return (
-              <li key={uid} id={`footnote-${uid}`}>
+              <li key={uid} id={`footnote-${zoteroId || uid}`}>
                 <div
                   dangerouslySetInnerHTML={{
                     __html: makeFootnote(footnote),
                   }}
                 />
-                <a href={`#ref-${uid}`} aria-label="Back to content">
-                  ↵
-                </a>
+                {refsList ? (
+                  refsList.map((ref, index) => (
+                    <sup id={`cite_ref-${ref}`}>
+                      <a href={`#ref-${ref}`} aria-label="Back to content">
+                        {alphabet[index]}
+                      </a>{' '}
+                    </sup>
+                  ))
+                ) : (
+                  <sup id={`cite_ref-${uid}`}>
+                    <a href={`#ref-${uid}`} aria-label="Back to content">
+                      ↵
+                    </a>{' '}
+                  </sup>
+                )}
               </li>
             );
           })}

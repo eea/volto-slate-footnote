@@ -1,5 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Popup } from 'semantic-ui-react';
+import { useEditorContext } from 'volto-slate/hooks';
+import { getAllBlocks } from 'volto-slate/utils';
+import { makeFootnoteListOfUniqueItems } from './utils';
 
 const makeFootnote = (footnote) => {
   const free = footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
@@ -7,29 +10,66 @@ const makeFootnote = (footnote) => {
   return free;
 };
 
-export const FootnoteElement = ({
-  attributes,
-  children,
-  element,
-  mode,
-  ...rest
-}) => {
+export const FootnoteElement = (props) => {
+  const { attributes, children, element, mode, extras } = props;
   const { data = {} } = element;
-  const { uid = 'undefined' } = data;
+  const { uid, zoteroId } = data;
+  const editor = useEditorContext();
+  const [citationIndice, setCitationIndice] = useState(null);
+  const [citationRefId, setCitationRefId] = useState(null);
+
+  useEffect(() => {
+    let metadata = {};
+    if (editor) {
+      const blockProps = editor.getBlockProps();
+
+      metadata = blockProps.metadata || blockProps.properties;
+    } else {
+      metadata = extras.metadata;
+    }
+
+    const blocks = [];
+    getAllBlocks(metadata, blocks);
+    const notesObjResult = makeFootnoteListOfUniqueItems(blocks);
+
+    const indice = data.zoteroId
+      ? Object.keys(notesObjResult).indexOf(data.zoteroId) + 1
+      : notesObjResult[data.uid]
+      ? Object.keys(notesObjResult).indexOf(data.uid) + 1
+      : Object.keys(notesObjResult).indexOf(
+          Object.keys(notesObjResult).find(
+            (noteKey) =>
+              notesObjResult[noteKey].refs &&
+              notesObjResult[noteKey].refs[data.uid],
+          ),
+        ) + 1;
+
+    const findReferenceId = Object.keys(notesObjResult).find(
+      (noteKey) =>
+        notesObjResult[noteKey].uid === uid ||
+        (notesObjResult[noteKey].refs && notesObjResult[noteKey].refs[uid]),
+    );
+
+    setCitationIndice(indice);
+    setCitationRefId(findReferenceId);
+  }, [editor, element, children]); // eslint-disable-line
 
   return (
     <>
       {mode === 'view' ? (
         <a
-          href={`#footnote-${uid}`}
+          href={`#footnote-${citationRefId}`}
           id={`ref-${uid}`}
           aria-describedby="footnote-label"
         >
           <Popup
             position="bottom left"
             trigger={
-              <span {...attributes} className="citation-indice">
+              <span {...attributes}>
                 {children}
+                <sup id={`cite_ref-${uid}`}>
+                  <a href={`#footnote-${citationRefId}`}>[{citationIndice}]</a>
+                </sup>
               </span>
             }
           >
@@ -51,6 +91,9 @@ export const FootnoteElement = ({
               className="footnote-edit-node zotero-edit-node"
             >
               {children}
+              <sup id={`cite_ref-${uid}`}>
+                <a href={`#footnote-${zoteroId || uid}`}>[{citationIndice}]</a>{' '}
+              </sup>
             </span>
           }
         >

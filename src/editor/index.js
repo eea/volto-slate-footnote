@@ -8,9 +8,10 @@ import {
 import { makeInlineElementPlugin } from 'volto-slate/components/ElementEditor';
 import { _insertElement } from 'volto-slate/components/ElementEditor/utils';
 import { FootnoteEditorSchema } from './schema';
-import { withFootnote } from './extensions';
+import { withFootnote, withBeforeInsertFragment } from './extensions';
 import { FOOTNOTE } from '../constants';
 import { FootnoteElement } from './render';
+import FootnoteEditor from './FootnoteEditor';
 
 import './styles.less';
 
@@ -30,10 +31,11 @@ export default function install(config) {
     title: 'Footnote',
     pluginId: FOOTNOTE,
     elementType: FOOTNOTE,
+    pluginEditor: FootnoteEditor,
     element: FootnoteElement,
     isInlineElement: true,
     editSchema: FootnoteEditorSchema,
-    extensions: [withFootnote],
+    extensions: [withFootnote, withBeforeInsertFragment],
     hasValue: (formData) => !!formData.footnote,
     insertElement: (editor, data) => {
       // the default behavior is _insertElement,
@@ -64,7 +66,6 @@ export default function install(config) {
             break;
           }
         }
-
         // if not, create it
         if (!footnotesBlockExists) {
           const id = uuid();
@@ -78,6 +79,7 @@ export default function install(config) {
               items: [...blocks_layout.items, id],
             },
           };
+
           ReactDOM.unstable_batchedUpdates(() => {
             onChangeField(blocksFieldname, formData[blocksFieldname]);
             onChangeField(

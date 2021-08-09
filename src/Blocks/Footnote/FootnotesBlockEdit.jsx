@@ -18,6 +18,7 @@ const FootnotesBlockEdit = (props) => {
   if (!instructions || instructions === '<p><br/></p>') {
     instructions = props.formDescription;
   }
+
   return (
     <>
       <FootnotesBlockView {...props} properties={properties} />
