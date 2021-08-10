@@ -30,6 +30,7 @@ const FootnoteEditor = (props) => {
   const active = getActiveElement(editor);
 
   if (!active) {
+    /* eslint no-console: 0 */
     console.error('Active element not found, this will crash');
   }
   const [elementNode] = active;
