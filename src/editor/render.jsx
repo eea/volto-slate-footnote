@@ -19,17 +19,11 @@ export const FootnoteElement = (props) => {
   const [citationRefId, setCitationRefId] = useState(null);
 
   useEffect(() => {
-    let metadata = {};
-    if (editor) {
-      const blockProps = editor.getBlockProps();
-
-      metadata = blockProps.metadata || blockProps.properties;
-    } else {
-      metadata = extras.metadata;
-    }
-
-    const blocks = [];
-    getAllBlocks(metadata, blocks);
+    const blockProps = editor ? editor.getBlockProps() : null;
+    const metadata = blockProps
+      ? blockProps.metadata || blockProps.properties
+      : extras.metadata;
+    const blocks = getAllBlocks(metadata, []);
     const notesObjResult = makeFootnoteListOfUniqueItems(blocks);
 
     const indice = data.zoteroId
@@ -68,7 +62,7 @@ export const FootnoteElement = (props) => {
               <span {...attributes}>
                 {children}
                 <sup id={`cite_ref-${uid}`}>
-                  <a href={`#footnote-${citationRefId}`}>[{citationIndice}]</a>
+                  <span className="footnote-indice">[{citationIndice}]</span>
                 </sup>
               </span>
             }
@@ -92,7 +86,7 @@ export const FootnoteElement = (props) => {
             >
               {children}
               <sup id={`cite_ref-${uid}`}>
-                <a href={`#footnote-${zoteroId || uid}`}>[{citationIndice}]</a>{' '}
+                <span className="footnote-indice">[{citationIndice}]</span>{' '}
               </sup>
             </span>
           }

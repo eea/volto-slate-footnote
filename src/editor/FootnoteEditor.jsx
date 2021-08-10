@@ -36,12 +36,10 @@ const FootnoteEditor = (props) => {
   const [elementNode] = active;
   const isElement = isActiveElement(editor);
 
-  const blocks = [];
-  const filteredBlocks = [];
-
   const blockProps = editor.getBlockProps();
   const metadata = blockProps.metadata || blockProps.properties;
-  getAllBlocks(metadata, blocks);
+  const blocks = getAllBlocks(metadata, []);
+  const filteredBlocks = [];
 
   // make a list of filtered footnotes that have unique title
   blocks

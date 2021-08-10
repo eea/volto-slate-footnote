@@ -19,12 +19,12 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const FootnotesBlockView = (props) => {
   const { data, properties } = props;
   const { title, global, placeholder = 'Footnotes' } = data;
-  const metadata = props.metadata || properties;
+  const metadata = global ? props.metadata : properties;
   const [notesObj, setNodesObjs] = useState(null);
 
   useEffect(() => {
     if (properties) {
-      const blocks = getAllBlocks(global ? metadata : properties, []);
+      const blocks = getAllBlocks(metadata, []);
       const notesObjResult = makeFootnoteListOfUniqueItems(blocks);
 
       setNodesObjs(notesObjResult);
@@ -51,7 +51,7 @@ const FootnotesBlockView = (props) => {
                 />
                 {refsList ? (
                   refsList.map((ref, index) => (
-                    <sup id={`cite_ref-${ref}`}>
+                    <sup id={`cite_ref-${ref}`} key={`indice-${ref}`}>
                       <a href={`#ref-${ref}`} aria-label="Back to content">
                         {alphabet[index]}
                       </a>{' '}
