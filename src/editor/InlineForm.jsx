@@ -98,6 +98,7 @@ const InlineForm = ({
               <Card.Header>Citation</Card.Header>
               <Card.Description fluid>
                 <Search
+                  id="field-footnote"
                   input={{ icon: 'search', iconPosition: 'right', fluid: true }}
                   fluid
                   onFocus={handleSearchChange}
