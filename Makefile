@@ -1,7 +1,7 @@
 SHELL=/bin/bash
 
 DIR=$(shell basename $$(pwd))
-ADDON ?= "@eeacms/volto-accordion-block"
+ADDON ?= "@eeacms/volto-slate-footnote"
 
 # We like colors
 # From: https://coderwall.com/p/izxssa/colored-makefile-for-golang-projects
