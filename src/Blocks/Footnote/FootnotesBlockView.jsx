@@ -24,13 +24,7 @@ const FootnotesBlockView = (props) => {
 
   useEffect(() => {
     if (properties) {
-      const blocks = [];
-
-      if (global) {
-        getAllBlocks(metadata, blocks);
-      } else {
-        getAllBlocks(properties, blocks);
-      }
+      const blocks = getAllBlocks(global ? metadata : properties, []);
       const notesObjResult = makeFootnoteListOfUniqueItems(blocks);
 
       setNodesObjs(notesObjResult);
