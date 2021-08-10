@@ -26,8 +26,8 @@ export const FootnoteElement = (props) => {
     const blocks = getAllBlocks(metadata, []);
     const notesObjResult = makeFootnoteListOfUniqueItems(blocks);
 
-    const indice = data.zoteroId
-      ? Object.keys(notesObjResult).indexOf(data.zoteroId) + 1
+    const indice = zoteroId
+      ? Object.keys(notesObjResult).indexOf(zoteroId) + 1
       : notesObjResult[data.uid]
       ? Object.keys(notesObjResult).indexOf(data.uid) + 1
       : Object.keys(notesObjResult).indexOf(

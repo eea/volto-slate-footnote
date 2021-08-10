@@ -19,12 +19,13 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const FootnotesBlockView = (props) => {
   const { data, properties } = props;
   const { title, global, placeholder = 'Footnotes' } = data;
-  const metadata = global ? props.metadata : properties;
   const [notesObj, setNodesObjs] = useState(null);
+  const metadata = props.metadata ? props.metadata : properties;
 
   useEffect(() => {
     if (properties) {
-      const blocks = getAllBlocks(metadata, []);
+      const globalMetadata = global ? metadata : properties;
+      const blocks = getAllBlocks(globalMetadata, []);
       const notesObjResult = makeFootnoteListOfUniqueItems(blocks);
 
       setNodesObjs(notesObjResult);
