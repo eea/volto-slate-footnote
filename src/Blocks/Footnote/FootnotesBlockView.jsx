@@ -4,7 +4,7 @@ import './less/public.less';
 import {
   makeFootnoteListOfUniqueItems,
   makeFootnote,
-} from '../../editor/utils';
+} from '@eeacms/volto-slate-footnote/editor/utils';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 
