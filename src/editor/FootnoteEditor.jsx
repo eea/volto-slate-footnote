@@ -3,11 +3,10 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { ReactEditor } from 'slate-react';
 import { setPluginOptions } from 'volto-slate/actions';
-import { Icon as VoltoIcon } from '@plone/volto/components';
+import { Icon as VoltoIcon, InlineForm } from '@plone/volto/components';
 import briefcaseSVG from '@plone/volto/icons/briefcase.svg';
 import checkSVG from '@plone/volto/icons/check.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
-import InlineForm from './InlineForm';
 import { Node } from 'slate';
 import { getAllBlocks } from 'volto-slate/utils';
 
@@ -91,54 +90,70 @@ const FootnoteEditor = (props) => {
   };
 
   const SchemaProvider = schemaProvider;
-
   return (
     <SchemaProvider {...props} data={formData}>
-      {(schema) => (
-        <InlineForm
-          schema={schema}
-          title={schema.title}
-          icon={<VoltoIcon size="24px" name={briefcaseSVG} />}
-          onChangeField={(value) => {
-            if (!onChangeValues) {
-              return setFormData({
-                ...formData,
-                ...value,
-              });
+      {(schema) => {
+        const schemaWithUpdatedChoices = {
+          ...schema,
+          properties: {
+            ...schema.properties,
+            footnote: {
+              ...schema.properties.footnote,
+              choices: filteredBlocks,
+            },
+          },
+        };
+
+        return (
+          <InlineForm
+            schema={schemaWithUpdatedChoices}
+            title={schema.title}
+            icon={<VoltoIcon size="24px" name={briefcaseSVG} />}
+            onChangeField={(value) => {
+              if (!onChangeValues) {
+                return setFormData({
+                  ...formData,
+                  ...value,
+                });
+              }
+              return onChangeValues('footnote', value, formData, setFormData);
+            }}
+            formData={formData}
+            source={filteredBlocks}
+            headerActions={
+              <>
+                <button
+                  onClick={() => {
+                    saveDataToEditor(formData);
+                    dispatch(
+                      setPluginOptions(pluginId, {
+                        show_sidebar_editor: false,
+                      }),
+                    );
+                    ReactEditor.focus(editor);
+                  }}
+                >
+                  <VoltoIcon size="24px" name={checkSVG} />
+                </button>
+                <button
+                  onClick={() => {
+                    checkForCancel();
+                    dispatch(
+                      setPluginOptions(pluginId, {
+                        show_sidebar_editor: false,
+                      }),
+                    );
+                    setFormData({});
+                    ReactEditor.focus(editor);
+                  }}
+                >
+                  <VoltoIcon size="24px" name={clearSVG} />
+                </button>
+              </>
             }
-            return onChangeValues('footnote', value, formData, setFormData);
-          }}
-          formData={formData}
-          source={filteredBlocks}
-          headerActions={
-            <>
-              <button
-                onClick={() => {
-                  saveDataToEditor(formData);
-                  dispatch(
-                    setPluginOptions(pluginId, { show_sidebar_editor: false }),
-                  );
-                  ReactEditor.focus(editor);
-                }}
-              >
-                <VoltoIcon size="24px" name={checkSVG} />
-              </button>
-              <button
-                onClick={() => {
-                  checkForCancel();
-                  dispatch(
-                    setPluginOptions(pluginId, { show_sidebar_editor: false }),
-                  );
-                  setFormData({});
-                  ReactEditor.focus(editor);
-                }}
-              >
-                <VoltoIcon size="24px" name={clearSVG} />
-              </button>
-            </>
-          }
-        />
-      )}
+          />
+        );
+      }}
     </SchemaProvider>
   );
 };
