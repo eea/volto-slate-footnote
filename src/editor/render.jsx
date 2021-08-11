@@ -59,7 +59,7 @@ export const FootnoteElement = (props) => {
           <Popup
             position="bottom left"
             trigger={
-              <span {...attributes} className="citation-indice">
+              <span {...attributes} className="citation-item">
                 {children}
                 <sup id={`cite_ref-${uid}`}>
                   <span className="footnote-indice">[{citationIndice}]</span>
