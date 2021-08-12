@@ -18,31 +18,33 @@ describe('Blocks Tests', () => {
 
     // Add some text with footnotes
     cy.get('.slate-editor [contenteditable=true]')
-    .focus()
-    .click()
-    .wait(1000)
-    .type('Colorless green ideas sleep furiously.');
+      .focus()
+      .click()
+      .wait(1000)
+      .type('Colorless green ideas sleep furiously.');
 
     cy.get('.slate-editor.selected [contenteditable=true]').setSelection(
-    'furiously',
+      'furiously',
     );
 
     cy.wait(500);
 
     cy.get('.slate-inline-toolbar .button-wrapper a[title="Footnote"]').click();
-    cy.get('.sidebar-container [id=field-footnote]').click().type("Citation");
+    cy.get('.sidebar-container [id=field-footnote]').click().type('Citation');
     cy.get('.sidebar-container .form .header button:first-of-type').click();
 
     // Add block
     cy.get('.slate-editor [contenteditable=true]')
-    .focus()
-    .click()
-    .wait(1000)
-    .type('{enter}');
+      .focus()
+      .click()
+      .wait(1000)
+      .type('{enter}');
 
     cy.get('.ui.basic.icon.button.block-add-button').first().click();
     cy.get('.blocks-chooser .title').contains('Text').click();
-    cy.get('.content.active.text .button.slateFootnotes').contains('Footnotes').click();
+    cy.get('.content.active.text .button.slateFootnotes')
+      .contains('Footnotes')
+      .click();
 
     // Configure block
     cy.get('[id=sidebar-properties] [name=title]').click().type('Footnotes');
@@ -54,7 +56,7 @@ describe('Blocks Tests', () => {
 
     // then the page view should contain our changes
     cy.contains('My Add-on Page');
-    cy.get('span.citation-indice').contains('furiously');
+    cy.get('span.citation-item').contains('furiously');
     cy.contains('Footnotes');
     cy.contains('Citation');
   });
