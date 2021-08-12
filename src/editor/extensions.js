@@ -36,7 +36,7 @@ export const withBeforeInsertFragment = (editor) => {
   const { beforeInsertFragment } = editor;
 
   editor.beforeInsertFragment = (parsed) => {
-    if (parsed[0] && parsed[0].children[0] && parsed[0].children[0].data.uid) {
+    if (parsed?.[0]?.children?.[0]?.data?.uid) {
       parsed[0].children[0].data.uid = nanoid(5);
     }
 
