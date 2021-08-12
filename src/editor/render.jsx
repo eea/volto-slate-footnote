@@ -59,11 +59,13 @@ export const FootnoteElement = (props) => {
           <Popup
             position="bottom left"
             trigger={
-              <span {...attributes} className="citation-item">
+              <span
+                id={`cite_ref-${uid}`}
+                {...attributes}
+                className="citation-item"
+                data-footnote-indice={citationIndice}
+              >
                 {children}
-                <sup id={`cite_ref-${uid}`}>
-                  <span className="footnote-indice">[{citationIndice}]</span>
-                </sup>
               </span>
             }
           >
@@ -81,13 +83,12 @@ export const FootnoteElement = (props) => {
           position="bottom left"
           trigger={
             <span
+              id={`cite_ref-${uid}`}
               {...attributes}
-              className="footnote-edit-node zotero-edit-node"
+              className="footnote-edit-node"
+              data-footnote-indice={citationIndice}
             >
               {children}
-              <sup id={`cite_ref-${uid}`}>
-                <span className="footnote-indice">[{citationIndice}]</span>{' '}
-              </sup>
             </span>
           }
         >
