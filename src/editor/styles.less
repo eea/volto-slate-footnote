@@ -47,3 +47,11 @@ a[aria-describedby='footnote-label'] {
   background-color: #e6f3ff;
   border-radius: 4px;
 }
+
+.footnote-edit-node::after,
+.citation-item::after {
+  color: #0645ad;
+  content: ' [' attr(data-footnote-indice) ']';
+  font-size: 75%;
+  vertical-align: super;
+}

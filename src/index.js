@@ -5,6 +5,7 @@ import FootnotesBlockEdit from './Blocks/Footnote/FootnotesBlockEdit';
 import FootnotesBlockSchema from './Blocks/Footnote/FootnotesBlockSchema';
 import { FOOTNOTE } from './constants';
 import installFootnoteEditor from './editor';
+import SearchWidget from '@eeacms/volto-slate-footnote/editor/SearchWidget';
 
 /**
  * @summary Called from Volto to configure new or existing Volto block types.
@@ -32,7 +33,7 @@ export default function install(config) {
   };
 
   config.settings.footnotes = [...(config.settings.footnotes || []), FOOTNOTE];
-
+  config.widgets.widget.searchInput = SearchWidget;
   config = installFootnoteEditor(config);
 
   return config;

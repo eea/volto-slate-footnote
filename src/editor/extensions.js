@@ -30,3 +30,18 @@ export const withFootnote = (editor) => {
 
   return editor;
 };
+// will replace existing uid with a new one
+// this will be usefull when copy/pase items have the same uid
+export const withBeforeInsertFragment = (editor) => {
+  const { beforeInsertFragment } = editor;
+
+  editor.beforeInsertFragment = (parsed) => {
+    if (parsed?.[0]?.children?.[0]?.data?.uid) {
+      parsed[0].children[0].data.uid = nanoid(5);
+    }
+
+    return beforeInsertFragment ? beforeInsertFragment(parsed) : parsed;
+  };
+
+  return editor;
+};
