@@ -52,8 +52,8 @@ export default function install(config) {
       const blocksFieldname = getBlocksFieldname(properties);
       const blocksLayoutFieldname = getBlocksLayoutFieldname(properties);
 
-      const blocks = properties[blocksFieldname];
-      const blocks_layout = properties[blocksLayoutFieldname];
+      const blocks = properties?.[blocksFieldname] || {};
+      const blocks_layout = properties?.[blocksLayoutFieldname] || {};
 
       // Auto-add footnote block
       if (config?.blocks?.blocksConfig?.slateFootnotes?.autoAdd) {
