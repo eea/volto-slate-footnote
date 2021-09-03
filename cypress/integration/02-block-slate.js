@@ -27,7 +27,7 @@ describe('Blocks Tests', () => {
       'furiously',
     );
 
-    cy.wait(500);
+    cy.wait(1000);
 
     cy.get('.slate-inline-toolbar .button-wrapper a[title="Footnote"]').click();
     cy.get('.sidebar-container [id=field-footnote]').click().type('Citation');
