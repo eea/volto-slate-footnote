@@ -12,6 +12,25 @@ export const makeFootnote = (footnote) => {
   return free;
 };
 
+const iterateZoteroObj = (notesObjResultTemp, zoteroObj, parentUid) => {
+  const uid = zoteroObj.uid;
+
+  if (!notesObjResultTemp[zoteroObj.zoteroId]) {
+    notesObjResultTemp[zoteroObj.zoteroId] = {
+      ...zoteroObj,
+      uid,
+    };
+  } else if (notesObjResultTemp[zoteroObj.zoteroId].refs) {
+    notesObjResultTemp[zoteroObj.zoteroId].refs[uid] = true;
+  } else {
+    // add its own uid in refs for easier parsing in html
+    notesObjResultTemp[zoteroObj.zoteroId].refs = {
+      [notesObjResultTemp[zoteroObj.zoteroId].uid]: true,
+      [uid]: true,
+    };
+  }
+};
+
 /**
  * Will make an object with keys for every zoteroId and some uid that are unique
  * or referenced multiple times
@@ -34,18 +53,11 @@ export const makeFootnoteListOfUniqueItems = (blocks) => {
         if (footnotes.includes(node.type) && node.data) {
           // for citations (Zotero items) create refs for same zoteroId
           if (node.data.zoteroId) {
-            if (!notesObjResult[node.data.zoteroId]) {
-              notesObjResult[node.data.zoteroId] = {
-                ...node.data,
-              };
-            } else if (notesObjResult[node.data.zoteroId].refs) {
-              notesObjResult[node.data.zoteroId].refs[node.data.uid] = true;
-            } else {
-              // add its own uid in refs for easier parsing in html
-              notesObjResult[node.data.zoteroId].refs = {
-                [notesObjResult[node.data.zoteroId].uid]: true,
-                [node.data.uid]: true,
-              };
+            iterateZoteroObj(notesObjResult, node.data);
+            if (node.data.extra) {
+              node.data.extra.forEach((zoteroObjItem) =>
+                iterateZoteroObj(notesObjResult, zoteroObjItem, node.data.uid),
+              );
             }
             // for footnotes - create refs, on identical text
           } else {
