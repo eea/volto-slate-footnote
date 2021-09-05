@@ -50,11 +50,17 @@ export const FootnoteElement = (props) => {
           ) + 1
         }]`;
 
-    const findReferenceId = Object.keys(notesObjResult).find(
-      (noteKey) =>
-        notesObjResult[noteKey].uid === uid ||
-        (notesObjResult[noteKey].refs && notesObjResult[noteKey].refs[uid]),
-    );
+    const findReferenceId =
+      // search within parent citations first, otherwise the uid might be inside a refs obj that comes before
+      Object.keys(notesObjResult).find(
+        (noteKey) => notesObjResult[noteKey].uid === uid,
+      ) ||
+      // if not found in parent, search in refs, it might be a footnote references multiple times
+      Object.keys(notesObjResult).find(
+        (noteKey) =>
+          notesObjResult[noteKey].uid === uid ||
+          (notesObjResult[noteKey].refs && notesObjResult[noteKey].refs[uid]),
+      );
 
     setCitationIndice(indice);
     setCitationRefId(findReferenceId);
@@ -79,7 +85,7 @@ export const FootnoteElement = (props) => {
             hoverable
           >
             <Popup.Content>
-              <List divided relaxed>
+              <List divided relaxed selection>
                 <List.Item as="a" href={`#footnote-${citationRefId}`}>
                   <List.Content>
                     <List.Description>
@@ -125,7 +131,7 @@ export const FootnoteElement = (props) => {
           hoverable
         >
           <Popup.Content>
-            <List divided relaxed>
+            <List divided relaxed selection>
               <List.Item as="a" href={`#footnote-${citationRefId}`}>
                 <List.Content>
                   <List.Description>
