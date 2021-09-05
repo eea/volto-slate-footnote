@@ -36,7 +36,7 @@ export const FootnoteElement = (props) => {
                   Object.keys(notesObjResult).indexOf(zoteroObj.zoteroId) + 1
                 }]`,
             ),
-          ].join()
+          ].join('')
         : `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`
       : notesObjResult[data.uid]
       ? `[${Object.keys(notesObjResult).indexOf(data.uid) + 1}]`
