@@ -12,18 +12,29 @@ export const makeFootnote = (footnote) => {
   return free;
 };
 
+/**
+ * Will change the notesObjResultTemp to add new property if the zoteroId is new or add to the existing ones refs
+ * @param {Object} notesObjResultTemp - the object that will configure the zotero items
+ * @param {Object} zoteroObj - the footnote object
+ * @param {string} zoteroObj.zoteroId - id of the zotero citation
+ * @param {string} zoteroObj.uid - id of the slate item
+ * @param {string} zoteroObj.footnote - xml citation from zotero
+ * @param {string} parentUid - will be needed because html element (the word) that references multiple citations
+ * will have the id as the main uid, the ids from the extra will not matter in this case
+ */
 const iterateZoteroObj = (notesObjResultTemp, zoteroObj, parentUid) => {
-  const uid = zoteroObj.uid;
-
+  const uid = parentUid || zoteroObj.uid;
+  // add new zoteroId
   if (!notesObjResultTemp[zoteroObj.zoteroId]) {
     notesObjResultTemp[zoteroObj.zoteroId] = {
       ...zoteroObj,
       uid,
     };
+    // if zoteroId and refs exist then add the uid to the refs
   } else if (notesObjResultTemp[zoteroObj.zoteroId].refs) {
     notesObjResultTemp[zoteroObj.zoteroId].refs[uid] = true;
   } else {
-    // add its own uid in refs for easier parsing in html
+    // if zoteroId exists but not refs, add its own uid also in refs for easier parsing in html
     notesObjResultTemp[zoteroObj.zoteroId].refs = {
       [notesObjResultTemp[zoteroObj.zoteroId].uid]: true,
       [uid]: true,
@@ -54,8 +65,11 @@ export const makeFootnoteListOfUniqueItems = (blocks) => {
           // for citations (Zotero items) create refs for same zoteroId
           if (node.data.zoteroId) {
             iterateZoteroObj(notesObjResult, node.data);
+            // itereate the extra obj for multiple citations
             if (node.data.extra) {
               node.data.extra.forEach((zoteroObjItem) =>
+                // send the uid of the parent
+                // of the word the will have the reference indice
                 iterateZoteroObj(notesObjResult, zoteroObjItem, node.data.uid),
               );
             }
