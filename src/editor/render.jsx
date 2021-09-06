@@ -11,19 +11,17 @@ const makeFootnote = (footnote) => {
 };
 
 const toggleAccordionReference = (footnoteId) => {
-  if (
-    typeof window !== 'undefined' &&
-    document.querySelector(footnoteId) !== null &&
-    document.querySelector(footnoteId).closest('.accordion') !== null
-  ) {
-    const comp = document
-      .querySelector(footnoteId)
-      .closest('.accordion')
-      .querySelector('.title');
-    if (!comp.className.includes('active')) {
-      comp.click();
+  if (typeof window !== 'undefined') {
+    const footnote = document.querySelector(footnoteId);
+    if (footnote !== null && footnote.closest('.accordion') !== null) {
+      const comp = footnote.closest('.accordion').querySelector('.title');
+      if (!comp.className.includes('active')) {
+        comp.click();
+      }
     }
   }
+
+  return true;
 };
 
 export const FootnoteElement = (props) => {
