@@ -66,7 +66,7 @@ export const FootnoteElement = (props) => {
     <>
       {mode === 'view' ? (
         <a
-          onClick={toggleAccordionReference(`#footnote-${citationRefId}`)}
+          onClick={() => toggleAccordionReference(`#footnote-${citationRefId}`)}
           href={`#footnote-${citationRefId}`}
           id={`ref-${uid}`}
           aria-describedby="footnote-label"
