@@ -10,6 +10,20 @@ const makeFootnote = (footnote) => {
   return free;
 };
 
+const toggleAccordionReference = (footnoteId) => {
+  if (typeof window !== 'undefined') {
+    const footnote = document.querySelector(footnoteId);
+    if (footnote !== null && footnote.closest('.accordion') !== null) {
+      const comp = footnote.closest('.accordion').querySelector('.title');
+      if (!comp.className.includes('active')) {
+        comp.click();
+      }
+    }
+  }
+
+  return true;
+};
+
 export const FootnoteElement = (props) => {
   const { attributes, children, element, mode, extras } = props;
   const { data = {} } = element;
@@ -52,6 +66,7 @@ export const FootnoteElement = (props) => {
     <>
       {mode === 'view' ? (
         <a
+          onClick={() => toggleAccordionReference(`#footnote-${citationRefId}`)}
           href={`#footnote-${citationRefId}`}
           id={`ref-${uid}`}
           aria-describedby="footnote-label"
