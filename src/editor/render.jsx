@@ -10,6 +10,20 @@ const makeFootnote = (footnote) => {
   return free;
 };
 
+const toggleAccordionReference = (footnoteId) => {
+  if (typeof window !== 'undefined') {
+    const footnote = document.querySelector(footnoteId);
+    if (footnote !== null && footnote.closest('.accordion') !== null) {
+      const comp = footnote.closest('.accordion').querySelector('.title');
+      if (!comp.className.includes('active')) {
+        comp.click();
+      }
+    }
+  }
+
+  return true;
+};
+
 export const FootnoteElement = (props) => {
   const { attributes, children, element, mode, extras } = props;
   const { data = {} } = element;
@@ -86,7 +100,14 @@ export const FootnoteElement = (props) => {
           >
             <Popup.Content>
               <List divided relaxed selection>
-                <List.Item as="a" href={`#footnote-${citationRefId}`}>
+                <List.Item
+                  as="a"
+                  href={`#footnote-${citationRefId}`}
+                  onClick={() =>
+                    toggleAccordionReference(`#footnote-${citationRefId}`)
+                  }
+                  key={`#footnote-${citationRefId}`}
+                >
                   <List.Content>
                     <List.Description>
                       <div
@@ -99,7 +120,14 @@ export const FootnoteElement = (props) => {
                 </List.Item>
                 {data.extra &&
                   data.extra.map((item) => (
-                    <List.Item as="a" href={`#footnote-${item.zoteroId}`}>
+                    <List.Item
+                      as="a"
+                      href={`#footnote-${item.zoteroId}`}
+                      onClick={() =>
+                        toggleAccordionReference(`#footnote-${item.zoteroId}`)
+                      }
+                      key={`#footnote-${item.zoteroId}`}
+                    >
                       <List.Content>
                         <List.Description>
                           <div
@@ -132,7 +160,14 @@ export const FootnoteElement = (props) => {
         >
           <Popup.Content>
             <List divided relaxed selection>
-              <List.Item as="a" href={`#footnote-${citationRefId}`}>
+              <List.Item
+                as="a"
+                href={`#footnote-${citationRefId}`}
+                onClick={() =>
+                  toggleAccordionReference(`#footnote-${citationRefId}`)
+                }
+                key={`#footnote-${citationRefId}`}
+              >
                 <List.Content>
                   <List.Description>
                     <div
@@ -145,7 +180,14 @@ export const FootnoteElement = (props) => {
               </List.Item>
               {data.extra &&
                 data.extra.map((item) => (
-                  <List.Item as="a" href={`#footnote-${item.zoteroId}`}>
+                  <List.Item
+                    as="a"
+                    href={`#footnote-${item.zoteroId}`}
+                    onClick={() =>
+                      toggleAccordionReference(`#footnote-${item.zoteroId}`)
+                    }
+                    key={`#footnote-${item.zoteroId}`}
+                  >
                     <List.Content>
                       <List.Description>
                         <div

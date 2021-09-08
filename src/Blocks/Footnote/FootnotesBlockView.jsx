@@ -44,7 +44,10 @@ const FootnotesBlockView = (props) => {
             const refsList = refs ? Object.keys(refs) : null;
 
             return (
-              <li key={uid} id={`footnote-${zoteroId || uid}`}>
+              <li
+                key={`footnote-${zoteroId || uid}`}
+                id={`footnote-${zoteroId || uid}`}
+              >
                 <div
                   dangerouslySetInnerHTML={{
                     __html: makeFootnote(footnote),
