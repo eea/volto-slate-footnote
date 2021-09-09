@@ -35,8 +35,8 @@ const FootnoteEditor = (props) => {
   const [elementNode] = active;
   const isElement = isActiveElement(editor);
 
-  const blockProps = editor.getBlockProps();
-  const metadata = blockProps.metadata || blockProps.properties;
+  const blockProps = editor?.getBlockProps ? editor.getBlockProps() : {};
+  const metadata = blockProps.metadata || blockProps.properties || {};
   const blocks = getAllBlocks(metadata, []);
   const filteredBlocks = [];
 
