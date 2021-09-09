@@ -33,10 +33,10 @@ export const FootnoteElement = (props) => {
   const [citationRefId, setCitationRefId] = useState(null);
 
   useEffect(() => {
-    const blockProps = editor ? editor.getBlockProps() : null;
+    const blockProps = editor?.getBlockProps ? editor.getBlockProps() : null;
     const metadata = blockProps
       ? blockProps.metadata || blockProps.properties
-      : extras.metadata;
+      : extras?.metadata || {};
     const blocks = getAllBlocks(metadata, []);
     const notesObjResult = makeFootnoteListOfUniqueItems(blocks);
 
