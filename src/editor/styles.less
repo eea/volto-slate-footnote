@@ -4,35 +4,11 @@ body {
   counter-reset: footnotes;
 }
 
-a[aria-describedby='footnote-label'] {
-  color: inherit;
+span[aria-describedby='footnote-label'] {
+  color: #004b87;
   cursor: default;
   outline: none;
   text-decoration: none;
-
-  &:focus {
-    &::after {
-      outline: thin dotted;
-      outline-offset: 2px;
-    }
-  }
-}
-
-.citation-indice {
-  color: inherit;
-  counter-increment: footnotes;
-  cursor: default;
-  outline: none;
-  text-decoration: none;
-
-  &::after {
-    margin-left: 2px;
-    color: blue;
-    content: '[' counter(footnotes) ']';
-    cursor: pointer;
-    font-size: 0.8em;
-    text-decoration: underline;
-  }
 
   &:focus {
     &::after {
@@ -51,7 +27,7 @@ a[aria-describedby='footnote-label'] {
 .footnote-edit-node::after,
 .citation-item::after {
   color: #0645ad;
-  content: ' [' attr(data-footnote-indice) ']';
+  content: attr(data-footnote-indice);
   font-size: 75%;
   vertical-align: super;
 }
