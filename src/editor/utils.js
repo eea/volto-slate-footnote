@@ -63,7 +63,7 @@ export const getAllBlocksAndSlateFields = (properties) => {
           flat_blocks.push({
             '@type': 'slate',
             id: field_id,
-            value: properties[field_id] || [],
+            value: properties[field_id]?.length ? properties[field_id] : null,
           });
         }
       }
@@ -73,13 +73,14 @@ export const getAllBlocksAndSlateFields = (properties) => {
         flat_blocks.push({
           '@type': 'slate',
           id: f_id,
-          value: properties[f_id] || [],
+          value: properties[f_id]?.length ? properties[f_id] : null,
         });
       }
     } else {
       flat_blocks.push(block);
     }
   }
+  console.log(flat_blocks);
   return flat_blocks;
 };
 
