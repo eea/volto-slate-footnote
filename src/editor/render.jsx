@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Popup, List } from 'semantic-ui-react';
 import { useEditorContext } from 'volto-slate/hooks';
-import { getAllBlocks } from 'volto-slate/utils';
+import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
 import { makeFootnoteListOfUniqueItems } from './utils';
 
 const makeFootnote = (footnote) => {
@@ -37,7 +37,7 @@ export const FootnoteElement = (props) => {
     const metadata = blockProps
       ? blockProps.metadata || blockProps.properties
       : extras?.metadata || {};
-    const blocks = getAllBlocks(metadata, []);
+    const blocks = getAllBlocksAndSlateFields(metadata);
     const notesObjResult = makeFootnoteListOfUniqueItems(blocks);
 
     const indice = zoteroId

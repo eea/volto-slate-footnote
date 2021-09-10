@@ -1,5 +1,6 @@
 import config from '@plone/volto/registry';
 import { Node } from 'slate';
+import { getAllBlocks } from 'volto-slate/utils';
 
 /**
  * remove <?xml version="1.0"?> from the string
@@ -40,6 +41,46 @@ const iterateZoteroObj = (notesObjResultTemp, zoteroObj, parentUid) => {
       [uid]: true,
     };
   }
+};
+
+/**
+ * Extends volto-slate getAllBlocks functionality also to SlateJSONFields
+ * inserted within blocks via Metadata / Metadata section block
+ * @param {Object} properties metadata properties received by the View component
+ * @returns {Array} Returns a flat array of blocks and slate fields
+ */
+export const getAllBlocksAndSlateFields = (properties) => {
+  const blocks = getAllBlocks(properties, []);
+  const flat_blocks = [];
+  for (const b_idx in blocks) {
+    const block = blocks[b_idx];
+    if (block['@type'] === 'metadataSection') {
+      const fields = block.fields;
+      for (const f_idx in fields) {
+        const field = fields[f_idx];
+        if (field?.field?.widget === 'slate') {
+          const field_id = field.field.id;
+          flat_blocks.push({
+            '@type': 'slate',
+            id: field_id,
+            value: properties[field_id]?.length ? properties[field_id] : null,
+          });
+        }
+      }
+    } else if (block['@type'] === 'metadata') {
+      if (block?.data?.widget === 'slate') {
+        const f_id = block.data.id;
+        flat_blocks.push({
+          '@type': 'slate',
+          id: f_id,
+          value: properties[f_id]?.length ? properties[f_id] : null,
+        });
+      }
+    } else {
+      flat_blocks.push(block);
+    }
+  }
+  return flat_blocks;
 };
 
 /**
