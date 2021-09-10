@@ -45,14 +45,13 @@ const iterateZoteroObj = (notesObjResultTemp, zoteroObj, parentUid) => {
 
 /**
  * Extends volto-slate getAllBlocks functionality also to SlateJSONFields
- * inserted within blocks are via Metadata section block
- * @param {Object} properties A prop received by the View component
- * @param {Array} blocks An array where to recursively store the output
+ * inserted within blocks via Metadata / Metadata section block
+ * @param {Object} properties metadata properties received by the View component
  * @returns {Array} Returns a flat array of blocks and slate fields
  */
 export const getAllBlocksAndSlateFields = (properties) => {
   const blocks = getAllBlocks(properties, []);
-  const new_blocks = [];
+  const flat_blocks = [];
   for (const b_idx in blocks) {
     const block = blocks[b_idx];
     if (block['@type'] === 'metadataSection') {
@@ -61,18 +60,27 @@ export const getAllBlocksAndSlateFields = (properties) => {
         const field = fields[f_idx];
         if (field?.field?.widget === 'slate') {
           const field_id = field.field.id;
-          new_blocks.push({
+          flat_blocks.push({
             '@type': 'slate',
             id: field_id,
             value: properties[field_id] || [],
           });
         }
       }
+    } else if (block['@type'] === 'metadata') {
+      if (block?.data?.widget === 'slate') {
+        const f_id = block.data.id;
+        flat_blocks.push({
+          '@type': 'slate',
+          id: f_id,
+          value: properties[f_id] || [],
+        });
+      }
     } else {
-      new_blocks.push(block);
+      flat_blocks.push(block);
     }
   }
-  return new_blocks;
+  return flat_blocks;
 };
 
 /**
