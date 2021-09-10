@@ -80,7 +80,6 @@ export const getAllBlocksAndSlateFields = (properties) => {
       flat_blocks.push(block);
     }
   }
-  console.log(flat_blocks);
   return flat_blocks;
 };
 
