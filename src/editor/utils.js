@@ -14,36 +14,6 @@ export const makeFootnote = (footnote) => {
 };
 
 /**
- * Will change the notesObjResultTemp to add new property if the zoteroId is new or add to the existing ones refs
- * @param {Object} notesObjResultTemp - the object that will configure the zotero items
- * @param {Object} zoteroObj - the footnote object
- * @param {string} zoteroObj.zoteroId - id of the zotero citation
- * @param {string} zoteroObj.uid - id of the slate item
- * @param {string} zoteroObj.footnote - xml citation from zotero
- * @param {string} parentUid - will be needed because html element (the word) that references multiple citations
- * will have the id as the main uid, the ids from the extra will not matter in this case
- */
-const iterateZoteroObj = (notesObjResultTemp, zoteroObj, parentUid) => {
-  const uid = parentUid || zoteroObj.uid;
-  // add new zoteroId
-  if (!notesObjResultTemp[zoteroObj.zoteroId]) {
-    notesObjResultTemp[zoteroObj.zoteroId] = {
-      ...zoteroObj,
-      uid,
-    };
-    // if zoteroId and refs exist then add the uid to the refs
-  } else if (notesObjResultTemp[zoteroObj.zoteroId].refs) {
-    notesObjResultTemp[zoteroObj.zoteroId].refs[uid] = true;
-  } else {
-    // if zoteroId exists but not refs, add its own uid also in refs for easier parsing in html
-    notesObjResultTemp[zoteroObj.zoteroId].refs = {
-      [notesObjResultTemp[zoteroObj.zoteroId].uid]: true,
-      [uid]: true,
-    };
-  }
-};
-
-/**
  * Extends volto-slate getAllBlocks functionality also to SlateJSONFields
  * inserted within blocks via Metadata / Metadata section block
  * @param {Object} properties metadata properties received by the View component
@@ -115,27 +85,88 @@ export const makeFootnoteListOfUniqueItems = (blocks) => {
               );
             }
             // for footnotes - create refs, on identical text
-          } else {
-            const found = Object.keys(notesObjResult).find(
-              (noteId) =>
-                notesObjResult[noteId].footnote === node.data.footnote,
+          } else if (node.data.extra) {
+            iterateFootnoteObj(notesObjResult, node.data);
+            node.data.extra.forEach((footnoteObjItem) =>
+              // since is called in case of extra, the parent is needed
+              iterateFootnoteObj(
+                notesObjResult,
+                footnoteObjItem,
+                node.data.uid,
+              ),
             );
-
-            if (!found) {
-              notesObjResult[node.data.uid] = { ...node.data };
-            } else if (notesObjResult[found].refs) {
-              notesObjResult[found].refs[node.data.uid] = true;
-            } else {
-              // add its own uid in refs for easier parsing in html
-              notesObjResult[found].refs = {
-                [notesObjResult[found].uid]: true,
-                [node.data.uid]: true,
-              };
-            }
+          } else {
+            iterateFootnoteObj(notesObjResult, node.data);
           }
         }
       });
     });
 
   return notesObjResult;
+};
+
+/**
+ * Will change the notesObjResultTemp to add new property if the zoteroId is new or add to the existing ones refs
+ * @param {Object} notesObjResultTemp - the object that will configure the zotero items
+ * @param {Object} zoteroObj - the footnote object
+ * @param {string} zoteroObj.zoteroId - id of the zotero citation
+ * @param {string} zoteroObj.uid - id of the slate item
+ * @param {string} zoteroObj.footnote - xml citation from zotero
+ * @param {string} parentUid - will be needed because html element (the word) that references multiple citations
+ * will have the id as the main uid, the ids from the extra will not matter in this case
+ */
+const iterateZoteroObj = (notesObjResultTemp, zoteroObj, parentUid) => {
+  const uid = parentUid || zoteroObj.uid;
+  // add new zoteroId
+  if (!notesObjResultTemp[zoteroObj.zoteroId]) {
+    notesObjResultTemp[zoteroObj.zoteroId] = {
+      ...zoteroObj,
+      uid,
+    };
+    // if zoteroId and refs exist then add the uid to the refs
+  } else if (notesObjResultTemp[zoteroObj.zoteroId].refs) {
+    notesObjResultTemp[zoteroObj.zoteroId].refs[uid] = true;
+  } else {
+    // if zoteroId exists but not refs, add its own uid also in refs for easier parsing in html
+    notesObjResultTemp[zoteroObj.zoteroId].refs = {
+      [notesObjResultTemp[zoteroObj.zoteroId].uid]: true,
+      [uid]: true,
+    };
+  }
+};
+
+/**
+ * Will change the notesObjResultTemp to add new property if the footnote uid is new or add to the refs of the existing ones
+ * Some footnotes will always be in extra, so we need parentId to know where to find it in render
+ * @param {Object} notesObjResultTemp - the object that will configure the zotero items
+ * @param {Object} node - the footnote object
+ * @param {string} node.zoteroId - id of the zotero citation
+ * @param {string} node.parentUid - id of the parent footnote
+ * @param {string} node.uid - id of the slate item
+ * @param {string} node.footnote - xml citation from zotero
+ * @param {string} parentUid - will be needed because html element (the word) that references multiple citations
+ * will have the id as the main uid, the ids from the extra will not matter in this case
+ */
+const iterateFootnoteObj = (notesObjResultTemp, node, parentUid) => {
+  const uid = parentUid || node.uid;
+  const found = Object.keys(notesObjResultTemp).find((noteId) => {
+    return notesObjResultTemp[noteId].footnote === node.footnote;
+  });
+  // has not yet been added
+  if (!found) {
+    // will use the parentUid instead of own uid for render to be able to reference to the correct element
+    //(word containing the footnotes)
+    notesObjResultTemp[node.uid] = parentUid
+      ? { ...node, parentUid }
+      : { ...node };
+    // the element is found, just add it's own uid to the list of refs, the parent is already known
+  } else if (notesObjResultTemp[found].refs) {
+    notesObjResultTemp[found].refs[node.uid] = true;
+  } else {
+    // element found but doesn't have refs yet, this means that it is a parent, so add it's existing uid and the current one
+    notesObjResultTemp[found].refs = {
+      [notesObjResultTemp[found].uid]: true,
+      [uid]: true,
+    };
+  }
 };

@@ -40,7 +40,7 @@ const FootnotesBlockView = (props) => {
         <ol>
           {Object.keys(notesObj).map((noteId) => {
             const note = notesObj[noteId];
-            const { uid, footnote, zoteroId } = note;
+            const { uid, footnote, zoteroId, parentUid } = note;
             const { refs } = note;
             const refsList = refs ? Object.keys(refs) : null;
 
@@ -55,16 +55,36 @@ const FootnotesBlockView = (props) => {
                   }}
                 />
                 {refsList ? (
-                  refsList.map((ref, index) => (
-                    <sup id={`cite_ref-${ref}`} key={`indice-${ref}`}>
-                      <a href={`#ref-${ref}`} aria-label="Back to content">
-                        {alphabet[index]}
+                  <>
+                    {/** some footnotes are never parent so we need the parent to reference */}
+                    {/** int this case the first from refs has reference to the parent*/}
+                    <sup
+                      id={`cite_ref-${refsList[0]}`}
+                      key={`indice-${refsList[0]}`}
+                    >
+                      <a
+                        href={`#ref-${parentUid || uid}`}
+                        aria-label="Back to content"
+                      >
+                        {alphabet[0]}
                       </a>{' '}
                     </sup>
-                  ))
+                    {/** following refs will have the uid of the one that references it*/}
+                    {refsList.slice(1).map((ref, index) => (
+                      <sup id={`cite_ref-${ref}`} key={`indice-${ref}`}>
+                        <a href={`#ref-${ref}`} aria-label="Back to content">
+                          {alphabet[index + 1]}
+                        </a>{' '}
+                      </sup>
+                    ))}
+                  </>
                 ) : (
                   <sup id={`cite_ref-${uid}`}>
-                    <a href={`#ref-${uid}`} aria-label="Back to content">
+                    {/** some footnotes are never parent so we need the parent to reference */}
+                    <a
+                      href={`#ref-${parentUid || uid}`}
+                      aria-label="Back to content"
+                    >
                       ↵
                     </a>{' '}
                   </sup>
