@@ -53,7 +53,51 @@ export const FootnoteElement = (props) => {
           ].join('')
         : `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`
       : notesObjResult[data.uid]
-      ? `[${Object.keys(notesObjResult).indexOf(data.uid) + 1}]`
+      ? data.extra
+        ? [
+            `[${Object.keys(notesObjResult).indexOf(data.uid) + 1}]`,
+            ...data.extra.map((footnoteObj, index) => {
+              return notesObjResult[footnoteObj.uid]
+                ? `[${
+                    Object.keys(notesObjResult).indexOf(footnoteObj.uid) + 1
+                  }]`
+                : `[${
+                    Object.keys(notesObjResult).indexOf(
+                      Object.keys(notesObjResult).find(
+                        (noteKey) =>
+                          notesObjResult[noteKey].refs &&
+                          notesObjResult[noteKey].refs[data.uid],
+                      ),
+                    ) + 1
+                  }]`;
+            }),
+          ].join('')
+        : `[${Object.keys(notesObjResult).indexOf(data.uid) + 1}]`
+      : data.extra
+      ? [
+          `[${
+            Object.keys(notesObjResult).indexOf(
+              Object.keys(notesObjResult).find(
+                (noteKey) =>
+                  notesObjResult[noteKey].refs &&
+                  notesObjResult[noteKey].refs[data.uid],
+              ),
+            ) + 1
+          }]`,
+          ...data.extra.map((footnoteObj, index) => {
+            return notesObjResult[footnoteObj.uid]
+              ? `[${Object.keys(notesObjResult).indexOf(footnoteObj.uid) + 1}]`
+              : `[${
+                  Object.keys(notesObjResult).indexOf(
+                    Object.keys(notesObjResult).find(
+                      (noteKey) =>
+                        notesObjResult[noteKey].refs &&
+                        notesObjResult[noteKey].refs[data.uid],
+                    ),
+                  ) + 1
+                }]`;
+          }),
+        ].join('')
       : `[${
           Object.keys(notesObjResult).indexOf(
             Object.keys(notesObjResult).find(
@@ -63,7 +107,6 @@ export const FootnoteElement = (props) => {
             ),
           ) + 1
         }]`;
-
     const findReferenceId =
       // search within parent citations first, otherwise the uid might be inside a refs obj that comes before
       Object.keys(notesObjResult).find(
@@ -78,6 +121,9 @@ export const FootnoteElement = (props) => {
 
     setCitationIndice(indice);
     setCitationRefId(findReferenceId);
+
+    console.log({ data });
+    console.log({ notesObjResult });
   }, [editor, element, children]); // eslint-disable-line
 
   return (

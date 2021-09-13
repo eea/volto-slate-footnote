@@ -42,6 +42,29 @@ const iterateZoteroObj = (notesObjResultTemp, zoteroObj, parentUid) => {
   }
 };
 
+const iterateFootnoteObj = (notesObjResultTemp, node, parentUid) => {
+  const uid = parentUid || node.uid;
+  // console.log('iterateFootnoteObj', { notesObjResultTemp });
+  const found = Object.keys(notesObjResultTemp).find((noteId) => {
+    // console.log({ notesObjResultTemp });
+    // console.log({ noteId });
+    // console.log({ node });
+    return notesObjResultTemp[noteId].footnote === node.footnote;
+  });
+
+  if (!found) {
+    notesObjResultTemp[node.uid] = { ...node };
+  } else if (notesObjResultTemp[found].refs) {
+    notesObjResultTemp[found].refs[node.uid] = true;
+  } else {
+    // add its own uid in refs for easier parsing in html
+    notesObjResultTemp[found].refs = {
+      [notesObjResultTemp[found].uid]: true,
+      [uid]: true,
+    };
+  }
+};
+
 /**
  * Will make an object with keys for every zoteroId and some uid that are unique
  * or referenced multiple times
@@ -74,23 +97,19 @@ export const makeFootnoteListOfUniqueItems = (blocks) => {
               );
             }
             // for footnotes - create refs, on identical text
-          } else {
-            const found = Object.keys(notesObjResult).find(
-              (noteId) =>
-                notesObjResult[noteId].footnote === node.data.footnote,
+          } else if (node.data.extra) {
+            iterateFootnoteObj(notesObjResult, node.data);
+            node.data.extra.forEach((footnoteObjItem) =>
+              // send the uid of the parent
+              // of the word the will have the reference indice
+              iterateFootnoteObj(
+                notesObjResult,
+                footnoteObjItem,
+                node.data.uid,
+              ),
             );
-
-            if (!found) {
-              notesObjResult[node.data.uid] = { ...node.data };
-            } else if (notesObjResult[found].refs) {
-              notesObjResult[found].refs[node.data.uid] = true;
-            } else {
-              // add its own uid in refs for easier parsing in html
-              notesObjResult[found].refs = {
-                [notesObjResult[found].uid]: true,
-                [node.data.uid]: true,
-              };
-            }
+          } else {
+            iterateFootnoteObj(notesObjResult, node.data);
           }
         }
       });
