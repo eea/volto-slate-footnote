@@ -39,6 +39,9 @@ const FootnoteEditor = (props) => {
   const filteredBlocks = [];
 
   // make a list of filtered footnotes that have unique title
+  // to be used as choices for the multi search widget
+  // add label and value for the multi search widget
+  // flatten blocks to add all extra in the list
   blocks
     .filter((b) => b['@type'] === 'slate')
     .forEach(({ value }) => {
@@ -88,6 +91,7 @@ const FootnoteEditor = (props) => {
   // Update the form data based on the current element
   const elRef = React.useRef(null);
 
+  // add label and value for the multi search widget to be able to show/filter current data
   if (isElement && !isEqual(elementNode, elRef.current)) {
     elRef.current = elementNode;
     setFormData({

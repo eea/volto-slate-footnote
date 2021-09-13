@@ -51,9 +51,19 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
       });
     };
 
+    /**
+     * If the list is empty or the first is not parent, return true
+     * @param {Object[]} selectedOption list of objects - footnotes
+     * @returns {boolean}
+     */
     const isParetFootnoteRemoved = (selectedOption) =>
       !selectedOption[0] || selectedOption[0].value !== parentFootnote.value;
 
+    /**
+     * replace all parentFootnote data except uid, with the first from the list
+     * @param {Object[]} selectedOption list of objects - footnotes
+     * @returns {Object}
+     */
     const setParentFootnoteFromExtra = (selectedOption) => {
       const { footnote, label, value } = selectedOption[0] || [];
 
@@ -66,6 +76,12 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
       };
     };
 
+    /**
+     * Will make the footnotes object, that will be saved as first from selectedOption
+     * the rest will be added to extra
+     * @param {*} selectedOption
+     * @returns
+     */
     const setFootnoteFromSelection = (selectedOption) => {
       const extra = selectedOption.slice(1).map((item) => {
         const obj = {
@@ -82,8 +98,7 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
     };
 
     /**
-     * Handle the field change, store it in the local state and back to simple
-     * array of tokens for correct serialization
+     * Handle the field change, will remake the result based on the new selected list
      * @method handleChange
      * @param {array} selectedOption The selected options (already aggregated).
      * @returns {undefined}
@@ -91,15 +106,18 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
     const handleChange = (selectedOption) => {
       setSelectedOption(selectedOption);
 
-      const resultSlected = isParetFootnoteRemoved(selectedOption)
+      // manage case if parent footnotes (first from the options) was removed
+      const resultSelected = isParetFootnoteRemoved(selectedOption)
         ? setParentFootnoteFromExtra(selectedOption)
         : setFootnoteFromSelection(selectedOption);
 
       props.onChange({
-        footnote: resultSlected,
+        footnote: resultSelected,
       });
     };
 
+    // from choices (list of all footnotes available including current in value) get all not found in current in value
+    // consider that new footnotes have value and footnote undefined
     const defaultOptions = (props.choices || []).filter(
       (item) =>
         !selectedOption.find(({ label }) => label === item.label) && item.value,

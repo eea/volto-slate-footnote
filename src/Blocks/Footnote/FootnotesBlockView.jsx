@@ -56,6 +56,8 @@ const FootnotesBlockView = (props) => {
                 />
                 {refsList ? (
                   <>
+                    {/** some footnotes are never parent so we need the parent to reference */}
+                    {/** int this case the first from refs has reference to the parent*/}
                     <sup
                       id={`cite_ref-${refsList[0]}`}
                       key={`indice-${refsList[0]}`}
@@ -67,6 +69,7 @@ const FootnotesBlockView = (props) => {
                         {alphabet[0]}
                       </a>{' '}
                     </sup>
+                    {/** following refs will have the uid of the one that references it*/}
                     {refsList.slice(1).map((ref, index) => (
                       <sup id={`cite_ref-${ref}`} key={`indice-${ref}`}>
                         <a href={`#ref-${ref}`} aria-label="Back to content">
@@ -77,8 +80,9 @@ const FootnotesBlockView = (props) => {
                   </>
                 ) : (
                   <sup id={`cite_ref-${uid}`}>
+                    {/** some footnotes are never parent so we need the parent to reference */}
                     <a
-                      href={`#ref-${parentUid ? parentUid : uid}`}
+                      href={`#ref-${parentUid || uid}`}
                       aria-label="Back to content"
                     >
                       ↵

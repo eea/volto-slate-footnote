@@ -4,13 +4,22 @@ import { useEditorContext } from 'volto-slate/hooks';
 import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
 import { makeFootnoteListOfUniqueItems } from './utils';
 
+/**
+ * Removes '<?xml version="1.0"?>' from footnote
+ * @param {string} footnote
+ * @returns {string} formatted footnote
+ */
 const makeFootnote = (footnote) => {
   const free = footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
 
   return free;
 };
 
-const toggleAccordionReference = (footnoteId) => {
+/**
+ * Will open accordion if contains footnote reference
+ * @param {string} footnoteId
+ */
+const openAccordionIfContainsFootnoteReference = (footnoteId) => {
   if (typeof window !== 'undefined') {
     const footnote = document.querySelector(footnoteId);
     if (footnote !== null && footnote.closest('.accordion') !== null) {
@@ -29,8 +38,8 @@ export const FootnoteElement = (props) => {
   const { data = {} } = element;
   const { uid, zoteroId } = data;
   const editor = useEditorContext();
-  const [citationIndice, setCitationIndice] = useState(null);
-  const [citationRefId, setCitationRefId] = useState(null);
+  const [citationIndice, setCitationIndice] = useState(null); // list of indices to reference
+  const [citationRefId, setCitationRefId] = useState(null); // indice of element to be referenced
 
   useEffect(() => {
     const blockProps = editor?.getBlockProps ? editor.getBlockProps() : null;
@@ -40,28 +49,39 @@ export const FootnoteElement = (props) => {
     const blocks = getAllBlocksAndSlateFields(metadata);
     const notesObjResult = makeFootnoteListOfUniqueItems(blocks);
 
-    const indice = zoteroId
+    // will cosider zotero citations and footnote
+    // notesObjResult contains all zotero/footnote as unique, and contain refs for other zotero/footnote
+    const indice = zoteroId // ZOTERO
       ? data.extra
         ? [
-            `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`,
+            `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`, // parent footnote
             ...data.extra.map(
+              // citations from extra
               (zoteroObj, index) =>
+                // all zotero citation are indexed by zoteroId in notesObjResult
                 `[${
                   Object.keys(notesObjResult).indexOf(zoteroObj.zoteroId) + 1
                 }]`,
             ),
           ].join('')
-        : `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`
-      : notesObjResult[data.uid]
-      ? data.extra
+        : // no extra citations (no multiples)
+          `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`
+      : // FOOTNOTES
+      // not all footnotes will be found in notesObjResult because they might have different uid
+      notesObjResult[data.uid]
+      ? // footnotes from extra
+        data.extra
         ? [
+            // parent footnote
             `[${Object.keys(notesObjResult).indexOf(data.uid) + 1}]`,
             ...data.extra.map((footnoteObj, index) => {
               return notesObjResult[footnoteObj.uid]
-                ? `[${
+                ? // take footnote if uid is found
+                  `[${
                     Object.keys(notesObjResult).indexOf(footnoteObj.uid) + 1
                   }]`
-                : `[${
+                : // if uid is not found look for it in other footnotes refs
+                  `[${
                     Object.keys(notesObjResult).indexOf(
                       Object.keys(notesObjResult).find(
                         (noteKey) =>
@@ -72,9 +92,12 @@ export const FootnoteElement = (props) => {
                   }]`;
             }),
           ].join('')
-        : `[${Object.keys(notesObjResult).indexOf(data.uid) + 1}]`
-      : data.extra
+        : // no extra footnotes (no multiples)
+          `[${Object.keys(notesObjResult).indexOf(data.uid) + 1}]`
+      : // footnotes not found in notesObjResult
+      data.extra
       ? [
+          // look for it in other footnotes refs - parent
           `[${
             Object.keys(notesObjResult).indexOf(
               Object.keys(notesObjResult).find(
@@ -86,8 +109,10 @@ export const FootnoteElement = (props) => {
           }]`,
           ...data.extra.map((footnoteObj, index) => {
             return notesObjResult[footnoteObj.uid]
-              ? `[${Object.keys(notesObjResult).indexOf(footnoteObj.uid) + 1}]`
-              : `[${
+              ? // footnotes from extra might be found in notesObjResult
+                `[${Object.keys(notesObjResult).indexOf(footnoteObj.uid) + 1}]`
+              : // if uid is not found look for it in other footnotes refs
+                `[${
                   Object.keys(notesObjResult).indexOf(
                     Object.keys(notesObjResult).find(
                       (noteKey) =>
@@ -98,7 +123,8 @@ export const FootnoteElement = (props) => {
                 }]`;
           }),
         ].join('')
-      : `[${
+      : // no extra footnotes
+        `[${
           Object.keys(notesObjResult).indexOf(
             Object.keys(notesObjResult).find(
               (noteKey) =>
@@ -147,7 +173,9 @@ export const FootnoteElement = (props) => {
                   as="a"
                   href={`#footnote-${citationRefId}`}
                   onClick={() =>
-                    toggleAccordionReference(`#footnote-${citationRefId}`)
+                    openAccordionIfContainsFootnoteReference(
+                      `#footnote-${citationRefId}`,
+                    )
                   }
                   key={`#footnote-${citationRefId}`}
                 >
@@ -167,7 +195,7 @@ export const FootnoteElement = (props) => {
                       as="a"
                       href={`#footnote-${item.zoteroId || item.uid}`}
                       onClick={() =>
-                        toggleAccordionReference(
+                        openAccordionIfContainsFootnoteReference(
                           `#footnote-${item.zoteroId || item.uid}`,
                         )
                       }
@@ -209,7 +237,9 @@ export const FootnoteElement = (props) => {
                 as="a"
                 href={`#footnote-${citationRefId}`}
                 onClick={() =>
-                  toggleAccordionReference(`#footnote-${citationRefId}`)
+                  openAccordionIfContainsFootnoteReference(
+                    `#footnote-${citationRefId}`,
+                  )
                 }
                 key={`#footnote-${citationRefId}`}
               >
@@ -229,7 +259,7 @@ export const FootnoteElement = (props) => {
                     as="a"
                     href={`#footnote-${item.zoteroId || item.uid}`}
                     onClick={() =>
-                      toggleAccordionReference(
+                      openAccordionIfContainsFootnoteReference(
                         `#footnote-${item.zoteroId || item.uid}`,
                       )
                     }
