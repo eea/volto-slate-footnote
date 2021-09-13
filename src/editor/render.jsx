@@ -121,9 +121,6 @@ export const FootnoteElement = (props) => {
 
     setCitationIndice(indice);
     setCitationRefId(findReferenceId);
-
-    console.log({ data });
-    console.log({ notesObjResult });
   }, [editor, element, children]); // eslint-disable-line
 
   return (
@@ -168,11 +165,13 @@ export const FootnoteElement = (props) => {
                   data.extra.map((item) => (
                     <List.Item
                       as="a"
-                      href={`#footnote-${item.zoteroId}`}
+                      href={`#footnote-${item.zoteroId || item.uid}`}
                       onClick={() =>
-                        toggleAccordionReference(`#footnote-${item.zoteroId}`)
+                        toggleAccordionReference(
+                          `#footnote-${item.zoteroId || item.uid}`,
+                        )
                       }
-                      key={`#footnote-${item.zoteroId}`}
+                      key={`#footnote-${item.zoteroId || item.uid}`}
                     >
                       <List.Content>
                         <List.Description>
@@ -228,11 +227,13 @@ export const FootnoteElement = (props) => {
                 data.extra.map((item) => (
                   <List.Item
                     as="a"
-                    href={`#footnote-${item.zoteroId}`}
+                    href={`#footnote-${item.zoteroId || item.uid}`}
                     onClick={() =>
-                      toggleAccordionReference(`#footnote-${item.zoteroId}`)
+                      toggleAccordionReference(
+                        `#footnote-${item.zoteroId || item.uid}`,
+                      )
                     }
-                    key={`#footnote-${item.zoteroId}`}
+                    key={`#footnote-${item.zoteroId || item.uid}`}
                   >
                     <List.Content>
                       <List.Description>

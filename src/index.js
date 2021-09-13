@@ -5,8 +5,6 @@ import FootnotesBlockEdit from './Blocks/Footnote/FootnotesBlockEdit';
 import FootnotesBlockSchema from './Blocks/Footnote/FootnotesBlockSchema';
 import { FOOTNOTE } from './constants';
 import installFootnoteEditor from './editor';
-// import SearchWidget from '@eeacms/volto-slate-footnote/editor/SearchWidget';
-// import SearchWidget from '@eeacms/volto-slate-footnote/editor/TokenWidget';
 import SearchWidget from '@eeacms/volto-slate-footnote/editor/MultiSelectSearchWidget';
 
 /**

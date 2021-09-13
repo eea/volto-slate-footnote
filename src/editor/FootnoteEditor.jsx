@@ -46,7 +46,6 @@ const FootnoteEditor = (props) => {
 
       Array.from(Node.elements(value[0])).forEach(([block]) => {
         block.children.forEach((node) => {
-          // console.log({ node });
           if (node.data && node.type === 'footnote' && node.data.extra) {
             if (
               !filteredBlocks.find((item) => item.title === node.data.footnote)
@@ -59,8 +58,6 @@ const FootnoteEditor = (props) => {
               });
             }
             node.data.extra.forEach((ftitem) => {
-              // console.log({ ftitem });
-              // console.log({ filteredBlocks });
               if (
                 !filteredBlocks.find((item) => item.title === ftitem.footnote)
               ) {
@@ -93,7 +90,6 @@ const FootnoteEditor = (props) => {
 
   if (isElement && !isEqual(elementNode, elRef.current)) {
     elRef.current = elementNode;
-    // console.log('Editor F elementNode.data', elementNode.data);
     setFormData({
       footnote: {
         ...elementNode.data,
@@ -107,7 +103,6 @@ const FootnoteEditor = (props) => {
 
   const saveDataToEditor = React.useCallback(
     (formData) => {
-      // console.log({ formData });
       if (hasValue(formData.footnote)) {
         insertElement(editor, formData.footnote);
       } else {
@@ -127,8 +122,6 @@ const FootnoteEditor = (props) => {
   return (
     <SchemaProvider {...props} data={formData}>
       {(schema) => {
-        // console.log('schemaWithUpdatedChoices', { formData });
-        // console.log('SchemaProvider', { props });
         const schemaWithUpdatedChoices = {
           ...schema,
           properties: {
@@ -139,7 +132,6 @@ const FootnoteEditor = (props) => {
             },
           },
         };
-        // console.log('EDitor SchemaProvider', { formData });
 
         return (
           <InlineForm
@@ -147,18 +139,6 @@ const FootnoteEditor = (props) => {
             title={schema.title}
             icon={<VoltoIcon size="24px" name={briefcaseSVG} />}
             onChangeField={(value) => {
-              console.log('Inline onChangeField', { value });
-              console.log('Inline onChangeField', { formData });
-
-              // const extra = value.slice(1);
-              // console.log('Inline extra', { extra });
-
-              // const footnoteResult = { ...formData.footnote, extra };
-              // const resultFormData = {
-              //   footnote: footnoteResult,
-              // };
-              // console.log('Inline resultFormData', resultFormData);
-
               if (!onChangeValues) {
                 return setFormData(value);
               }

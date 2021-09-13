@@ -46,9 +46,6 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
       const isMatch = (result) => re.test(result.value);
       const resultsFiltered = filter(props.choices, isMatch);
 
-      // console.log({ selectedOption });
-      // console.log({ props });
-
       return new Promise((resolve, reject) => {
         resolve(resultsFiltered);
       });
@@ -59,12 +56,7 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
 
     const setParentFootnoteFromExtra = (selectedOption) => {
       const { footnote, label, value } = selectedOption[0] || [];
-      // console.log('setParentFootnoteFromExtra', { parentFootnote });
-      // console.log('setParentFootnoteFromExtra', { footnote });
-      // console.log(
-      //   'setParentFootnoteFromExtra selectedOption.slice(1)',
-      //   selectedOption.slice(1),
-      // );
+
       return {
         ...parentFootnote,
         footnote: footnote || selectedOption[0]?.value,
@@ -75,12 +67,16 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
     };
 
     const setFootnoteFromSelection = (selectedOption) => {
-      const extra = selectedOption.slice(1).map((item) => ({
-        uid: nanoid(5),
-        ...item,
-        footnote: item.value,
-      }));
-      // console.log('setFootnoteFromSelection', { extra });
+      const extra = selectedOption.slice(1).map((item) => {
+        const obj = {
+          uid: nanoid(5),
+          ...item,
+          footnote: item.value,
+        };
+
+        const { __isNew__: remove, ...rest } = obj;
+        return rest;
+      });
 
       return { ...parentFootnote, extra };
     };
@@ -93,27 +89,22 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
      * @returns {undefined}
      */
     const handleChange = (selectedOption) => {
-      // console.log({ selectedOption });
       setSelectedOption(selectedOption);
 
       const resultSlected = isParetFootnoteRemoved(selectedOption)
         ? setParentFootnoteFromExtra(selectedOption)
         : setFootnoteFromSelection(selectedOption);
-      // console.log('handleChange', { resultSlected });
+
       props.onChange({
         footnote: resultSlected,
       });
     };
 
-    // console.log('&&&&&&&& props.choices', props.choices);
-    console.log('========== props', props);
-    // console.log('========== selectedOption', selectedOption);
     const defaultOptions = (props.choices || []).filter(
       (item) =>
         !selectedOption.find(({ label }) => label === item.label) && item.value,
     );
     const AsyncCreatableSelect = props.reactSelectAsyncCreateable.default;
-    console.log('========== defaultOptions', defaultOptions);
 
     return (
       <FormFieldWrapper {...props}>

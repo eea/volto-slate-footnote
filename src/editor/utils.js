@@ -138,16 +138,14 @@ const iterateZoteroObj = (notesObjResultTemp, zoteroObj, parentUid) => {
 
 const iterateFootnoteObj = (notesObjResultTemp, node, parentUid) => {
   const uid = parentUid || node.uid;
-  // console.log('iterateFootnoteObj', { notesObjResultTemp });
   const found = Object.keys(notesObjResultTemp).find((noteId) => {
-    // console.log({ notesObjResultTemp });
-    // console.log({ noteId });
-    // console.log({ node });
     return notesObjResultTemp[noteId].footnote === node.footnote;
   });
 
   if (!found) {
-    notesObjResultTemp[node.uid] = { ...node };
+    notesObjResultTemp[node.uid] = parentUid
+      ? { ...node, parentUid }
+      : { ...node };
   } else if (notesObjResultTemp[found].refs) {
     notesObjResultTemp[found].refs[node.uid] = true;
   } else {
