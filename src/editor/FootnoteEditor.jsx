@@ -22,10 +22,8 @@ const FootnoteEditor = (props) => {
     hasValue,
     onChangeValues,
   } = props;
-
   const dispatch = useDispatch();
   const [formData, setFormData] = React.useState({});
-
   const active = getActiveElement(editor);
 
   if (!active) {
@@ -41,6 +39,9 @@ const FootnoteEditor = (props) => {
   const filteredBlocks = [];
 
   // make a list of filtered footnotes that have unique title
+  // to be used as choices for the multi search widget
+  // add label and value for the multi search widget
+  // flatten blocks to add all extra in the list
   blocks
     .filter((b) => b['@type'] === 'slate')
     .forEach(({ value }) => {
@@ -48,7 +49,30 @@ const FootnoteEditor = (props) => {
 
       Array.from(Node.elements(value[0])).forEach(([block]) => {
         block.children.forEach((node) => {
-          if (
+          if (node.data && node.type === 'footnote' && node.data.extra) {
+            if (
+              !filteredBlocks.find((item) => item.title === node.data.footnote)
+            ) {
+              filteredBlocks.push({
+                ...node.data,
+                title: node.data.footnote || node.data.value,
+                label: node.data.footnote || node.data.value,
+                value: node.data.footnote || node.data.value,
+              });
+            }
+            node.data.extra.forEach((ftitem) => {
+              if (
+                !filteredBlocks.find((item) => item.title === ftitem.footnote)
+              ) {
+                filteredBlocks.push({
+                  ...ftitem,
+                  title: ftitem.footnote || ftitem.value,
+                  label: ftitem.footnote || ftitem.value,
+                  value: ftitem.footnote || ftitem.value,
+                });
+              }
+            });
+          } else if (
             node.data &&
             node.type === 'footnote' &&
             !filteredBlocks.find((item) => item.title === node.data.footnote)
@@ -56,6 +80,8 @@ const FootnoteEditor = (props) => {
             filteredBlocks.push({
               ...node.data,
               title: node.data.footnote,
+              label: node.data.footnote,
+              value: node.data.footnote,
             });
           }
         });
@@ -65,17 +91,24 @@ const FootnoteEditor = (props) => {
   // Update the form data based on the current element
   const elRef = React.useRef(null);
 
+  // add label and value for the multi search widget to be able to show/filter current data
   if (isElement && !isEqual(elementNode, elRef.current)) {
     elRef.current = elementNode;
-    setFormData(elementNode.data || {});
+    setFormData({
+      footnote: {
+        ...elementNode.data,
+        label: elementNode.data.footnote,
+        value: elementNode.data.footnote,
+      },
+    });
   } else if (!isElement) {
     elRef.current = null;
   }
 
   const saveDataToEditor = React.useCallback(
     (formData) => {
-      if (hasValue(formData)) {
-        insertElement(editor, formData);
+      if (hasValue(formData.footnote)) {
+        insertElement(editor, formData.footnote);
       } else {
         unwrapElement(editor);
       }
@@ -111,14 +144,12 @@ const FootnoteEditor = (props) => {
             icon={<VoltoIcon size="24px" name={briefcaseSVG} />}
             onChangeField={(value) => {
               if (!onChangeValues) {
-                return setFormData({
-                  ...formData,
-                  ...value,
-                });
+                return setFormData(value);
               }
               return onChangeValues('footnote', value, formData, setFormData);
             }}
             formData={formData}
+            dataBoss={formData}
             source={filteredBlocks}
             headerActions={
               <>
