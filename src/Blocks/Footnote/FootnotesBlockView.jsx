@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { getAllBlocks } from 'volto-slate/utils';
+import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
+
 import './less/public.less';
 import {
   makeFootnoteListOfUniqueItems,
@@ -25,7 +26,7 @@ const FootnotesBlockView = (props) => {
   useEffect(() => {
     if (properties) {
       const globalMetadata = global ? metadata : properties;
-      const blocks = getAllBlocks(globalMetadata, []);
+      const blocks = getAllBlocksAndSlateFields(globalMetadata);
       const notesObjResult = makeFootnoteListOfUniqueItems(blocks);
 
       setNodesObjs(notesObjResult);

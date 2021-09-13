@@ -8,7 +8,7 @@ import briefcaseSVG from '@plone/volto/icons/briefcase.svg';
 import checkSVG from '@plone/volto/icons/check.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
 import { Node } from 'slate';
-import { getAllBlocks } from 'volto-slate/utils';
+import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
 
 const FootnoteEditor = (props) => {
   const {
@@ -35,7 +35,7 @@ const FootnoteEditor = (props) => {
 
   const blockProps = editor?.getBlockProps ? editor.getBlockProps() : {};
   const metadata = blockProps.metadata || blockProps.properties || {};
-  const blocks = getAllBlocks(metadata, []);
+  const blocks = getAllBlocksAndSlateFields(metadata);
   const filteredBlocks = [];
 
   // make a list of filtered footnotes that have unique title

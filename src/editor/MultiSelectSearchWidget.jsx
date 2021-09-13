@@ -67,7 +67,7 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
       // );
       return {
         ...parentFootnote,
-        footnote: footnote || selectedOption[0].value,
+        footnote: footnote || selectedOption[0]?.value,
         label,
         value,
         extra: selectedOption.slice(1),
