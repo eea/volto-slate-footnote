@@ -40,10 +40,8 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
 
         const extraValues =
           parentFootnoteCurrent && props.value.extra ? props.value.extra : [];
-        const selectedOptionCurrent = parentFootnoteCurrent.extra
+        const selectedOptionCurrent = parentFootnoteCurrent.value
           ? [...[parentFootnoteCurrent], ...extraValues]
-          : parentFootnoteCurrent
-          ? [parentFootnoteCurrent]
           : [];
         setSelectedOption(selectedOptionCurrent);
 
