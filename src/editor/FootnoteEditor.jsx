@@ -1,5 +1,5 @@
 import { isEqual } from 'lodash';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { ReactEditor } from 'slate-react';
 import { setPluginOptions } from 'volto-slate/actions';
@@ -8,6 +8,8 @@ import briefcaseSVG from '@plone/volto/icons/briefcase.svg';
 import checkSVG from '@plone/volto/icons/check.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
 import { Node } from 'slate';
+import { useSelector } from 'react-redux';
+import { isEmpty } from 'lodash';
 import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
 
 const FootnoteEditor = (props) => {
@@ -25,6 +27,7 @@ const FootnoteEditor = (props) => {
   const dispatch = useDispatch();
   const [formData, setFormData] = React.useState({});
   const active = getActiveElement(editor);
+  const initialFormData = useSelector((state) => state?.content?.data || {});
 
   if (!active) {
     /* eslint no-console: 0 */
@@ -36,13 +39,15 @@ const FootnoteEditor = (props) => {
   const blockProps = editor?.getBlockProps ? editor.getBlockProps() : {};
   const metadata = blockProps.metadata || blockProps.properties || {};
   const blocks = getAllBlocksAndSlateFields(metadata);
+  const storeBlocks = getAllBlocksAndSlateFields(initialFormData);
   const filteredBlocks = [];
 
+  const resultBlocks = isEmpty(metadata) ? storeBlocks : blocks;
   // make a list of filtered footnotes that have unique title
   // to be used as choices for the multi search widget
   // add label and value for the multi search widget
   // flatten blocks to add all extra in the list
-  blocks
+  resultBlocks
     .filter((b) => b['@type'] === 'slate')
     .forEach(({ value }) => {
       if (!value) return;
@@ -105,6 +110,21 @@ const FootnoteEditor = (props) => {
     elRef.current = null;
   }
 
+  useEffect(() => {
+    if (isElement) {
+      elRef.current = elementNode;
+      setFormData({
+        footnote: {
+          ...elementNode.data,
+          label: elementNode.data.footnote,
+          value: elementNode.data.footnote,
+        },
+      });
+    } else if (!isElement) {
+      elRef.current = null;
+    }
+  }, [isElement, elRef, elementNode]); // eslint-disable-line
+
   const saveDataToEditor = React.useCallback(
     (formData) => {
       if (hasValue(formData.footnote)) {
@@ -149,7 +169,6 @@ const FootnoteEditor = (props) => {
               return onChangeValues('footnote', value, formData, setFormData);
             }}
             formData={formData}
-            dataBoss={formData}
             source={filteredBlocks}
             headerActions={
               <>

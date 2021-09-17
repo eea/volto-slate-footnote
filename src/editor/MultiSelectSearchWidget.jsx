@@ -3,7 +3,7 @@
  * @module components/manage/Widgets/ArrayWidget
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { defineMessages } from 'react-intl';
 import {
   Option,
@@ -30,11 +30,35 @@ const messages = defineMessages({
 
 const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
   (props) => {
-    const parentFootnote = props.value;
-    const extraValues = props.value.extra ? props.value.extra : [];
-    const [selectedOption, setSelectedOption] = useState(
-      parentFootnote.value ? [...[parentFootnote], ...extraValues] : [],
-    );
+    const [selectedOption, setSelectedOption] = useState([]);
+    const [defaultOptions, setDefaultOptions] = useState([]);
+    const [parentFootnote, setParentFootnote] = useState(props.value);
+
+    useEffect(() => {
+      if (props.value) {
+        const parentFootnoteCurrent = props.value;
+
+        const extraValues =
+          parentFootnoteCurrent && props.value.extra ? props.value.extra : [];
+        const selectedOptionCurrent = parentFootnoteCurrent.extra
+          ? [...[parentFootnoteCurrent], ...extraValues]
+          : parentFootnoteCurrent
+          ? [parentFootnoteCurrent]
+          : [];
+        setSelectedOption(selectedOptionCurrent);
+
+        // from choices (list of all footnotes available including current in value) get all not
+        // found in current in value
+        // consider that new footnotes have value and footnote undefined
+        const defaultOptions = (props.choices || []).filter(
+          (item) =>
+            !selectedOption.find(({ label }) => label === item.label) &&
+            item.value,
+        );
+        setDefaultOptions(defaultOptions);
+        setParentFootnote(props.value);
+      }
+  }, [props]); // eslint-disable-line
 
     /**
      * evaluate on Regex to filter results
@@ -116,14 +140,7 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
       });
     };
 
-    // from choices (list of all footnotes available including current in value) get all not found in current in value
-    // consider that new footnotes have value and footnote undefined
-    const defaultOptions = (props.choices || []).filter(
-      (item) =>
-        !selectedOption.find(({ label }) => label === item.label) && item.value,
-    );
     const AsyncCreatableSelect = props.reactSelectAsyncCreateable.default;
-
     return (
       <FormFieldWrapper {...props}>
         <AsyncCreatableSelect
