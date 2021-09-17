@@ -56,7 +56,7 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
         setDefaultOptions(defaultOptions);
         setParentFootnote(props.value);
       }
-  }, [props]); // eslint-disable-line
+    }, [props]); // eslint-disable-line
 
     /**
      * evaluate on Regex to filter results
