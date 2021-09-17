@@ -56,15 +56,6 @@ export const FootnoteElement = (props) => {
       ? makeFootnoteListOfUniqueItems(storeBlocks)
       : makeFootnoteListOfUniqueItems(blocks);
 
-    // console.log({ props });
-    // console.log({ blockProps });
-    // console.log({ initialFormData });
-    // console.log({ blocks });
-    // console.log({ storeBlocks });
-    // console.log({ metadata });
-    // console.log({ editor });
-    // console.log({ extras });
-    // console.log({ notesObjResult });
     // will cosider zotero citations and footnote
     // notesObjResult contains all zotero/footnote as unique, and contain refs for other zotero/footnote
     const indice = zoteroId // ZOTERO

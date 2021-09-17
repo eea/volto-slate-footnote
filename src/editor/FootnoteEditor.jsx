@@ -169,6 +169,7 @@ const FootnoteEditor = (props) => {
               return onChangeValues('footnote', value, formData, setFormData);
             }}
             formData={formData}
+            dataBoss={formData}
             source={filteredBlocks}
             headerActions={
               <>
