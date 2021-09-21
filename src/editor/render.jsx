@@ -74,72 +74,20 @@ export const FootnoteElement = (props) => {
         : // no extra citations (no multiples)
           `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`
       : // FOOTNOTES
-      // not all footnotes will be found in notesObjResult because they might have different uid
-      notesObjResult[data.uid]
-      ? // footnotes from extra
-        data.extra
-        ? [
-            // parent footnote
-            `[${Object.keys(notesObjResult).indexOf(data.uid) + 1}]`,
-            ...data.extra.map((footnoteObj, index) => {
-              return notesObjResult[footnoteObj.uid]
-                ? // take footnote if uid is found
-                  `[${
-                    Object.keys(notesObjResult).indexOf(footnoteObj.uid) + 1
-                  }]`
-                : // if uid is not found look for it in other footnotes refs
-                  `[${
-                    Object.keys(notesObjResult).indexOf(
-                      Object.keys(notesObjResult).find(
-                        (noteKey) =>
-                          notesObjResult[noteKey].refs &&
-                          notesObjResult[noteKey].refs[data.uid],
-                      ),
-                    ) + 1
-                  }]`;
-            }),
-          ].join('')
-        : // no extra footnotes (no multiples)
-          `[${Object.keys(notesObjResult).indexOf(data.uid) + 1}]`
-      : // footnotes not found in notesObjResult
-      data.extra
-      ? [
-          // look for it in other footnotes refs - parent
-          `[${
-            Object.keys(notesObjResult).indexOf(
-              Object.keys(notesObjResult).find(
-                (noteKey) =>
-                  notesObjResult[noteKey].refs &&
-                  notesObjResult[noteKey].refs[data.uid],
-              ),
-            ) + 1
-          }]`,
-          ...data.extra.map((footnoteObj, index) => {
-            return notesObjResult[footnoteObj.uid]
-              ? // footnotes from extra might be found in notesObjResult
-                `[${Object.keys(notesObjResult).indexOf(footnoteObj.uid) + 1}]`
-              : // if uid is not found look for it in other footnotes refs
-                `[${
-                  Object.keys(notesObjResult).indexOf(
-                    Object.keys(notesObjResult).find(
-                      (noteKey) =>
-                        notesObjResult[noteKey].refs &&
-                        notesObjResult[noteKey].refs[data.uid],
-                    ),
-                  ) + 1
-                }]`;
-          }),
-        ].join('')
-      : // no extra footnotes
-        `[${
-          Object.keys(notesObjResult).indexOf(
-            Object.keys(notesObjResult).find(
-              (noteKey) =>
-                notesObjResult[noteKey].refs &&
-                notesObjResult[noteKey].refs[data.uid],
-            ),
-          ) + 1
-        }]`;
+        // parent footnote
+        [data, ...(data.extra || [])]
+          .map((footnoteObj, index) => {
+            return `[${
+              Object.keys(notesObjResult).indexOf(
+                Object.keys(notesObjResult).find(
+                  (key) =>
+                    notesObjResult[key].footnote === footnoteObj.footnote,
+                ),
+              ) + 1
+            }]`;
+          })
+          .join('');
+
     const findReferenceId =
       // search within parent citations first, otherwise the uid might be inside a refs obj that comes before
       Object.keys(notesObjResult).find(

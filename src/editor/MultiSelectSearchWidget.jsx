@@ -107,12 +107,12 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
     const setFootnoteFromSelection = (selectedOption) => {
       const extra = selectedOption.slice(1).map((item) => {
         const obj = {
-          uid: nanoid(5),
           ...item,
+          uid: nanoid(5),
           footnote: item.value,
         };
 
-        const { __isNew__: remove, ...rest } = obj;
+        const { __isNew__: remove, extra, ...rest } = obj;
         return rest;
       });
 
