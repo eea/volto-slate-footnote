@@ -25,6 +25,7 @@ const FootnoteEditor = (props) => {
     onChangeValues,
   } = props;
   const dispatch = useDispatch();
+  const pid = `${editor.uid}-${pluginId}`;
   const [formData, setFormData] = React.useState({});
   const active = getActiveElement(editor);
   const initialFormData = useSelector((state) => state?.content?.data || {});
@@ -177,7 +178,7 @@ const FootnoteEditor = (props) => {
                   onClick={() => {
                     saveDataToEditor(formData);
                     dispatch(
-                      setPluginOptions(pluginId, {
+                      setPluginOptions(pid, {
                         show_sidebar_editor: false,
                       }),
                     );
@@ -190,7 +191,7 @@ const FootnoteEditor = (props) => {
                   onClick={() => {
                     checkForCancel();
                     dispatch(
-                      setPluginOptions(pluginId, {
+                      setPluginOptions(pid, {
                         show_sidebar_editor: false,
                       }),
                     );
