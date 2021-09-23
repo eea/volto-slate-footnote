@@ -75,63 +75,67 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
 
     /**
      * If the list is empty or the first is not parent, return true
-     * @param {Object[]} selectedOption list of objects - footnotes
+     * @param {Object[]} optionsList list of objects - footnotes
      * @returns {boolean}
      */
-    const isParetFootnoteRemoved = (selectedOption) =>
-      !selectedOption[0] || selectedOption[0].value !== parentFootnote.value;
+    const isParetFootnoteRemoved = (optionsList) =>
+      !optionsList[0] || optionsList[0].value !== parentFootnote.value;
 
     /**
      * replace all parentFootnote data except uid, with the first from the list
-     * @param {Object[]} selectedOption list of objects - footnotes
+     * @param {Object[]} optionsList list of objects - footnotes
      * @returns {Object}
      */
-    const setParentFootnoteFromExtra = (selectedOption) => {
-      const { footnote, label, value } = selectedOption[0] || [];
+    const setParentFootnoteFromExtra = (optionsList) => {
+      const { footnote, label, value } = optionsList[0] || [];
 
       return {
         ...parentFootnote,
-        footnote: footnote || selectedOption[0]?.value,
+        footnote: footnote || optionsList[0]?.value,
         label,
         value,
-        extra: selectedOption.slice(1),
+        extra: optionsList.slice(1),
       };
     };
 
     /**
-     * Will make the footnotes object, that will be saved as first from selectedOption
+     * Will make the footnotes object, that will be saved as first from optionsList
      * the rest will be added to extra
-     * @param {*} selectedOption
+     * @param {Object[]} optionsList
      * @returns
      */
-    const setFootnoteFromSelection = (selectedOption) => {
-      const extra = selectedOption.slice(1).map((item) => {
+    const setFootnoteFromSelection = (optionsList) => {
+      const extra = optionsList.slice(1).map((item) => {
         const obj = {
           ...item,
-          uid: nanoid(5),
           footnote: item.value,
         };
 
         const { __isNew__: remove, extra, ...rest } = obj;
         return rest;
       });
-
       return { ...parentFootnote, extra };
     };
 
     /**
      * Handle the field change, will remake the result based on the new selected list
      * @method handleChange
-     * @param {array} selectedOption The selected options (already aggregated).
+     * @param {array} optionsList The selected options (already aggregated).
      * @returns {undefined}
      */
-    const handleChange = (selectedOption) => {
-      setSelectedOption(selectedOption);
+    const handleChange = (optionsList) => {
+      const formattedSelectedOptions = optionsList.map((option) => ({
+        footnoteId: nanoid(5), // to be overwritten if already exists (keep as a reference to same text)
+        ...option,
+        uid: nanoid(5), // overwrite existing, thus creating new record for the same text
+        footnote: option.value,
+      }));
+      setSelectedOption(formattedSelectedOptions);
 
       // manage case if parent footnotes (first from the options) was removed
-      const resultSelected = isParetFootnoteRemoved(selectedOption)
-        ? setParentFootnoteFromExtra(selectedOption)
-        : setFootnoteFromSelection(selectedOption);
+      const resultSelected = isParetFootnoteRemoved(formattedSelectedOptions)
+        ? setParentFootnoteFromExtra(formattedSelectedOptions)
+        : setFootnoteFromSelection(formattedSelectedOptions);
 
       props.onChange({
         footnote: resultSelected,

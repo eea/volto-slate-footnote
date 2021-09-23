@@ -39,55 +39,43 @@ const FootnoteEditor = (props) => {
 
   const blockProps = editor?.getBlockProps ? editor.getBlockProps() : {};
   const metadata = blockProps.metadata || blockProps.properties || {};
-  const blocks = getAllBlocksAndSlateFields(metadata);
+  const metadataBlocks = getAllBlocksAndSlateFields(metadata);
   const storeBlocks = getAllBlocksAndSlateFields(initialFormData);
-  const filteredBlocks = [];
+  const uniqueFootnoteBlocks = [];
 
-  const resultBlocks = isEmpty(metadata) ? storeBlocks : blocks;
+  const flatAllBlocks = isEmpty(metadata) ? storeBlocks : metadataBlocks;
+  /**
+   * Will add only the items that are unique by text
+   * @param {Object[]} uniqueFootnoteBlocks
+   * @param {Object} itemToManage
+   */
+  const manageAddBlockToUniqueBlocks = (uniqueFootnoteBlocks, itemToManage) => {
+    if (
+      !uniqueFootnoteBlocks.find((item) => item.title === itemToManage.footnote)
+    ) {
+      uniqueFootnoteBlocks.push({
+        ...itemToManage,
+        title: itemToManage.footnote || itemToManage.value,
+        label: itemToManage.footnote || itemToManage.value,
+        value: itemToManage.footnote || itemToManage.value,
+      });
+    }
+  };
   // make a list of filtered footnotes that have unique title
   // to be used as choices for the multi search widget
   // add label and value for the multi search widget
   // flatten blocks to add all extra in the list
-  resultBlocks
+  flatAllBlocks
     .filter((b) => b['@type'] === 'slate')
     .forEach(({ value }) => {
       if (!value) return;
 
       Array.from(Node.elements(value[0])).forEach(([block]) => {
         block.children.forEach((node) => {
-          if (node.data && node.type === 'footnote' && node.data.extra) {
-            if (
-              !filteredBlocks.find((item) => item.title === node.data.footnote)
-            ) {
-              filteredBlocks.push({
-                ...node.data,
-                title: node.data.footnote || node.data.value,
-                label: node.data.footnote || node.data.value,
-                value: node.data.footnote || node.data.value,
-              });
-            }
-            node.data.extra.forEach((ftitem) => {
-              if (
-                !filteredBlocks.find((item) => item.title === ftitem.footnote)
-              ) {
-                filteredBlocks.push({
-                  ...ftitem,
-                  title: ftitem.footnote || ftitem.value,
-                  label: ftitem.footnote || ftitem.value,
-                  value: ftitem.footnote || ftitem.value,
-                });
-              }
-            });
-          } else if (
-            node.data &&
-            node.type === 'footnote' &&
-            !filteredBlocks.find((item) => item.title === node.data.footnote)
-          ) {
-            filteredBlocks.push({
-              ...node.data,
-              title: node.data.footnote,
-              label: node.data.footnote,
-              value: node.data.footnote,
+          if (node.data && node.type === 'footnote') {
+            manageAddBlockToUniqueBlocks(uniqueFootnoteBlocks, node.data);
+            (node.data.extra || []).forEach((ftitem) => {
+              manageAddBlockToUniqueBlocks(uniqueFootnoteBlocks, ftitem);
             });
           }
         });
@@ -153,7 +141,7 @@ const FootnoteEditor = (props) => {
             ...schema.properties,
             footnote: {
               ...schema.properties.footnote,
-              choices: filteredBlocks,
+              choices: uniqueFootnoteBlocks,
             },
           },
         };
@@ -171,7 +159,7 @@ const FootnoteEditor = (props) => {
             }}
             formData={formData}
             dataBoss={formData}
-            source={filteredBlocks}
+            source={uniqueFootnoteBlocks}
             headerActions={
               <>
                 <button
