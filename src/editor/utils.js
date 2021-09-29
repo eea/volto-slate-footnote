@@ -85,18 +85,18 @@ export const makeFootnoteListOfUniqueItems = (blocks) => {
               );
             }
             // for footnotes - create refs, on identical text
-          } else if (node.data.extra) {
-            iterateFootnoteObj(notesObjResult, node.data);
-            node.data.extra.forEach((footnoteObjItem) =>
-              // since is called in case of extra, the parent is needed
-              iterateFootnoteObj(
-                notesObjResult,
-                footnoteObjItem,
-                node.data.uid,
-              ),
-            );
           } else {
             iterateFootnoteObj(notesObjResult, node.data);
+            if (node.data.extra) {
+              node.data.extra.forEach((footnoteObjItem) =>
+                // since is called in case of extra, the parent is needed
+                iterateFootnoteObj(
+                  notesObjResult,
+                  footnoteObjItem,
+                  node.data.uid,
+                ),
+              );
+            }
           }
         }
       });
@@ -161,11 +161,11 @@ const iterateFootnoteObj = (notesObjResultTemp, node, parentUid) => {
       : { ...node };
     // the element is found, just add it's own uid to the list of refs, the parent is already known
   } else if (notesObjResultTemp[found].refs) {
-    notesObjResultTemp[found].refs[node.uid] = true;
+    notesObjResultTemp[found].refs[uid] = true;
   } else {
     // element found but doesn't have refs yet, this means that it is a parent, so add it's existing uid and the current one
     notesObjResultTemp[found].refs = {
-      [notesObjResultTemp[found].uid]: true,
+      [found]: true,
       [uid]: true,
     };
   }
