@@ -21,36 +21,48 @@ export const makeFootnote = (footnote) => {
  */
 export const getAllBlocksAndSlateFields = (properties) => {
   const blocks = getAllBlocks(properties, []);
-  const flat_blocks = [];
-  for (const b_idx in blocks) {
-    const block = blocks[b_idx];
+  const flatBlocks = [];
+
+  for (const bIdx in blocks) {
+    const block = blocks[bIdx];
     if (block['@type'] === 'metadataSection') {
       const fields = block.fields;
-      for (const f_idx in fields) {
-        const field = fields[f_idx];
+      for (const fIdx in fields) {
+        const field = fields[fIdx];
         if (field?.field?.widget === 'slate') {
-          const field_id = field.field.id;
-          flat_blocks.push({
-            '@type': 'slate',
-            id: field_id,
-            value: properties[field_id]?.length ? properties[field_id] : null,
+          const fieldId = field.field.id;
+          (properties[fieldId] || []).forEach((valueItem) => {
+            flatBlocks.push({
+              '@type': 'slate',
+              id: fieldId,
+              value: [valueItem],
+            });
           });
         }
       }
     } else if (block['@type'] === 'metadata') {
       if (block?.data?.widget === 'slate') {
-        const f_id = block.data.id;
-        flat_blocks.push({
+        const fId = block.data.id;
+        flatBlocks.push({
           '@type': 'slate',
-          id: f_id,
-          value: properties[f_id]?.length ? properties[f_id] : null,
+          id: fId,
+          value: properties[fId]?.length ? properties[fId] : null,
         });
       }
+    } else if (block['@type'] === 'slateTable') {
+      block.table.rows.forEach((row) => {
+        row.cells.forEach((cell) => {
+          flatBlocks.push({
+            ...cell,
+            '@type': 'slate',
+          });
+        });
+      });
     } else {
-      flat_blocks.push(block);
+      flatBlocks.push(block);
     }
   }
-  return flat_blocks;
+  return flatBlocks;
 };
 
 /**
