@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
+import {
+  openAccordionIfContainsFootnoteReference,
+  getAllBlocksAndSlateFields,
+} from '@eeacms/volto-slate-footnote/editor/utils';
 
 import './less/public.less';
 import {
@@ -57,7 +60,7 @@ const FootnotesBlockView = (props) => {
                 {refsList ? (
                   <>
                     {/** some footnotes are never parent so we need the parent to reference */}
-                    {/** int this case the first from refs has reference to the parent*/}
+                    {/** in this case the first from refs has reference to the parent*/}
                     <sup
                       id={`cite_ref-${refsList[0]}`}
                       key={`indice-${refsList[0]}`}
@@ -65,6 +68,11 @@ const FootnotesBlockView = (props) => {
                       <a
                         href={`#ref-${parentUid || uid}`}
                         aria-label="Back to content"
+                        onClick={() =>
+                          openAccordionIfContainsFootnoteReference(
+                            `#ref-${parentUid || uid}`,
+                          )
+                        }
                       >
                         {alphabet[0]}
                       </a>{' '}
@@ -72,7 +80,15 @@ const FootnotesBlockView = (props) => {
                     {/** following refs will have the uid of the one that references it*/}
                     {refsList.slice(1).map((ref, index) => (
                       <sup id={`cite_ref-${ref}`} key={`indice-${ref}`}>
-                        <a href={`#ref-${ref}`} aria-label="Back to content">
+                        <a
+                          href={`#ref-${ref}`}
+                          aria-label="Back to content"
+                          onClick={() =>
+                            openAccordionIfContainsFootnoteReference(
+                              `#ref-${ref}`,
+                            )
+                          }
+                        >
                           {alphabet[index + 1]}
                         </a>{' '}
                       </sup>
@@ -84,6 +100,11 @@ const FootnotesBlockView = (props) => {
                     <a
                       href={`#ref-${parentUid || uid}`}
                       aria-label="Back to content"
+                      onClick={() =>
+                        openAccordionIfContainsFootnoteReference(
+                          `#ref-${parentUid || uid}`,
+                        )
+                      }
                     >
                       ↵
                     </a>{' '}

@@ -13,6 +13,24 @@ export const makeFootnote = (footnote) => {
   return free;
 };
 
+/**
+ * Will open accordion if contains footnote reference
+ * @param {string} footnoteId
+ */
+export const openAccordionIfContainsFootnoteReference = (footnoteId) => {
+  if (typeof window !== 'undefined') {
+    const footnote = document.querySelector(footnoteId);
+    if (footnote !== null && footnote.closest('.accordion') !== null) {
+      const comp = footnote.closest('.accordion').querySelector('.title');
+      if (!comp.className.includes('active')) {
+        comp.click();
+      }
+    }
+  }
+
+  return true;
+};
+
 const blockTypesOperations = {
   metadataSection: (block, properties) => {
     const fields = block.fields;
