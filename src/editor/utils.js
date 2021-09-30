@@ -14,6 +14,76 @@ export const makeFootnote = (footnote) => {
 };
 
 /**
+ * Will open accordion if contains footnote reference
+ * @param {string} footnoteId
+ */
+export const openAccordionIfContainsFootnoteReference = (footnoteId) => {
+  if (typeof window !== 'undefined') {
+    const footnote = document.querySelector(footnoteId);
+    if (footnote !== null && footnote.closest('.accordion') !== null) {
+      const comp = footnote.closest('.accordion').querySelector('.title');
+      if (!comp.className.includes('active')) {
+        comp.click();
+      }
+    }
+  }
+
+  return true;
+};
+
+const blockTypesOperations = {
+  metadataSection: (block, properties) => {
+    const fields = block.fields;
+
+    const flatMetadataSectionBlocks = fields
+      .filter((field) => field?.field?.widget === 'slate')
+      .reduce((accumulator, currentField) => {
+        const fieldId = currentField.field.id;
+        const propertiesBlocks = (properties[fieldId] || []).map(
+          (propertyBlockValue) => ({
+            '@type': 'slate',
+            id: fieldId,
+            value: [propertyBlockValue],
+          }),
+        );
+        return [...accumulator, ...propertiesBlocks];
+      }, []);
+
+    return flatMetadataSectionBlocks;
+  },
+  metadata: (block, properties) => {
+    const fId = block.data.id;
+
+    return block?.data?.widget === 'slate'
+      ? [
+          {
+            '@type': 'slate',
+            id: fId,
+            value: properties[fId]?.length ? properties[fId] : null,
+          },
+        ]
+      : [];
+  },
+  slateTable: (block) => {
+    const flatSlateBlocks = (block?.table?.rows || []).reduce(
+      (accumulator, currentRow) => {
+        const cellsBlocks = (currentRow.cells || []).map((cell) => ({
+          '@type': 'slate',
+          ...cell,
+        }));
+        return [...accumulator, ...cellsBlocks];
+      },
+      [],
+    );
+
+    return flatSlateBlocks;
+  },
+  defaultOperation: (block) => {
+    return [block];
+  },
+};
+
+/**
  * Extends volto-slate getAllBlocks functionality also to SlateJSONFields
  * inserted within blocks via Metadata / Metadata section block
  * @param {Object} properties metadata properties received by the View component
@@ -21,36 +91,17 @@ export const makeFootnote = (footnote) => {
  */
 export const getAllBlocksAndSlateFields = (properties) => {
   const blocks = getAllBlocks(properties, []);
-  const flat_blocks = [];
-  for (const b_idx in blocks) {
-    const block = blocks[b_idx];
-    if (block['@type'] === 'metadataSection') {
-      const fields = block.fields;
-      for (const f_idx in fields) {
-        const field = fields[f_idx];
-        if (field?.field?.widget === 'slate') {
-          const field_id = field.field.id;
-          flat_blocks.push({
-            '@type': 'slate',
-            id: field_id,
-            value: properties[field_id]?.length ? properties[field_id] : null,
-          });
-        }
-      }
-    } else if (block['@type'] === 'metadata') {
-      if (block?.data?.widget === 'slate') {
-        const f_id = block.data.id;
-        flat_blocks.push({
-          '@type': 'slate',
-          id: f_id,
-          value: properties[f_id]?.length ? properties[f_id] : null,
-        });
-      }
-    } else {
-      flat_blocks.push(block);
-    }
-  }
-  return flat_blocks;
+
+  const flatBlocksResult = blocks.reduce((accumulator, currentblock) => {
+    return [
+      ...accumulator,
+      ...(blockTypesOperations[currentblock['@type']]
+        ? blockTypesOperations[currentblock['@type']](currentblock, properties)
+        : blockTypesOperations.defaultOperation(currentblock)),
+    ];
+  }, []);
+
+  return flatBlocksResult;
 };
 
 /**
