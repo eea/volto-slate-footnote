@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Popup, List } from 'semantic-ui-react';
 import { useEditorContext } from 'volto-slate/hooks';
 import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
-import { makeFootnoteListOfUniqueItems } from './utils';
+import {
+  makeFootnoteListOfUniqueItems,
+  openAccordionIfContainsFootnoteReference,
+} from './utils';
 import { isEmpty } from 'lodash';
 import { useSelector } from 'react-redux';
 
@@ -15,24 +18,6 @@ const makeFootnote = (footnote) => {
   const free = footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
 
   return free;
-};
-
-/**
- * Will open accordion if contains footnote reference
- * @param {string} footnoteId
- */
-const openAccordionIfContainsFootnoteReference = (footnoteId) => {
-  if (typeof window !== 'undefined') {
-    const footnote = document.querySelector(footnoteId);
-    if (footnote !== null && footnote.closest('.accordion') !== null) {
-      const comp = footnote.closest('.accordion').querySelector('.title');
-      if (!comp.className.includes('active')) {
-        comp.click();
-      }
-    }
-  }
-
-  return true;
 };
 
 export const FootnoteElement = (props) => {

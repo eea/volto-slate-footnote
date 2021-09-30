@@ -1,6 +1,6 @@
 {
   "name": "@eeacms/volto-slate-footnote",
-  "version": "4.0.1",
+  "version": "4.0.2",
   "description": "volto-slate-footnote: Volto add-on",
   "main": "src/index.js",
   "author": "European Environment Agency: IDM2 A-Team",
@@ -19,7 +19,7 @@
     "url": "git@github.com:eea/volto-slate-footnote.git"
   },
   "addons": [
-    "volto-slate:asDefault"
+    "volto-slate"
   ],
   "dependencies": {
     "volto-slate": "*"

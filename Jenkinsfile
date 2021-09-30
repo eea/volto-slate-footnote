@@ -4,8 +4,8 @@ pipeline {
   environment {
         GIT_NAME = "volto-slate-footnote"
         NAMESPACE = "@eeacms"
-        SONARQUBE_TAGS = "volto.eea.europa.eu,biodiversity.europa.eu,www.eea.europa.eu-ims,climate-energy.eea.europa.eu"
-        DEPENDENCIES = ""
+        SONARQUBE_TAGS = "volto.eea.europa.eu,biodiversity.europa.eu,www.eea.europa.eu-ims,climate-energy.eea.europa.eu,sustainability.eionet.europa.eu"
+        DEPENDENCIES = "volto-slate:asDefault"
     }
 
   stages {
