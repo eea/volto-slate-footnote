@@ -21,7 +21,7 @@
   "addons": [
     "volto-slate"
   ],
-  "dependencies": {
+  "peerDependencies": {
     "volto-slate": "*"
   },
   "devDependencies": {
