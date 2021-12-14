@@ -1,7 +1,18 @@
 # volto-slate-footnote
 [![Releases](https://img.shields.io/github/v/release/eea/volto-slate-footnote)](https://github.com/eea/volto-slate-footnote/releases)
+
 [![Pipeline](https://ci.eionet.europa.eu/buildStatus/icon?job=volto-addons%2Fvolto-slate-footnote%2Fmaster&subject=master)](https://ci.eionet.europa.eu/view/Github/job/volto-addons/job/volto-slate-footnote/job/master/display/redirect)
+[![Lines of Code](https://sonarqube.eea.europa.eu/api/project_badges/measure?project=volto-slate-footnote-master&metric=ncloc)](https://sonarqube.eea.europa.eu/dashboard?id=volto-slate-footnote-master)
+[![Coverage](https://sonarqube.eea.europa.eu/api/project_badges/measure?project=volto-slate-footnote-master&metric=coverage)](https://sonarqube.eea.europa.eu/dashboard?id=volto-slate-footnote-master)
+[![Bugs](https://sonarqube.eea.europa.eu/api/project_badges/measure?project=volto-slate-footnote-master&metric=bugs)](https://sonarqube.eea.europa.eu/dashboard?id=volto-slate-footnote-master)
+[![Duplicated Lines (%)](https://sonarqube.eea.europa.eu/api/project_badges/measure?project=volto-slate-footnote-master&metric=duplicated_lines_density)](https://sonarqube.eea.europa.eu/dashboard?id=volto-slate-footnote-master)
+
 [![Pipeline](https://ci.eionet.europa.eu/buildStatus/icon?job=volto-addons%2Fvolto-slate-footnote%2Fdevelop&subject=develop)](https://ci.eionet.europa.eu/view/Github/job/volto-addons/job/volto-slate-footnote/job/develop/display/redirect)
+[![Lines of Code](https://sonarqube.eea.europa.eu/api/project_badges/measure?project=volto-slate-footnote-develop&metric=ncloc)](https://sonarqube.eea.europa.eu/dashboard?id=volto-slate-footnote-develop)
+[![Coverage](https://sonarqube.eea.europa.eu/api/project_badges/measure?project=volto-slate-footnote-develop&metric=coverage)](https://sonarqube.eea.europa.eu/dashboard?id=volto-slate-footnote-develop)
+[![Bugs](https://sonarqube.eea.europa.eu/api/project_badges/measure?project=volto-slate-footnote-develop&metric=bugs)](https://sonarqube.eea.europa.eu/dashboard?id=volto-slate-footnote-develop)
+[![Duplicated Lines (%)](https://sonarqube.eea.europa.eu/api/project_badges/measure?project=volto-slate-footnote-develop&metric=duplicated_lines_density)](https://sonarqube.eea.europa.eu/dashboard?id=volto-slate-footnote-develop)
+
 
 [Volto Slate](https://github.com/eea/volto-slate/tree/develop) Footnotes
 
