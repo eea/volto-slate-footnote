@@ -11,6 +11,7 @@ import { Node } from 'slate';
 import { useSelector } from 'react-redux';
 import { isEmpty } from 'lodash';
 import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
+import config from '@plone/volto/registry';
 
 const FootnoteEditor = (props) => {
   const {
@@ -66,7 +67,7 @@ const FootnoteEditor = (props) => {
   // add label and value for the multi search widget
   // flatten blocks to add all extra in the list
   flatAllBlocks
-    .filter((b) => b['@type'] === 'slate')
+    .filter((b) => config.settings.blocksWithFootnotes.includes(b['@type']))
     .forEach(({ value }) => {
       if (!value) return;
 

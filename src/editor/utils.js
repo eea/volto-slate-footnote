@@ -118,7 +118,7 @@ export const makeFootnoteListOfUniqueItems = (blocks) => {
   let notesObjResult = {};
 
   blocks
-    .filter((b) => b['@type'] === 'slate')
+    .filter((b) => config.settings.blocksWithFootnotes.includes(b['@type']))
     .forEach(({ value }) => {
       if (!value) return;
       // Node.elements(value[0]) returns an iterable generator of nodes

@@ -3,7 +3,7 @@ import codeSVG from '@plone/volto/icons/blog-entry.svg';
 import FootnotesBlockView from './Blocks/Footnote/FootnotesBlockView';
 import FootnotesBlockEdit from './Blocks/Footnote/FootnotesBlockEdit';
 import FootnotesBlockSchema from './Blocks/Footnote/FootnotesBlockSchema';
-import { FOOTNOTE } from './constants';
+import { FOOTNOTE, SLATE } from './constants';
 import installFootnoteEditor from './editor';
 import SearchWidget from '@eeacms/volto-slate-footnote/editor/MultiSelectSearchWidget';
 
@@ -35,6 +35,11 @@ export default function install(config) {
   config.settings.footnotes = [...(config.settings.footnotes || []), FOOTNOTE];
   config.widgets.widget.searchInput = SearchWidget;
   config = installFootnoteEditor(config);
+
+  config.settings.blocksWithFootnotes = [
+    ...(config.settings.blocksWithFootnotes || []),
+    SLATE,
+  ];
 
   return config;
 }
