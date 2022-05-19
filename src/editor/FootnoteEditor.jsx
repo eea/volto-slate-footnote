@@ -67,18 +67,27 @@ const FootnoteEditor = (props) => {
   // add label and value for the multi search widget
   // flatten blocks to add all extra in the list
   flatAllBlocks
-    .filter((b) => config.settings.blocksWithFootnotes.includes(b['@type']))
-    .forEach(({ value }) => {
-      if (!value) return;
+    .filter((b) => b['@type'] in config.settings.blocksWithFootnotesSupport)
+    .forEach((element) => {
+      const mapping = config.settings.blocksWithFootnotesSupport[
+        element['@type']
+      ] || ['value'];
 
-      Array.from(Node.elements(value[0])).forEach(([block]) => {
-        block.children.forEach((node) => {
-          if (node.data && node.type === 'footnote') {
-            manageAddBlockToUniqueBlocks(uniqueFootnoteBlocks, node.data);
-            (node.data.extra || []).forEach((ftitem) => {
-              manageAddBlockToUniqueBlocks(uniqueFootnoteBlocks, ftitem);
+      mapping.forEach((key) => {
+        const value = element[key];
+        if (!value) return;
+
+        value.forEach((item) => {
+          Array.from(Node.elements(item)).forEach(([block]) => {
+            block.children.forEach((node) => {
+              if (node.data && node.type === 'footnote') {
+                manageAddBlockToUniqueBlocks(uniqueFootnoteBlocks, node.data);
+                (node.data.extra || []).forEach((ftitem) => {
+                  manageAddBlockToUniqueBlocks(uniqueFootnoteBlocks, ftitem);
+                });
+              }
             });
-          }
+          });
         });
       });
     });

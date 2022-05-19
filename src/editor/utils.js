@@ -118,38 +118,52 @@ export const makeFootnoteListOfUniqueItems = (blocks) => {
   let notesObjResult = {};
 
   blocks
-    .filter((b) => config.settings.blocksWithFootnotes.includes(b['@type']))
-    .forEach(({ value }) => {
-      if (!value) return;
-      // Node.elements(value[0]) returns an iterable generator of nodes
-      Array.from(Node.elements(value[0])).forEach(([node]) => {
-        if (footnotes.includes(node.type) && node.data) {
-          // for citations (Zotero items) create refs for same zoteroId
-          if (node.data.zoteroId) {
-            iterateZoteroObj(notesObjResult, node.data);
-            // itereate the extra obj for multiple citations
-            if (node.data.extra) {
-              node.data.extra.forEach((zoteroObjItem) =>
-                // send the uid of the parent
-                // of the word the will have the reference indice
-                iterateZoteroObj(notesObjResult, zoteroObjItem, node.data.uid),
-              );
+    .filter((b) => b['@type'] in config.settings.blocksWithFootnotesSupport)
+    .forEach((element) => {
+      const mapping = config.settings.blocksWithFootnotesSupport[
+        element['@type']
+      ] || ['value'];
+
+      mapping.forEach((key) => {
+        const value = element[key];
+        if (!value) return;
+
+        value.forEach((item) => {
+          // Node.elements(item) returns an iterable generator of nodes
+          Array.from(Node.elements(item)).forEach(([node]) => {
+            if (footnotes.includes(node.type) && node.data) {
+              // for citations (Zotero items) create refs for same zoteroId
+              if (node.data.zoteroId) {
+                iterateZoteroObj(notesObjResult, node.data);
+                // itereate the extra obj for multiple citations
+                if (node.data.extra) {
+                  node.data.extra.forEach((zoteroObjItem) =>
+                    // send the uid of the parent
+                    // of the word the will have the reference indice
+                    iterateZoteroObj(
+                      notesObjResult,
+                      zoteroObjItem,
+                      node.data.uid,
+                    ),
+                  );
+                }
+                // for footnotes - create refs, on identical text
+              } else {
+                iterateFootnoteObj(notesObjResult, node.data);
+                if (node.data.extra) {
+                  node.data.extra.forEach((footnoteObjItem) =>
+                    // since is called in case of extra, the parent is needed
+                    iterateFootnoteObj(
+                      notesObjResult,
+                      footnoteObjItem,
+                      node.data.uid,
+                    ),
+                  );
+                }
+              }
             }
-            // for footnotes - create refs, on identical text
-          } else {
-            iterateFootnoteObj(notesObjResult, node.data);
-            if (node.data.extra) {
-              node.data.extra.forEach((footnoteObjItem) =>
-                // since is called in case of extra, the parent is needed
-                iterateFootnoteObj(
-                  notesObjResult,
-                  footnoteObjItem,
-                  node.data.uid,
-                ),
-              );
-            }
-          }
-        }
+          });
+        });
       });
     });
 
