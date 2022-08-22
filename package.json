@@ -18,12 +18,8 @@
     "type": "git",
     "url": "git@github.com:eea/volto-slate-footnote.git"
   },
-  "addons": [
-    "volto-slate"
-  ],
-  "dependencies": {
-    "volto-slate": "*"
-  },
+  "addons": [],
+  "dependencies": {},
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.5",
     "babel-plugin-transform-class-properties": "^6.24.1"
