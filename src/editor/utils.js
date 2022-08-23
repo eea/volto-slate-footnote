@@ -1,6 +1,6 @@
 import config from '@plone/volto/registry';
 import { Node } from 'slate';
-import { getAllBlocks } from 'volto-slate/utils';
+import { getAllBlocks } from '@plone/volto-slate/utils';
 
 /**
  * remove <?xml version="1.0"?> from the string

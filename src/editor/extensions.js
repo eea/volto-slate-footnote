@@ -1,5 +1,5 @@
 import { FOOTNOTE } from '../constants';
-import { nanoid } from 'volto-slate/utils';
+import { nanoid } from '@plone/volto-slate/utils';
 import { Transforms } from 'slate';
 
 export const withFootnote = (editor) => {

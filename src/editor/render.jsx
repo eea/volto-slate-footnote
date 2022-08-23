@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Popup, List } from 'semantic-ui-react';
-import { useEditorContext } from 'volto-slate/hooks';
+import { useEditorContext } from '@plone/volto-slate/hooks';
 import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
 import {
   makeFootnoteListOfUniqueItems,

@@ -2,7 +2,7 @@ import { isEqual } from 'lodash';
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { ReactEditor } from 'slate-react';
-import { setPluginOptions } from 'volto-slate/actions';
+import { setPluginOptions } from '@plone/volto-slate/actions';
 import { Icon as VoltoIcon, InlineForm } from '@plone/volto/components';
 import briefcaseSVG from '@plone/volto/icons/briefcase.svg';
 import checkSVG from '@plone/volto/icons/check.svg';
