@@ -6,9 +6,12 @@ describe('Slate citations', () => {
 
   it('Add Footnotes block and create citation', () => {
     // Complete chained commands
-    cy.getSlateEditorAndType('Colorless green ideas sleep furiously.');
+    cy.getSlateEditorAndType('Colorless green ideas sleep furiously.')
+      .type('{selectAll}')
+      .dblclick();
 
     // Footnote
+    cy.setSlateCursor('Colorless').dblclick();
     cy.setSlateSelection('Colorless', 'green');
     cy.clickSlateButton('Footnote');
 
@@ -42,9 +45,12 @@ describe('Slate citations', () => {
 
   it('Add Footnotes block and create multiple citations', () => {
     // Complete chained commands
-    cy.getSlateEditorAndType('Colorless green ideas sleep furiously.');
+    cy.getSlateEditorAndType('Colorless green ideas sleep furiously.')
+      .type('{selectAll}')
+      .dblclick();
 
     // Footnote
+    cy.setSlateCursor('Colorless').dblclick();
     cy.setSlateSelection('Colorless', 'green');
     cy.clickSlateButton('Footnote');
 
