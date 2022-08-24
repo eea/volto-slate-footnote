@@ -1,4 +1,4 @@
-import { slateBeforeEach, slateAfterEach } from '../support';
+import { slateBeforeEach, slateAfterEach } from '../support/e2e';
 
 describe('Slate citations', () => {
   beforeEach(slateBeforeEach);
