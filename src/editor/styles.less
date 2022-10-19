@@ -5,7 +5,7 @@ body {
 }
 
 span[aria-describedby='footnote-label'] {
-  color: #004b87;
+  color: var(--text-color, #004b87);
   cursor: default;
   outline: none;
   text-decoration: none;
@@ -20,13 +20,13 @@ span[aria-describedby='footnote-label'] {
 
 .footnote-edit-node {
   padding: 0px 4px;
-  background-color: #e6f3ff;
+  background-color: var(--bg-color, #e6f3ff);
   border-radius: 4px;
 }
 
 .footnote-edit-node::after,
 .citation-item::after {
-  color: #0645ad;
+  color: var(--text-color, #0645ad);
   content: attr(data-footnote-indice);
   font-size: 75%;
   vertical-align: super;
