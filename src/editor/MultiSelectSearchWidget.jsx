@@ -12,7 +12,7 @@ import {
   customSelectStyles,
 } from '@plone/volto/components/manage/Widgets/SelectStyling';
 import { escapeRegExp, filter } from 'lodash';
-import { nanoid } from 'volto-slate/utils';
+import { nanoid } from '@plone/volto-slate/utils';
 
 import { FormFieldWrapper } from '@plone/volto/components';
 import { injectLazyLibs } from '@plone/volto/helpers/Loadable/Loadable';

@@ -5,8 +5,8 @@ import {
   getBlocksFieldname,
   getBlocksLayoutFieldname,
 } from '@plone/volto/helpers';
-import { makeInlineElementPlugin } from 'volto-slate/components/ElementEditor';
-import { _insertElement } from 'volto-slate/components/ElementEditor/utils';
+import { makeInlineElementPlugin } from '@plone/volto-slate/elementEditor';
+import { _insertElement } from '@plone/volto-slate/elementEditor/utils';
 import { FootnoteEditorSchema } from './schema';
 import { withFootnote, withBeforeInsertFragment } from './extensions';
 import { FOOTNOTE } from '../constants';
