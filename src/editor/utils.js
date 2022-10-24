@@ -8,9 +8,7 @@ import { getAllBlocks } from '@plone/volto-slate/utils';
  * @returns string
  */
 export const makeFootnote = (footnote) => {
-  const free = footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
-
-  return free;
+  return footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
 };
 
 /**
@@ -35,7 +33,7 @@ const blockTypesOperations = {
   metadataSection: (block, properties) => {
     const fields = block.fields;
 
-    const flatMetadataSectionBlocks = fields
+    return fields
       .filter((field) => field?.field?.widget === 'slate')
       .reduce((accumulator, currentField) => {
         const fieldId = currentField.field.id;
@@ -48,8 +46,6 @@ const blockTypesOperations = {
         );
         return [...accumulator, ...propertiesBlocks];
       }, []);
-
-    return flatMetadataSectionBlocks;
   },
   metadata: (block, properties) => {
     const fId = block.data.id;
@@ -65,18 +61,13 @@ const blockTypesOperations = {
       : [];
   },
   slateTable: (block) => {
-    const flatSlateBlocks = (block?.table?.rows || []).reduce(
-      (accumulator, currentRow) => {
-        const cellsBlocks = (currentRow.cells || []).map((cell) => ({
-          '@type': 'slate',
-          ...cell,
-        }));
-        return [...accumulator, ...cellsBlocks];
-      },
-      [],
-    );
-
-    return flatSlateBlocks;
+    return (block?.table?.rows || []).reduce((accumulator, currentRow) => {
+      const cellsBlocks = (currentRow.cells || []).map((cell) => ({
+        '@type': 'slate',
+        ...cell,
+      }));
+      return [...accumulator, ...cellsBlocks];
+    }, []);
   },
   defaultOperation: (block) => {
     return [block];
@@ -91,8 +82,7 @@ const blockTypesOperations = {
  */
 export const getAllBlocksAndSlateFields = (properties) => {
   const blocks = getAllBlocks(properties, []);
-
-  const flatBlocksResult = blocks.reduce((accumulator, currentblock) => {
+  return blocks.reduce((accumulator, currentblock) => {
     return [
       ...accumulator,
       ...(blockTypesOperations[currentblock['@type']]
@@ -100,8 +90,6 @@ export const getAllBlocksAndSlateFields = (properties) => {
         : blockTypesOperations.defaultOperation(currentblock)),
     ];
   }, []);
-
-  return flatBlocksResult;
 };
 
 /**

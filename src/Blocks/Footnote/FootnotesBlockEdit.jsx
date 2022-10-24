@@ -1,8 +1,7 @@
 import React from 'react';
 import FootnotesBlockView from './FootnotesBlockView';
-import { InlineForm } from '@plone/volto/components';
+import { InlineForm, SidebarPortal } from '@plone/volto/components';
 import { FootnoteBlockSchema as schema } from './schema';
-import { SidebarPortal } from '@plone/volto/components';
 import { Segment } from 'semantic-ui-react';
 
 /**
