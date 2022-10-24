@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Popup, List } from 'semantic-ui-react';
-import { useEditorContext } from 'volto-slate/hooks';
+import { useEditorContext } from '@plone/volto-slate/hooks';
 import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
 import {
   makeFootnoteListOfUniqueItems,
@@ -15,9 +15,7 @@ import { useSelector } from 'react-redux';
  * @returns {string} formatted footnote
  */
 const makeFootnote = (footnote) => {
-  const free = footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
-
-  return free;
+  return footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
 };
 
 export const FootnoteElement = (props) => {
@@ -49,7 +47,7 @@ export const FootnoteElement = (props) => {
             `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`, // parent footnote
             ...data.extra.map(
               // citations from extra
-              (zoteroObj, index) =>
+              (zoteroObj, _index) =>
                 // all zotero citation are indexed by zoteroId in notesObjResult
                 `[${
                   Object.keys(notesObjResult).indexOf(zoteroObj.zoteroId) + 1
@@ -61,7 +59,7 @@ export const FootnoteElement = (props) => {
       : // FOOTNOTES
         // parent footnote
         [data, ...(data.extra || [])]
-          .map((footnoteObj, index) => {
+          .map((footnoteObj, _index) => {
             return `[${
               Object.keys(notesObjResult).indexOf(
                 Object.keys(notesObjResult).find(

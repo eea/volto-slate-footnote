@@ -2,13 +2,10 @@ import React, { useEffect, useState } from 'react';
 import {
   openAccordionIfContainsFootnoteReference,
   getAllBlocksAndSlateFields,
-} from '@eeacms/volto-slate-footnote/editor/utils';
-
-import './less/public.less';
-import {
   makeFootnoteListOfUniqueItems,
   makeFootnote,
 } from '@eeacms/volto-slate-footnote/editor/utils';
+import './less/public.less';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 
