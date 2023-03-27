@@ -1,6 +1,6 @@
 {
   "name": "@eeacms/volto-slate-footnote",
-  "version": "6.0.2",
+  "version": "6.1.0",
   "description": "volto-slate-footnote: Volto add-on",
   "main": "src/index.js",
   "author": "European Environment Agency: IDM2 A-Team",
