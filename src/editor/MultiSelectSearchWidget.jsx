@@ -68,9 +68,7 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
       const isMatch = (result) => re.test(result.value);
       const resultsFiltered = filter(props.choices, isMatch);
 
-      return new Promise((resolve, reject) => {
-        resolve(resultsFiltered);
-      });
+      return Promise.resolve(resultsFiltered);
     };
 
     /**
@@ -110,7 +108,6 @@ const MultiSelectSearchWidget = injectLazyLibs('reactSelectAsyncCreateable')(
           ...item,
           footnote: item.value,
         };
-
         const { __isNew__: remove, extra, ...rest } = obj;
         return rest;
       });
