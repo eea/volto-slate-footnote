@@ -41,21 +41,23 @@ export const FootnoteElement = (props) => {
 
     // will cosider zotero citations and footnote
     // notesObjResult contains all zotero/footnote as unique, and contain refs for other zotero/footnote
+    const indiceIfZoteroId = data.extra
+      ? [
+          `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`, // parent footnote
+          ...data.extra.map(
+            // citations from extra
+            (zoteroObj, _index) =>
+              // all zotero citation are indexed by zoteroId in notesObjResult
+              `[${
+                Object.keys(notesObjResult).indexOf(zoteroObj.zoteroId) + 1
+              }]`,
+          ),
+        ].join('')
+      : // no extra citations (no multiples)
+        `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`;
+
     const indice = zoteroId // ZOTERO
-      ? data.extra
-        ? [
-            `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`, // parent footnote
-            ...data.extra.map(
-              // citations from extra
-              (zoteroObj, _index) =>
-                // all zotero citation are indexed by zoteroId in notesObjResult
-                `[${
-                  Object.keys(notesObjResult).indexOf(zoteroObj.zoteroId) + 1
-                }]`,
-            ),
-          ].join('')
-        : // no extra citations (no multiples)
-          `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`
+      ? indiceIfZoteroId
       : // FOOTNOTES
         // parent footnote
         [data, ...(data.extra || [])]
