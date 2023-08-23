@@ -31,8 +31,7 @@ export const openAccordionIfContainsFootnoteReference = (footnoteId) => {
 
 const blockTypesOperations = {
   metadataSection: (block, properties) => {
-    const fields = block.fields;
-
+    const fields = block?.fields || [];
     return fields
       .filter((field) => field?.field?.widget === 'slate')
       .reduce((accumulator, currentField) => {
@@ -48,8 +47,7 @@ const blockTypesOperations = {
       }, []);
   },
   metadata: (block, properties) => {
-    const fId = block.data.id;
-
+    const fId = block?.data?.id;
     return block?.data?.widget === 'slate'
       ? [
           {
