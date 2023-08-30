@@ -11,4 +11,22 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
+#: editor/index
+# defaultMessage: Edit footnote
+msgid "Edit footnote"
+msgstr ""
 
+#: editor/MultiSelectSearchWidget
+# defaultMessage: No options
+msgid "No options"
+msgstr ""
+
+#: editor/index
+# defaultMessage: Remove footnote
+msgid "Remove footnote"
+msgstr ""
+
+#: editor/MultiSelectSearchWidget
+# defaultMessage: Select…
+msgid "Select…"
+msgstr ""
