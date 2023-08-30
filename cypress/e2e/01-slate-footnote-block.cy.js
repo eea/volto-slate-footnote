@@ -41,6 +41,7 @@ describe('Slate citations', () => {
     cy.get('span.citation-item').contains('Colorless green');
     cy.contains('Footnotes');
     cy.contains('Citation');
+    cy.get('[aria-label="Back to content"]').first().click();
   });
 
   it('Add Footnotes block and create multiple citations', () => {
