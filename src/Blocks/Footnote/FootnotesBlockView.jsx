@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   openAccordionIfContainsFootnoteReference,
   getAllBlocksAndSlateFields,
@@ -20,18 +20,10 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const FootnotesBlockView = (props) => {
   const { data, properties } = props;
   const { title, global, placeholder = 'Footnotes' } = data;
-  const [notesObj, setNodesObjs] = useState(null);
   const metadata = props.metadata ? props.metadata : properties;
-
-  useEffect(() => {
-    if (properties) {
-      const globalMetadata = global ? metadata : properties;
-      const blocks = getAllBlocksAndSlateFields(globalMetadata);
-      const notesObjResult = makeFootnoteListOfUniqueItems(blocks);
-
-      setNodesObjs(notesObjResult);
-    }
-  }, [properties]); // eslint-disable-line
+  const globalMetadata = global ? metadata : properties;
+  const blocks = getAllBlocksAndSlateFields(globalMetadata);
+  const notesObj = makeFootnoteListOfUniqueItems(blocks);
 
   return (
     <div className="footnotes-listing-block">
