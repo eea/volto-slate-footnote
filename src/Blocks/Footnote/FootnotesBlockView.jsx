@@ -57,6 +57,7 @@ const FootnotesBlockView = (props) => {
                       <a
                         href={`#ref-${parentUid || uid}`}
                         aria-label="Back to content"
+                        target="_self"
                         onClick={() =>
                           openAccordionIfContainsFootnoteReference(
                             `#ref-${parentUid || uid}`,
@@ -72,6 +73,7 @@ const FootnotesBlockView = (props) => {
                         <a
                           href={`#ref-${ref}`}
                           aria-label="Back to content"
+                          target="_self"
                           onClick={() =>
                             openAccordionIfContainsFootnoteReference(
                               `#ref-${ref}`,
@@ -89,6 +91,7 @@ const FootnotesBlockView = (props) => {
                     <a
                       href={`#ref-${parentUid || uid}`}
                       aria-label="Back to content"
+                      target="_self"
                       onClick={() =>
                         openAccordionIfContainsFootnoteReference(
                           `#ref-${parentUid || uid}`,
