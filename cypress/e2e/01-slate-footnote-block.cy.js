@@ -44,6 +44,28 @@ describe('Slate citations', () => {
     cy.get('[aria-label="Back to content"]').first().click();
   });
 
+  it('Test cancel Button', () => {
+    cy.getSlateEditorAndType('Colorless green ideas sleep furiously.')
+      .type('{selectAll}')
+      .dblclick();
+
+    // Footnote
+    cy.setSlateCursor('Colorless').dblclick();
+    cy.setSlateSelection('Colorless', 'green');
+    cy.clickSlateButton('Footnote');
+
+    cy.get('.sidebar-container .field-wrapper-footnote .react-select-container')
+      .click()
+      .type('Citation{enter}');
+
+    //click on the cancel button
+    cy.get('.sidebar-container .form .header button').first().next().click();
+
+    // Save
+    cy.get('#toolbar-save').click();
+    cy.url().should('eq', Cypress.config().baseUrl + '/cypress/my-page');
+  });
+
   it('Add Footnotes block and create multiple citations', () => {
     // Complete chained commands
     cy.getSlateEditorAndType('Colorless green ideas sleep furiously.')
