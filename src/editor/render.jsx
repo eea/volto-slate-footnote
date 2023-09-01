@@ -8,6 +8,7 @@ import {
 } from './utils';
 import { isEmpty } from 'lodash';
 import { useSelector } from 'react-redux';
+import { UniversalLink } from '@plone/volto/components';
 
 /**
  * Removes '<?xml version="1.0"?>' from footnote
@@ -110,7 +111,7 @@ export const FootnoteElement = (props) => {
             <Popup.Content>
               <List divided relaxed selection>
                 <List.Item
-                  as="a"
+                  as={UniversalLink}
                   href={`#footnote-${citationRefId}`}
                   onClick={() =>
                     openAccordionIfContainsFootnoteReference(
@@ -132,7 +133,7 @@ export const FootnoteElement = (props) => {
                 {data.extra &&
                   data.extra.map((item) => (
                     <List.Item
-                      as="a"
+                      as={UniversalLink}
                       href={`#footnote-${item.zoteroId || item.uid}`}
                       onClick={() =>
                         openAccordionIfContainsFootnoteReference(
@@ -174,7 +175,7 @@ export const FootnoteElement = (props) => {
           <Popup.Content>
             <List divided relaxed selection>
               <List.Item
-                as="a"
+                as={UniversalLink}
                 href={`#footnote-${citationRefId}`}
                 onClick={() =>
                   openAccordionIfContainsFootnoteReference(
@@ -196,7 +197,7 @@ export const FootnoteElement = (props) => {
               {data.extra &&
                 data.extra.map((item) => (
                   <List.Item
-                    as="a"
+                    as={UniversalLink}
                     href={`#footnote-${item.zoteroId || item.uid}`}
                     onClick={() =>
                       openAccordionIfContainsFootnoteReference(
