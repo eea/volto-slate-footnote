@@ -7,6 +7,8 @@ import {
 } from '@eeacms/volto-slate-footnote/editor/utils';
 import './less/public.less';
 
+import { UniversalLink } from '@plone/volto/components';
+
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 
 /**
@@ -54,7 +56,7 @@ const FootnotesBlockView = (props) => {
                       id={`cite_ref-${refsList[0]}`}
                       key={`indice-${refsList[0]}`}
                     >
-                      <a
+                      <UniversalLink
                         href={`#ref-${parentUid || uid}`}
                         aria-label="Back to content"
                         target="_self"
@@ -65,12 +67,12 @@ const FootnotesBlockView = (props) => {
                         }
                       >
                         {alphabet[0]}
-                      </a>{' '}
+                      </UniversalLink>{' '}
                     </sup>
                     {/** following refs will have the uid of the one that references it*/}
                     {refsList.slice(1).map((ref, index) => (
                       <sup id={`cite_ref-${ref}`} key={`indice-${ref}`}>
-                        <a
+                        <UniversalLink
                           href={`#ref-${ref}`}
                           aria-label="Back to content"
                           target="_self"
@@ -81,14 +83,14 @@ const FootnotesBlockView = (props) => {
                           }
                         >
                           {alphabet[index + 1]}
-                        </a>{' '}
+                        </UniversalLink>{' '}
                       </sup>
                     ))}
                   </>
                 ) : (
                   <sup id={`cite_ref-${uid}`}>
                     {/** some footnotes are never parent so we need the parent to reference */}
-                    <a
+                    <UniversalLink
                       href={`#ref-${parentUid || uid}`}
                       aria-label="Back to content"
                       target="_self"
@@ -99,7 +101,7 @@ const FootnotesBlockView = (props) => {
                       }
                     >
                       ↵
-                    </a>{' '}
+                    </UniversalLink>{' '}
                   </sup>
                 )}
               </li>
