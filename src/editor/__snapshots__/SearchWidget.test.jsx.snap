@@ -1,0 +1,72 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Test SearchWidget check html content 1`] = `
+<div
+  id="blockform-fieldset-default"
+>
+  <div
+    className="ui segment attached"
+    fluid={true}
+  >
+    <div
+      className="ui fluid card"
+      onClick={[Function]}
+    >
+      <div
+        className="content"
+        fluid={true}
+      >
+        <div
+          className="header"
+        >
+          Citation
+        </div>
+        <div
+          className="description"
+          fluid={true}
+        >
+          <div
+            className="ui fluid search"
+            onBlur={[Function]}
+            onFocus={[Function]}
+            onMouseDown={[Function]}
+          >
+            <div
+              className="ui fluid right icon input"
+            >
+              <input
+                autoComplete="off"
+                className="prompt"
+                id="field-footnote"
+                onChange={[Function]}
+                onClick={[Function]}
+                tabIndex="0"
+                type="text"
+                value=""
+              />
+              <i
+                aria-hidden="true"
+                className="search icon"
+                onClick={[Function]}
+              />
+            </div>
+            <div
+              className="results transition"
+            >
+              <div
+                className="message empty"
+              >
+                <div
+                  className="header"
+                >
+                  No results found.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
