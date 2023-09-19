@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { Popup, List } from 'semantic-ui-react';
 import { useEditorContext } from '@plone/volto-slate/hooks';
 import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
@@ -24,71 +24,61 @@ export const FootnoteElement = (props) => {
   const { data = {} } = element;
   const { uid, zoteroId } = data;
   const editor = useEditorContext();
-  const [citationIndice, setCitationIndice] = useState(null); // list of indices to reference
-  const [citationRefId, setCitationRefId] = useState(null); // indice of element to be referenced
+
   const initialFormData = useSelector((state) => state?.content?.data || {});
+  const blockProps = editor?.getBlockProps ? editor.getBlockProps() : null;
+  const metadata = blockProps
+    ? blockProps.metadata || blockProps.properties
+    : extras?.metadata || {};
+  const blocks = getAllBlocksAndSlateFields(metadata);
+  const storeBlocks = getAllBlocksAndSlateFields(initialFormData);
 
-  useEffect(() => {
-    const blockProps = editor?.getBlockProps ? editor.getBlockProps() : null;
-    const metadata = blockProps
-      ? blockProps.metadata || blockProps.properties
-      : extras?.metadata || {};
-    const blocks = getAllBlocksAndSlateFields(metadata);
-    const storeBlocks = getAllBlocksAndSlateFields(initialFormData);
+  const notesObjResult = isEmpty(metadata)
+    ? makeFootnoteListOfUniqueItems(storeBlocks)
+    : makeFootnoteListOfUniqueItems(blocks);
 
-    const notesObjResult = isEmpty(metadata)
-      ? makeFootnoteListOfUniqueItems(storeBlocks)
-      : makeFootnoteListOfUniqueItems(blocks);
+  // will cosider zotero citations and footnote
+  // notesObjResult contains all zotero/footnote as unique, and contain refs for other zotero/footnote
+  const indiceIfZoteroId = data.extra
+    ? [
+        `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`, // parent footnote
+        ...data.extra.map(
+          // citations from extra
+          (zoteroObj, _index) =>
+            // all zotero citation are indexed by zoteroId in notesObjResult
+            `[${Object.keys(notesObjResult).indexOf(zoteroObj.zoteroId) + 1}]`,
+        ),
+      ].join('')
+    : // no extra citations (no multiples)
+      `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`;
 
-    // will cosider zotero citations and footnote
-    // notesObjResult contains all zotero/footnote as unique, and contain refs for other zotero/footnote
-    const indiceIfZoteroId = data.extra
-      ? [
-          `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`, // parent footnote
-          ...data.extra.map(
-            // citations from extra
-            (zoteroObj, _index) =>
-              // all zotero citation are indexed by zoteroId in notesObjResult
-              `[${
-                Object.keys(notesObjResult).indexOf(zoteroObj.zoteroId) + 1
-              }]`,
-          ),
-        ].join('')
-      : // no extra citations (no multiples)
-        `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`;
+  const citationIndice = zoteroId // ZOTERO
+    ? indiceIfZoteroId
+    : // FOOTNOTES
+      // parent footnote
+      [data, ...(data.extra || [])]
+        .map((footnoteObj, _index) => {
+          return `[${
+            Object.keys(notesObjResult).indexOf(
+              Object.keys(notesObjResult).find(
+                (key) => notesObjResult[key].footnote === footnoteObj.footnote,
+              ),
+            ) + 1
+          }]`;
+        })
+        .join('');
 
-    const indice = zoteroId // ZOTERO
-      ? indiceIfZoteroId
-      : // FOOTNOTES
-        // parent footnote
-        [data, ...(data.extra || [])]
-          .map((footnoteObj, _index) => {
-            return `[${
-              Object.keys(notesObjResult).indexOf(
-                Object.keys(notesObjResult).find(
-                  (key) =>
-                    notesObjResult[key].footnote === footnoteObj.footnote,
-                ),
-              ) + 1
-            }]`;
-          })
-          .join('');
-
-    const findReferenceId =
-      // search within parent citations first, otherwise the uid might be inside a refs obj that comes before
-      Object.keys(notesObjResult).find(
-        (noteKey) => notesObjResult[noteKey].uid === uid,
-      ) ||
-      // if not found in parent, search in refs, it might be a footnote references multiple times
-      Object.keys(notesObjResult).find(
-        (noteKey) =>
-          notesObjResult[noteKey].uid === uid ||
-          (notesObjResult[noteKey].refs && notesObjResult[noteKey].refs[uid]),
-      );
-
-    setCitationIndice(indice);
-    setCitationRefId(findReferenceId);
-  }, [editor, element, children]); // eslint-disable-line
+  const citationRefId =
+    // search within parent citations first, otherwise the uid might be inside a refs obj that comes before
+    Object.keys(notesObjResult).find(
+      (noteKey) => notesObjResult[noteKey].uid === uid,
+    ) ||
+    // if not found in parent, search in refs, it might be a footnote references multiple times
+    Object.keys(notesObjResult).find(
+      (noteKey) =>
+        notesObjResult[noteKey].uid === uid ||
+        (notesObjResult[noteKey].refs && notesObjResult[noteKey].refs[uid]),
+    );
 
   return (
     <>
