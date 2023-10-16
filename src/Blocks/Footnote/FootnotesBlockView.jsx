@@ -1,97 +1,106 @@
 import React from 'react';
-import { Node } from 'slate';
 import {
-  getBlocksFieldname,
-  getBlocksLayoutFieldname,
-} from '@plone/volto/helpers';
-import { settings } from '~/config';
+  openAccordionIfContainsFootnoteReference,
+  getAllBlocksAndSlateFields,
+  makeFootnoteListOfUniqueItems,
+  makeFootnote,
+} from '@eeacms/volto-slate-footnote/editor/utils';
 import './less/public.less';
 
-const makeFootnote = (footnote) => {
-  const free = footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
+import { UniversalLink } from '@plone/volto/components';
 
-  return free;
-};
-
-/**
- * @param {object} properties A prop received by the View component
- * `FootnotesBlockView` which is read by the `getBlocksFieldname` and
- * `getBlocksLayoutFieldname` Volto helpers to produce the return value.
- * @returns {Array} The blocks data taken from the Volto form.
- */
-const getBlocks = (properties, blocks) => {
-  const blocksFieldName = getBlocksFieldname(properties);
-  const blocksLayoutFieldname = getBlocksLayoutFieldname(properties);
-
-  for (const n of properties[blocksLayoutFieldname].items) {
-    const block = properties[blocksFieldName][n];
-    // TODO Make this configurable via block config getBlocks
-    if (
-      block?.data?.[blocksLayoutFieldname] &&
-      block?.data?.[blocksFieldName]
-    ) {
-      getBlocks(block.data, blocks);
-    } else if (block?.[blocksLayoutFieldname] && block?.[blocksFieldName]) {
-      getBlocks(block, blocks);
-    }
-    blocks.push(block);
-  }
-  return blocks;
-};
+const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 
 /**
  * @summary The React component that displays the list of footnotes inserted
  * before in the current page.
- * @param {object} props Contains the properties `data` and `properties` as
+ * Will show an indice for the footnote/citation but also numbers to indicate each
+ * text that has same reference
+ * @param {Object} props Contains the properties `data` and `properties` as
  * received from the Volto form.
  */
 const FootnotesBlockView = (props) => {
   const { data, properties } = props;
-  const { title, global } = data;
-  const { footnotes } = settings;
-  const metadata = props.metadata || properties;
-
-  // console.log(properties);
-  const blocks = [];
-  if (global) {
-    getBlocks(metadata, blocks);
-  } else {
-    getBlocks(properties, blocks);
-  }
-  const notes = [];
-  // TODO: slice the blocks according to existing footnote listing blocks. A
-  // footnote listing block should reset the counter of the footnotes above it
-  // If so, then it should only include the footnotes between the last footnotes
-  // listing block and this block
-  blocks
-    .filter((b) => b['@type'] === 'slate')
-    .forEach(({ value }) => {
-      if (!value) return;
-
-      Array.from(Node.elements(value[0])).forEach(([node]) => {
-        if (footnotes.includes(node.type)) {
-          notes.push(node);
-        }
-      });
-    });
+  const { title, global, placeholder = 'Footnotes' } = data;
+  const metadata = props.metadata ? props.metadata : properties;
+  const globalMetadata = global ? metadata : properties;
+  const blocks = getAllBlocksAndSlateFields(globalMetadata);
+  const notesObj = makeFootnoteListOfUniqueItems(blocks);
 
   return (
     <div className="footnotes-listing-block">
-      <h3>{title}</h3>
-      {notes && (
+      <h3 title={placeholder}>{title}</h3>
+      {notesObj && (
         <ol>
-          {notes.map(({ data }) => {
-            const { uid, footnote } = data;
+          {Object.keys(notesObj).map((noteId) => {
+            const note = notesObj[noteId];
+            const { uid, footnote, zoteroId, parentUid } = note;
+            const { refs } = note;
+            const refsList = refs ? Object.keys(refs) : null;
+
             return (
-              <li key={uid} id={`footnote-${uid}`}>
+              <li
+                key={`footnote-${zoteroId || uid}`}
+                id={`footnote-${zoteroId || uid}`}
+              >
                 <div
                   dangerouslySetInnerHTML={{
                     __html: makeFootnote(footnote),
                   }}
                 />
-                <a href={`#ref-${uid}`} aria-label="Back to content">
-                  ↵
-                </a>
+                {refsList ? (
+                  <>
+                    {/** some footnotes are never parent so we need the parent to reference */}
+                    {/** in this case the first from refs has reference to the parent*/}
+                    <sup
+                      id={`cite_ref-${refsList[0]}`}
+                      key={`indice-${refsList[0]}`}
+                    >
+                      <UniversalLink
+                        href={`#ref-${parentUid || uid}`}
+                        aria-label="Back to content"
+                        onClick={() =>
+                          openAccordionIfContainsFootnoteReference(
+                            `#ref-${parentUid || uid}`,
+                          )
+                        }
+                      >
+                        {alphabet[0]}
+                      </UniversalLink>{' '}
+                    </sup>
+                    {/** following refs will have the uid of the one that references it*/}
+                    {refsList.slice(1).map((ref, index) => (
+                      <sup id={`cite_ref-${ref}`} key={`indice-${ref}`}>
+                        <UniversalLink
+                          href={`#ref-${ref}`}
+                          aria-label="Back to content"
+                          onClick={() =>
+                            openAccordionIfContainsFootnoteReference(
+                              `#ref-${ref}`,
+                            )
+                          }
+                        >
+                          {alphabet[index + 1]}
+                        </UniversalLink>{' '}
+                      </sup>
+                    ))}
+                  </>
+                ) : (
+                  <sup id={`cite_ref-${uid}`}>
+                    {/** some footnotes are never parent so we need the parent to reference */}
+                    <UniversalLink
+                      href={`#ref-${parentUid || uid}`}
+                      aria-label="Back to content"
+                      onClick={() =>
+                        openAccordionIfContainsFootnoteReference(
+                          `#ref-${parentUid || uid}`,
+                        )
+                      }
+                    >
+                      ↵
+                    </UniversalLink>{' '}
+                  </sup>
+                )}
               </li>
             );
           })}

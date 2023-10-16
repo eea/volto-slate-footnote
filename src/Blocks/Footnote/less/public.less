@@ -3,3 +3,14 @@
     background: yellow;
   }
 }
+
+.slateFootnotes {
+  .footnotes-listing-block {
+    h3:empty {
+      &::after {
+        content: attr(title);
+        opacity: 0.333;
+      }
+    }
+  }
+}

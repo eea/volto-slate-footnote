@@ -1,41 +1,33 @@
 /*  Based on https://www.sitepoint.com/accessible-footnotes-css/ */
 
 body {
-	counter-reset: footnotes;
+  counter-reset: footnotes;
 }
-a[aria-describedby='footnote-label'] {
-	color: inherit;
-	cursor: default;
-	outline: none;
-	text-decoration: none;
-	&:focus {
-		&::after {
-			outline: thin dotted;
-			outline-offset: 2px;
-		}
-	}
+
+span[aria-describedby='footnote-label'] {
+  color: var(--text-color, #004b87);
+  cursor: default;
+  outline: none;
+  text-decoration: none;
+
+  &:focus {
+    &::after {
+      outline: thin dotted;
+      outline-offset: 2px;
+    }
+  }
 }
-.citation-indice {
-	color: inherit;
-	counter-increment: footnotes;
-	cursor: default;
-	outline: none;
-	text-decoration: none;
-	&::after {
-		margin-left: 2px;
-		color: blue;
-		content: '[' counter(footnotes) ']';
-		cursor: pointer;
-		font-size: 0.8em;
-		text-decoration: underline;
-	}
-	&:focus {
-		&::after {
-			outline: thin dotted;
-			outline-offset: 2px;
-		}
-	}
-}
+
 .footnote-edit-node {
-	background-color: #e6f3ff;
+  padding: 0px 4px;
+  background-color: var(--bg-color, #e6f3ff);
+  border-radius: 4px;
+}
+
+.footnote-edit-node::after,
+.citation-item::after {
+  color: var(--text-color, #0645ad);
+  content: attr(data-footnote-indice);
+  font-size: 75%;
+  vertical-align: super;
 }

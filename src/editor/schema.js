@@ -10,8 +10,9 @@ export const FootnoteEditorSchema = {
   properties: {
     footnote: {
       title: 'Reference text',
-      widget: 'textarea',
+      widget: 'searchInput',
+      choices: [],
     },
   },
-  required: ['footnote'],
+  required: [],
 };
