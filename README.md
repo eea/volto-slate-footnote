@@ -21,7 +21,7 @@
 
 ### Easily annotate text within [Volto Slate](https://6.dev-docs.plone.org/volto/configuration/volto-slate/) text editor
 
-![Insert footnotes](https://github.com/eea/volto-slate-footnote/raw/docs/docs/volto-slate-footnote.gif)
+![Insert footnotes](https://github.com/eea/volto-slate-footnote/raw/master/docs/volto-slate-footnote.gif)
 
 ## Upgrade
 
