@@ -10,6 +10,38 @@ import { getAllBlocks } from '@plone/volto-slate/utils';
 export const makeFootnote = (footnote) => {
   return footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
 };
+/**
+ * retrive all slate children of nested objects
+ * @param {object} path - the keys that we want to extract the slate children from
+ * @param {*} value - the source that we want to extract the slate children from
+ * Exemple of parameters
+ * path:{items:'value'}
+ * @returns string
+ */
+const retriveValuesOfSlateFromNastedPath = (path, value) => {
+  console.log(path, value);
+  if (Array.isArray(value)) {
+    let allSlateValue = [];
+    value.forEach((element) => {
+      allSlateValue = [
+        ...allSlateValue,
+        ...retriveValuesOfSlateFromNastedPath(path, element),
+      ];
+    });
+    return allSlateValue;
+  }
+  if (typeof path === 'string' && value) {
+    if (value[path]?.length > 0) return [...value[path]];
+    return [];
+  }
+  if (typeof path === 'object' && Object.keys(path).length > 0) {
+    return retriveValuesOfSlateFromNastedPath(
+      path[Object.keys(path)[0]],
+      value[Object.keys(path)[0]],
+    );
+  }
+  return [];
+};
 
 /**
  * Will open accordion if contains footnote reference
@@ -111,7 +143,9 @@ export const makeFootnoteListOfUniqueItems = (blocks) => {
       ] || ['value'];
 
       mapping.forEach((key) => {
-        const value = element[key];
+        console.log(retriveValuesOfSlateFromNastedPath(key, element));
+        const value = retriveValuesOfSlateFromNastedPath(key, element);
+
         if (!value) return;
 
         value.forEach((item) => {

@@ -6,7 +6,8 @@ import FootnotesBlockSchema from './Blocks/Footnote/FootnotesBlockSchema';
 import { FOOTNOTE } from './constants';
 import installFootnoteEditor from './editor';
 import SearchWidget from '@eeacms/volto-slate-footnote/editor/MultiSelectSearchWidget';
-
+import { nanoid } from '@plone/volto-slate/utils';
+import { v4 as uuid } from 'uuid';
 /**
  * @summary Called from Volto to configure new or existing Volto block types.
  * @param {object} config The object received from Volto containing the
@@ -46,5 +47,27 @@ export default function install(config) {
     slate: ['value'],
   };
 
+  // config.blocks.blocksConfig.slate.cloneData = (data) => {
+  //   return [
+  //     uuid(),
+  //     {
+  //       ...data,
+  //       value: [
+  //         ...data.value.map((c) => {
+  //           return {
+  //             ...c,
+  //             children: c.children.map((childrenData) => {
+  //               return {
+  //                 ...childrenData,
+  //                 data: { ...childrenData.data, uid: nanoid(5) },
+  //               };
+  //             }),
+  //           };
+  //         }),
+  //       ],
+  //     },
+  //   ];
+  // };
+  console.log(config);
   return config;
 }
