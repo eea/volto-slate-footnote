@@ -18,14 +18,13 @@ export const makeFootnote = (footnote) => {
  * path:{items:'value'}
  * @returns string
  */
-const retriveValuesOfSlateFromNastedPath = (path, value) => {
-  console.log(path, value);
+const retriveValuesOfSlateFromNestedPath = (path, value) => {
   if (Array.isArray(value)) {
     let allSlateValue = [];
     value.forEach((element) => {
       allSlateValue = [
         ...allSlateValue,
-        ...retriveValuesOfSlateFromNastedPath(path, element),
+        ...retriveValuesOfSlateFromNestedPath(path, element),
       ];
     });
     return allSlateValue;
@@ -35,7 +34,7 @@ const retriveValuesOfSlateFromNastedPath = (path, value) => {
     return [];
   }
   if (typeof path === 'object' && Object.keys(path).length > 0) {
-    return retriveValuesOfSlateFromNastedPath(
+    return retriveValuesOfSlateFromNestedPath(
       path[Object.keys(path)[0]],
       value[Object.keys(path)[0]],
     );
@@ -143,8 +142,7 @@ export const makeFootnoteListOfUniqueItems = (blocks) => {
       ] || ['value'];
 
       mapping.forEach((key) => {
-        console.log(retriveValuesOfSlateFromNastedPath(key, element));
-        const value = retriveValuesOfSlateFromNastedPath(key, element);
+        const value = retriveValuesOfSlateFromNestedPath(key, element);
 
         if (!value) return;
 
@@ -238,6 +236,7 @@ const iterateFootnoteObj = (notesObjResultTemp, node, parentUid) => {
     return notesObjResultTemp[noteId].footnote === node.footnote;
   });
   // has not yet been added
+
   if (!found) {
     // will use the parentUid instead of own uid for render to be able to reference to the correct element
     //(word containing the footnotes)

@@ -22,32 +22,73 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const FootnotesBlockView = (props) => {
   const { data, properties } = props;
   const { title, global, placeholder = 'Footnotes' } = data;
+
   const metadata = props.metadata ? props.metadata : properties;
   const globalMetadata = global ? metadata : properties;
+
   const blocks = getAllBlocksAndSlateFields(globalMetadata);
   const notesObj = makeFootnoteListOfUniqueItems(blocks);
+  let startList = 1;
+  if (Object.keys(notesObj).length > 0) {
+    const noteId = Object.keys(notesObj)[0];
+    const note = notesObj[noteId];
+    const { zoteroId } = note;
+
+    const notesGlobalResult = makeFootnoteListOfUniqueItems(
+      getAllBlocksAndSlateFields(metadata),
+    );
+    const indiceIfZoteroId = note.extra
+      ? [
+          Object.keys(notesGlobalResult).indexOf(zoteroId) + 1, // parent footnote
+          ...note.extra.map(
+            // citations from extra
+            (zoteroObj, _index) =>
+              // all zotero citation are indexed by zoteroId in notesGlobalResult
+
+              Object.keys(notesGlobalResult).indexOf(zoteroObj.zoteroId) + 1,
+          ),
+        ]
+      : // no extra citations (no multiples)
+        Object.keys(notesGlobalResult).indexOf(zoteroId) + 1;
+    const citationIndice = zoteroId // ZOTERO
+      ? indiceIfZoteroId
+      : // FOOTNOTES
+        // parent footnote
+        [note, ...(note.extra || [])].map((footnoteObj, _index) => {
+          return (
+            Object.keys(notesGlobalResult).indexOf(
+              Object.keys(notesGlobalResult).find(
+                (key) =>
+                  notesGlobalResult[key].footnote === footnoteObj.footnote,
+              ),
+            ) + 1
+          );
+        });
+    startList = citationIndice;
+  }
 
   return (
     <div className="footnotes-listing-block">
       <h3 title={placeholder}>{title}</h3>
       {notesObj && (
-        <ol>
+        <ol start={startList}>
           {Object.keys(notesObj).map((noteId) => {
             const note = notesObj[noteId];
             const { uid, footnote, zoteroId, parentUid } = note;
             const { refs } = note;
             const refsList = refs ? Object.keys(refs) : null;
-
             return (
               <li
                 key={`footnote-${zoteroId || uid}`}
                 id={`footnote-${zoteroId || uid}`}
               >
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: makeFootnote(footnote),
-                  }}
-                />
+                <div>
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: makeFootnote(footnote),
+                    }}
+                  />
+                </div>
                 {refsList ? (
                   <>
                     {/** some footnotes are never parent so we need the parent to reference */}
