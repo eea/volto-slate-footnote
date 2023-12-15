@@ -77,6 +77,7 @@ const blockTypesOperations = {
         return [...accumulator, ...propertiesBlocks];
       }, []);
   },
+
   metadata: (block, properties) => {
     const fId = block?.data?.id;
     return block?.data?.widget === 'slate'
@@ -111,6 +112,7 @@ const blockTypesOperations = {
  */
 export const getAllBlocksAndSlateFields = (properties) => {
   const blocks = getAllBlocks(properties, []);
+
   return blocks.reduce((accumulator, currentblock) => {
     return [
       ...accumulator,

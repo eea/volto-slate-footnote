@@ -20,15 +20,20 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz';
  * received from the Volto form.
  */
 const FootnotesBlockView = (props) => {
-  const { data, properties, tabData } = props;
+  const { data, properties, tabData, content } = props;
   const { title, global, placeholder = 'Footnotes' } = data;
   console.log({ props });
 
   const metadata = props.metadata ? props.metadata : properties;
 
-  const globalMetadata = tabData ? tabData : global ? metadata : properties;
-  console.log({ properties });
-  const blocks = getAllBlocksAndSlateFields(globalMetadata);
+  const localMetadata = content
+    ? content
+    : tabData
+    ? tabData
+    : global
+    ? metadata
+    : properties;
+  const blocks = getAllBlocksAndSlateFields(localMetadata);
   const notesObj = makeFootnoteListOfUniqueItems(blocks);
   let startList = 1;
   if (Object.keys(notesObj).length > 0) {
@@ -39,6 +44,7 @@ const FootnotesBlockView = (props) => {
     const notesGlobalResult = makeFootnoteListOfUniqueItems(
       getAllBlocksAndSlateFields(metadata),
     );
+
     const indiceIfZoteroId = note.extra
       ? [
           Object.keys(notesGlobalResult).indexOf(zoteroId) + 1, // parent footnote
