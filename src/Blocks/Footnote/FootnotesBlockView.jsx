@@ -20,12 +20,14 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz';
  * received from the Volto form.
  */
 const FootnotesBlockView = (props) => {
-  const { data, properties } = props;
+  const { data, properties, tabData } = props;
   const { title, global, placeholder = 'Footnotes' } = data;
+  console.log({ props });
 
   const metadata = props.metadata ? props.metadata : properties;
-  const globalMetadata = global ? metadata : properties;
 
+  const globalMetadata = tabData ? tabData : global ? metadata : properties;
+  console.log({ properties });
   const blocks = getAllBlocksAndSlateFields(globalMetadata);
   const notesObj = makeFootnoteListOfUniqueItems(blocks);
   let startList = 1;
