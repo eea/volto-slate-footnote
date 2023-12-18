@@ -6,6 +6,7 @@ import FootnotesBlockSchema from './Blocks/Footnote/FootnotesBlockSchema';
 import { FOOTNOTE } from './constants';
 import installFootnoteEditor from './editor';
 import SearchWidget from '@eeacms/volto-slate-footnote/editor/MultiSelectSearchWidget';
+
 /**
  * @summary Called from Volto to configure new or existing Volto block types.
  * @param {object} config The object received from Volto containing the
