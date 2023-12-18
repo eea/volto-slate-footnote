@@ -26,9 +26,7 @@ export const FootnoteElement = (props) => {
   const editor = useEditorContext();
 
   const initialFormData = useSelector((state) => state?.content?.data || {});
-
   const blockProps = editor?.getBlockProps ? editor.getBlockProps() : null;
-
   const metadata = blockProps
     ? blockProps.metadata || blockProps.properties
     : extras?.metadata || {};
