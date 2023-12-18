@@ -77,7 +77,6 @@ const blockTypesOperations = {
         return [...accumulator, ...propertiesBlocks];
       }, []);
   },
-
   metadata: (block, properties) => {
     const fId = block?.data?.id;
     return block?.data?.widget === 'slate'
@@ -112,7 +111,6 @@ const blockTypesOperations = {
  */
 export const getAllBlocksAndSlateFields = (properties) => {
   const blocks = getAllBlocks(properties, []);
-
   return blocks.reduce((accumulator, currentblock) => {
     return [
       ...accumulator,
@@ -145,7 +143,6 @@ export const makeFootnoteListOfUniqueItems = (blocks) => {
 
       mapping.forEach((key) => {
         const value = retriveValuesOfSlateFromNestedPath(key, element);
-
         if (!value) return;
 
         value.forEach((item) => {
@@ -238,7 +235,6 @@ const iterateFootnoteObj = (notesObjResultTemp, node, parentUid) => {
     return notesObjResultTemp[noteId].footnote === node.footnote;
   });
   // has not yet been added
-
   if (!found) {
     // will use the parentUid instead of own uid for render to be able to reference to the correct element
     //(word containing the footnotes)
