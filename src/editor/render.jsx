@@ -26,7 +26,9 @@ export const FootnoteElement = (props) => {
   const editor = useEditorContext();
 
   const initialFormData = useSelector((state) => state?.content?.data || {});
+
   const blockProps = editor?.getBlockProps ? editor.getBlockProps() : null;
+
   const metadata = blockProps
     ? blockProps.metadata || blockProps.properties
     : extras?.metadata || {};
@@ -36,7 +38,6 @@ export const FootnoteElement = (props) => {
   const notesObjResult = isEmpty(metadata)
     ? makeFootnoteListOfUniqueItems(storeBlocks)
     : makeFootnoteListOfUniqueItems(blocks);
-
   // will cosider zotero citations and footnote
   // notesObjResult contains all zotero/footnote as unique, and contain refs for other zotero/footnote
   const indiceIfZoteroId = data.extra
@@ -58,12 +59,15 @@ export const FootnoteElement = (props) => {
       // parent footnote
       [data, ...(data.extra || [])]
         .map((footnoteObj, _index) => {
+          const indexInNotesObjResult = Object.keys(notesObjResult).indexOf(
+            Object.keys(notesObjResult).find(
+              (key) => notesObjResult[key].footnote === footnoteObj.footnote,
+            ),
+          );
           return `[${
-            Object.keys(notesObjResult).indexOf(
-              Object.keys(notesObjResult).find(
-                (key) => notesObjResult[key].footnote === footnoteObj.footnote,
-              ),
-            ) + 1
+            indexInNotesObjResult === -1
+              ? Object.keys(notesObjResult).length + 1
+              : indexInNotesObjResult + 1
           }]`;
         })
         .join('');
