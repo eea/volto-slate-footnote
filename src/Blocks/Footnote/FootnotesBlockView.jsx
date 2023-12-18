@@ -22,7 +22,6 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const FootnotesBlockView = (props) => {
   const { data, properties, tabData, content } = props;
   const { title, global, placeholder = 'Footnotes' } = data;
-  console.log({ props });
 
   const metadata = props.metadata ? props.metadata : properties;
 
