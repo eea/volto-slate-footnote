@@ -40,6 +40,7 @@ export default function install(config) {
     insertElement: (editor, data) => {
       // the default behavior is _insertElement,
       // it returns whether an element was possibly inserted
+      console.log(editor.selection.anchor, editor.selection.anchor);
       if (!_insertElement(FOOTNOTE)(editor, data)) {
         return;
       }
