@@ -4,11 +4,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { ReactEditor } from 'slate-react';
 import { setPluginOptions } from '@plone/volto-slate/actions';
 import { Icon as VoltoIcon, InlineForm } from '@plone/volto/components';
-
 import briefcaseSVG from '@plone/volto/icons/briefcase.svg';
 import checkSVG from '@plone/volto/icons/check.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
-import { Node, Editor } from 'slate';
+import { Node } from 'slate';
 import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
 import config from '@plone/volto/registry';
 
@@ -125,13 +124,7 @@ const FootnoteEditor = (props) => {
 
   const saveDataToEditor = React.useCallback(
     (formData) => {
-      console.log({ editor }, formData.footnote);
-      console.log();
-      if (
-        hasValue(formData.footnote) &&
-        editor?.selection?.anchor &&
-        editor?.selection?.focus
-      ) {
+      if (hasValue(formData.footnote)) {
         insertElement(editor, formData.footnote);
       } else {
         unwrapElement(editor);
@@ -178,8 +171,7 @@ const FootnoteEditor = (props) => {
             headerActions={
               <>
                 <button
-                  onClick={(e) => {
-                    e.preventDefault();
+                  onClick={() => {
                     saveDataToEditor(formData);
                     dispatch(
                       setPluginOptions(pid, {
