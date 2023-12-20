@@ -24,6 +24,7 @@ export const FootnoteElement = (props) => {
   const { data = {} } = element;
   const { uid, zoteroId } = data;
   const editor = useEditorContext();
+  const ref = React.useRef(null);
 
   const initialFormData = useSelector((state) => state?.content?.data || {});
   const blockProps = editor?.getBlockProps ? editor.getBlockProps() : null;
@@ -83,15 +84,20 @@ export const FootnoteElement = (props) => {
   return (
     <>
       {mode === 'view' ? (
-        <span id={`ref-${uid}`} aria-describedby="footnote-label">
+        <span id={`ref-${uid}`} aria-describedby="footnote-label" ref={ref}>
           <Popup
             position="bottom left"
+            pinned={true}
+            mountNode={ref.current}
+            on={['click', 'hover', 'focus']}
             trigger={
               <span
                 id={`cite_ref-${uid}`}
                 {...attributes}
                 className="citation-item"
                 data-footnote-indice={citationIndice}
+                tabIndex={0}
+                role={'presentation'}
               >
                 {children}
               </span>
