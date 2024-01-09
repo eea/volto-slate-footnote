@@ -89,13 +89,11 @@ const FootnotesBlockView = (props) => {
                 key={`footnote-${zoteroId || uid}`}
                 id={`footnote-${zoteroId || uid}`}
               >
-                <div>
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: makeFootnote(footnote),
-                    }}
-                  />
-                </div>
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: makeFootnote(footnote),
+                  }}
+                />
                 {refsList ? (
                   <>
                     {/** some footnotes are never parent so we need the parent to reference */}
