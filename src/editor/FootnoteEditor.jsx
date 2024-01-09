@@ -41,7 +41,6 @@ const FootnoteEditor = (props) => {
   const metadataBlocks = getAllBlocksAndSlateFields(metadata);
   const storeBlocks = getAllBlocksAndSlateFields(initialFormData);
   const uniqueFootnoteBlocks = [];
-
   const flatAllBlocks = isEmpty(metadata) ? storeBlocks : metadataBlocks;
   /**
    * Will add only the items that are unique by text
