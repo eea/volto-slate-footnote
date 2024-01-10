@@ -148,42 +148,44 @@ export const makeFootnoteListOfUniqueItems = (blocks) => {
 
         if (!value) return;
 
-        value.forEach((item) => {
-          // Node.elements(item) returns an iterable generator of nodes
-          Array.from(Node.elements(item)).forEach(([node]) => {
-            if (footnotes.includes(node.type) && node.data) {
-              // for citations (Zotero items) create refs for same zoteroId
-              if (node.data.zoteroId) {
-                iterateZoteroObj(notesObjResult, node.data);
-                // itereate the extra obj for multiple citations
-                if (node.data.extra) {
-                  node.data.extra.forEach((zoteroObjItem) =>
-                    // send the uid of the parent
-                    // of the word the will have the reference indice
-                    iterateZoteroObj(
-                      notesObjResult,
-                      zoteroObjItem,
-                      node.data.uid,
-                    ),
-                  );
-                }
-                // for footnotes - create refs, on identical text
-              } else {
-                iterateFootnoteObj(notesObjResult, node.data);
-                if (node.data.extra) {
-                  node.data.extra.forEach((footnoteObjItem) =>
-                    // since is called in case of extra, the parent is needed
-                    iterateFootnoteObj(
-                      notesObjResult,
-                      footnoteObjItem,
-                      node.data.uid,
-                    ),
-                  );
+        value
+          .filter((val) => val.children)
+          .forEach((item) => {
+            // Node.elements(item) returns an iterable generator of nodes
+            Array.from(Node.elements(item)).forEach(([node]) => {
+              if (footnotes.includes(node.type) && node.data) {
+                // for citations (Zotero items) create refs for same zoteroId
+                if (node.data.zoteroId) {
+                  iterateZoteroObj(notesObjResult, node.data);
+                  // itereate the extra obj for multiple citations
+                  if (node.data.extra) {
+                    node.data.extra.forEach((zoteroObjItem) =>
+                      // send the uid of the parent
+                      // of the word the will have the reference indice
+                      iterateZoteroObj(
+                        notesObjResult,
+                        zoteroObjItem,
+                        node.data.uid,
+                      ),
+                    );
+                  }
+                  // for footnotes - create refs, on identical text
+                } else {
+                  iterateFootnoteObj(notesObjResult, node.data);
+                  if (node.data.extra) {
+                    node.data.extra.forEach((footnoteObjItem) =>
+                      // since is called in case of extra, the parent is needed
+                      iterateFootnoteObj(
+                        notesObjResult,
+                        footnoteObjItem,
+                        node.data.uid,
+                      ),
+                    );
+                  }
                 }
               }
-            }
+            });
           });
-        });
       });
     });
 
