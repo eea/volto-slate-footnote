@@ -79,8 +79,9 @@ const FootnotesBlockView = (props) => {
       <h3 title={placeholder}>{title}</h3>
       {notesObj && (
         <ol start={startList}>
-          {Object.keys(notesObj).map((noteId) => {
+          {Object.keys(notesObj).map((noteId, index) => {
             const note = notesObj[noteId];
+            const ref_index = index + 1;
             const { uid, footnote, zoteroId, parentUid } = note;
             const { refs } = note;
             const refsList = refs ? Object.keys(refs) : null;
@@ -104,7 +105,8 @@ const FootnotesBlockView = (props) => {
                     >
                       <UniversalLink
                         href={`#ref-${parentUid || uid}`}
-                        aria-label="Back to content"
+                        aria-label={`Back to reference ${ref_index}`}
+                        role="doc-backlink"
                         onClick={() =>
                           openAccordionIfContainsFootnoteReference(
                             `#ref-${parentUid || uid}`,
@@ -119,7 +121,8 @@ const FootnotesBlockView = (props) => {
                       <sup id={`cite_ref-${ref}`} key={`indice-${ref}`}>
                         <UniversalLink
                           href={`#ref-${ref}`}
-                          aria-label="Back to content"
+                          aria-label={`Back to reference ${ref_index}`}
+                          role="doc-backlink"
                           onClick={() =>
                             openAccordionIfContainsFootnoteReference(
                               `#ref-${ref}`,
@@ -136,7 +139,8 @@ const FootnotesBlockView = (props) => {
                     {/** some footnotes are never parent so we need the parent to reference */}
                     <UniversalLink
                       href={`#ref-${parentUid || uid}`}
-                      aria-label="Back to content"
+                      aria-label={`Back to reference ${ref_index}`}
+                      role="doc-backlink"
                       onClick={() =>
                         openAccordionIfContainsFootnoteReference(
                           `#ref-${parentUid || uid}`,

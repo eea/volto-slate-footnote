@@ -99,7 +99,7 @@ export const FootnoteElement = (props) => {
                 className="citation-item"
                 data-footnote-indice={citationIndice}
                 tabIndex={0}
-                role={'presentation'}
+                role={'doc-noteref'}
               >
                 {children}
               </span>
