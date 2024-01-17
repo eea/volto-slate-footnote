@@ -10,6 +10,37 @@ import { getAllBlocks } from '@plone/volto-slate/utils';
 export const makeFootnote = (footnote) => {
   return footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
 };
+/**
+ * retrive all slate children of nested objects
+ * @param {object} path - the keys that we want to extract the slate children from
+ * @param {*} value - the source that we want to extract the slate children from
+ * Exemple of parameters
+ * path:{items:'value'}
+ * @returns string
+ */
+const retriveValuesOfSlateFromNestedPath = (path, value) => {
+  if (Array.isArray(value)) {
+    let allSlateValue = [];
+    value.forEach((element) => {
+      allSlateValue = [
+        ...allSlateValue,
+        ...retriveValuesOfSlateFromNestedPath(path, element),
+      ];
+    });
+    return allSlateValue;
+  }
+  if (typeof path === 'string' && value) {
+    if (value[path]?.length > 0) return [...value[path]];
+    return [];
+  }
+  if (typeof path === 'object' && Object.keys(path).length > 0) {
+    return retriveValuesOfSlateFromNestedPath(
+      path[Object.keys(path)[0]],
+      value[Object.keys(path)[0]],
+    );
+  }
+  return [];
+};
 
 /**
  * Will open accordion if contains footnote reference
@@ -46,6 +77,7 @@ const blockTypesOperations = {
         return [...accumulator, ...propertiesBlocks];
       }, []);
   },
+
   metadata: (block, properties) => {
     const fId = block?.data?.id;
     return block?.data?.widget === 'slate'
@@ -80,6 +112,7 @@ const blockTypesOperations = {
  */
 export const getAllBlocksAndSlateFields = (properties) => {
   const blocks = getAllBlocks(properties, []);
+
   return blocks.reduce((accumulator, currentblock) => {
     return [
       ...accumulator,
@@ -111,45 +144,48 @@ export const makeFootnoteListOfUniqueItems = (blocks) => {
       ] || ['value'];
 
       mapping.forEach((key) => {
-        const value = element[key];
+        const value = retriveValuesOfSlateFromNestedPath(key, element);
+
         if (!value) return;
 
-        value.forEach((item) => {
-          // Node.elements(item) returns an iterable generator of nodes
-          Array.from(Node.elements(item)).forEach(([node]) => {
-            if (footnotes.includes(node.type) && node.data) {
-              // for citations (Zotero items) create refs for same zoteroId
-              if (node.data.zoteroId) {
-                iterateZoteroObj(notesObjResult, node.data);
-                // itereate the extra obj for multiple citations
-                if (node.data.extra) {
-                  node.data.extra.forEach((zoteroObjItem) =>
-                    // send the uid of the parent
-                    // of the word the will have the reference indice
-                    iterateZoteroObj(
-                      notesObjResult,
-                      zoteroObjItem,
-                      node.data.uid,
-                    ),
-                  );
-                }
-                // for footnotes - create refs, on identical text
-              } else {
-                iterateFootnoteObj(notesObjResult, node.data);
-                if (node.data.extra) {
-                  node.data.extra.forEach((footnoteObjItem) =>
-                    // since is called in case of extra, the parent is needed
-                    iterateFootnoteObj(
-                      notesObjResult,
-                      footnoteObjItem,
-                      node.data.uid,
-                    ),
-                  );
+        value
+          .filter((val) => val.children)
+          .forEach((item) => {
+            // Node.elements(item) returns an iterable generator of nodes
+            Array.from(Node.elements(item)).forEach(([node]) => {
+              if (footnotes.includes(node.type) && node.data) {
+                // for citations (Zotero items) create refs for same zoteroId
+                if (node.data.zoteroId) {
+                  iterateZoteroObj(notesObjResult, node.data);
+                  // itereate the extra obj for multiple citations
+                  if (node.data.extra) {
+                    node.data.extra.forEach((zoteroObjItem) =>
+                      // send the uid of the parent
+                      // of the word the will have the reference indice
+                      iterateZoteroObj(
+                        notesObjResult,
+                        zoteroObjItem,
+                        node.data.uid,
+                      ),
+                    );
+                  }
+                  // for footnotes - create refs, on identical text
+                } else {
+                  iterateFootnoteObj(notesObjResult, node.data);
+                  if (node.data.extra) {
+                    node.data.extra.forEach((footnoteObjItem) =>
+                      // since is called in case of extra, the parent is needed
+                      iterateFootnoteObj(
+                        notesObjResult,
+                        footnoteObjItem,
+                        node.data.uid,
+                      ),
+                    );
+                  }
                 }
               }
-            }
+            });
           });
-        });
       });
     });
 
@@ -204,6 +240,7 @@ const iterateFootnoteObj = (notesObjResultTemp, node, parentUid) => {
     return notesObjResultTemp[noteId].footnote === node.footnote;
   });
   // has not yet been added
+
   if (!found) {
     // will use the parentUid instead of own uid for render to be able to reference to the correct element
     //(word containing the footnotes)

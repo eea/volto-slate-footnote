@@ -24,6 +24,7 @@ export const FootnoteElement = (props) => {
   const { data = {} } = element;
   const { uid, zoteroId } = data;
   const editor = useEditorContext();
+  const ref = React.useRef(null);
 
   const initialFormData = useSelector((state) => state?.content?.data || {});
   const blockProps = editor?.getBlockProps ? editor.getBlockProps() : null;
@@ -36,7 +37,6 @@ export const FootnoteElement = (props) => {
   const notesObjResult = isEmpty(metadata)
     ? makeFootnoteListOfUniqueItems(storeBlocks)
     : makeFootnoteListOfUniqueItems(blocks);
-
   // will cosider zotero citations and footnote
   // notesObjResult contains all zotero/footnote as unique, and contain refs for other zotero/footnote
   const indiceIfZoteroId = data.extra
@@ -58,12 +58,15 @@ export const FootnoteElement = (props) => {
       // parent footnote
       [data, ...(data.extra || [])]
         .map((footnoteObj, _index) => {
+          const indexInNotesObjResult = Object.keys(notesObjResult).indexOf(
+            Object.keys(notesObjResult).find(
+              (key) => notesObjResult[key].footnote === footnoteObj.footnote,
+            ),
+          );
           return `[${
-            Object.keys(notesObjResult).indexOf(
-              Object.keys(notesObjResult).find(
-                (key) => notesObjResult[key].footnote === footnoteObj.footnote,
-              ),
-            ) + 1
+            indexInNotesObjResult === -1
+              ? Object.keys(notesObjResult).length + 1
+              : indexInNotesObjResult + 1
           }]`;
         })
         .join('');
@@ -83,15 +86,20 @@ export const FootnoteElement = (props) => {
   return (
     <>
       {mode === 'view' ? (
-        <span id={`ref-${uid}`} aria-describedby="footnote-label">
+        <span id={`ref-${uid}`} aria-describedby="footnote-label" ref={ref}>
           <Popup
             position="bottom left"
+            pinned={true}
+            mountNode={ref.current}
+            on={['click', 'hover', 'focus']}
             trigger={
               <span
                 id={`cite_ref-${uid}`}
                 {...attributes}
                 className="citation-item"
                 data-footnote-indice={citationIndice}
+                tabIndex={0}
+                role={'presentation'}
               >
                 {children}
               </span>
