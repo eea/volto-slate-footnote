@@ -6,7 +6,7 @@ export const withFootnote = (editor) => {
   const { normalizeNode, isInline } = editor;
 
   editor.isInline = (element) => {
-    return element.type === FOOTNOTE ? true : isInline(element);
+    return element && element.type === FOOTNOTE ? true : isInline(element);
   };
 
   editor.normalizeNode = (entry) => {
