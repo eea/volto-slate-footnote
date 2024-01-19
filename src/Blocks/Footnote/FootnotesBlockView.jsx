@@ -25,13 +25,14 @@ const FootnotesBlockView = (props) => {
 
   const metadata = props.metadata ? props.metadata : properties;
 
-  const localMetadata = content
+  const localMetadata = global
+    ? metadata
+    : content
     ? content
     : tabData
     ? tabData
-    : global
-    ? metadata
     : properties;
+
   const blocks = getAllBlocksAndSlateFields(localMetadata);
   const notesObj = makeFootnoteListOfUniqueItems(blocks);
   let startList = 1;
