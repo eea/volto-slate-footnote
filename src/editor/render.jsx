@@ -4,7 +4,7 @@ import { useEditorContext } from '@plone/volto-slate/hooks';
 import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
 import {
   makeFootnoteListOfUniqueItems,
-  openAccordionIfContainsFootnoteReference,
+  openAccordionOrTabIfContainsFootnoteReference,
 } from './utils';
 import { isEmpty } from 'lodash';
 import { useSelector } from 'react-redux';
@@ -112,7 +112,7 @@ export const FootnoteElement = (props) => {
                   as={UniversalLink}
                   href={`#footnote-${citationRefId}`}
                   onClick={() =>
-                    openAccordionIfContainsFootnoteReference(
+                    openAccordionOrTabIfContainsFootnoteReference(
                       `#footnote-${citationRefId}`,
                     )
                   }
@@ -134,7 +134,7 @@ export const FootnoteElement = (props) => {
                       as={UniversalLink}
                       href={`#footnote-${item.zoteroId || item.uid}`}
                       onClick={() =>
-                        openAccordionIfContainsFootnoteReference(
+                        openAccordionOrTabIfContainsFootnoteReference(
                           `#footnote-${item.zoteroId || item.uid}`,
                         )
                       }
@@ -176,7 +176,7 @@ export const FootnoteElement = (props) => {
                 as={UniversalLink}
                 href={`#footnote-${citationRefId}`}
                 onClick={() =>
-                  openAccordionIfContainsFootnoteReference(
+                  openAccordionOrTabIfContainsFootnoteReference(
                     `#footnote-${citationRefId}`,
                   )
                 }
@@ -198,7 +198,7 @@ export const FootnoteElement = (props) => {
                     as={UniversalLink}
                     href={`#footnote-${item.zoteroId || item.uid}`}
                     onClick={() =>
-                      openAccordionIfContainsFootnoteReference(
+                      openAccordionOrTabIfContainsFootnoteReference(
                         `#footnote-${item.zoteroId || item.uid}`,
                       )
                     }
