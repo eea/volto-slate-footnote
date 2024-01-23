@@ -11,7 +11,7 @@ export const withFootnote = (editor) => {
 
   editor.normalizeNode = (entry) => {
     const [node, path] = entry;
-    if (node.type === FOOTNOTE && !node.data?.uid) {
+    if (node.type === FOOTNOTE && !node.data?.uid && node?.data?.footnote) {
       Transforms.setNodes(
         editor,
         {

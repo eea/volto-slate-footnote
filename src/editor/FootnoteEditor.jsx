@@ -8,6 +8,7 @@ import briefcaseSVG from '@plone/volto/icons/briefcase.svg';
 import checkSVG from '@plone/volto/icons/check.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
 import { Node } from 'slate';
+import { nanoid } from '@plone/volto-slate/utils';
 import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
 import config from '@plone/volto/registry';
 
