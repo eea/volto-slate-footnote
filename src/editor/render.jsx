@@ -24,7 +24,7 @@ export const FootnoteElement = (props) => {
   const { data = {} } = element;
   const { uid, zoteroId } = data;
   const editor = useEditorContext();
-  const ref = React.useRef(null);
+  const ref = React.useRef();
 
   const initialFormData = useSelector((state) => state?.content?.data || {});
   const blockProps = editor?.getBlockProps ? editor.getBlockProps() : null;
