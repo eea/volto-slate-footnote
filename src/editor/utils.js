@@ -46,14 +46,33 @@ const retriveValuesOfSlateFromNestedPath = (path, value) => {
  * Will open accordion if contains footnote reference
  * @param {string} footnoteId
  */
-export const openAccordionIfContainsFootnoteReference = (footnoteId) => {
+export const openAccordionOrTabIfContainsFootnoteReference = (footnoteId) => {
   if (typeof window !== 'undefined') {
     const footnote = document.querySelector(footnoteId);
+
     if (footnote !== null && footnote.closest('.accordion') !== null) {
       const comp = footnote.closest('.accordion').querySelector('.title');
       if (!comp.className.includes('active')) {
         comp.click();
       }
+    }
+
+    if (footnote !== null && footnote.closest('.tab-name') !== null) {
+      const idOfTabBlock = footnote.closest('.tabs-block').id;
+
+      const idOfTabPanel = footnote.closest('.tab-name').id;
+      const allTabs = document
+        .getElementById(idOfTabBlock)
+        .getElementsByClassName('menu-item-text');
+
+      (Array.from(allTabs) || []).forEach((tab) => {
+        if (
+          tab.textContent === idOfTabPanel &&
+          !tab.parentElement.classList.contains('active')
+        ) {
+          tab.parentElement.click();
+        }
+      });
     }
   }
 

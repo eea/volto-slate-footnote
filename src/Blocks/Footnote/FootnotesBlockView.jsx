@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  openAccordionIfContainsFootnoteReference,
+  openAccordionOrTabIfContainsFootnoteReference,
   getAllBlocksAndSlateFields,
   makeFootnoteListOfUniqueItems,
   makeFootnote,
@@ -107,7 +107,7 @@ const FootnotesBlockView = (props) => {
                         href={`#ref-${parentUid || uid}`}
                         aria-label="Back to content"
                         onClick={() =>
-                          openAccordionIfContainsFootnoteReference(
+                          openAccordionOrTabIfContainsFootnoteReference(
                             `#ref-${parentUid || uid}`,
                           )
                         }
@@ -122,7 +122,7 @@ const FootnotesBlockView = (props) => {
                           href={`#ref-${ref}`}
                           aria-label="Back to content"
                           onClick={() =>
-                            openAccordionIfContainsFootnoteReference(
+                            openAccordionOrTabIfContainsFootnoteReference(
                               `#ref-${ref}`,
                             )
                           }
@@ -139,7 +139,7 @@ const FootnotesBlockView = (props) => {
                       href={`#ref-${parentUid || uid}`}
                       aria-label="Back to content"
                       onClick={() =>
-                        openAccordionIfContainsFootnoteReference(
+                        openAccordionOrTabIfContainsFootnoteReference(
                           `#ref-${parentUid || uid}`,
                         )
                       }
