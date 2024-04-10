@@ -1,6 +1,6 @@
 import {
   makeFootnote,
-  openAccordionIfContainsFootnoteReference,
+  openAccordionOrTabIfContainsFootnoteReference,
   getAllBlocksAndSlateFields,
 } from './utils';
 import { getAllBlocks } from '@plone/volto-slate/utils';
@@ -22,7 +22,7 @@ describe('makeFootnote', () => {
   });
 });
 
-describe('openAccordionIfContainsFootnoteReference', () => {
+describe('openAccordionOrTabIfContainsFootnoteReference', () => {
   it('should open accordion if it contains footnote reference', () => {
     document.body.innerHTML = `
       <div class="accordion">
@@ -34,7 +34,7 @@ describe('openAccordionIfContainsFootnoteReference', () => {
     const title = document.querySelector('.title');
     title.click = jest.fn();
 
-    openAccordionIfContainsFootnoteReference('#footnote');
+    openAccordionOrTabIfContainsFootnoteReference('#footnote');
 
     expect(title.click).toHaveBeenCalled();
   });
@@ -49,7 +49,7 @@ describe('openAccordionIfContainsFootnoteReference', () => {
     const title = document.querySelector('.title');
     title.click = jest.fn();
 
-    openAccordionIfContainsFootnoteReference('#footnote');
+    openAccordionOrTabIfContainsFootnoteReference('#footnote');
 
     expect(title.click).not.toHaveBeenCalled();
   });
