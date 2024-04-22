@@ -61,7 +61,7 @@ describe('getAllBlocksAndSlateFields', () => {
   });
 
   it('handles metadataSection correctly', () => {
-    const properties = { '1': ['test'] };
+    const properties = { 1: ['test'] };
     const blocks = [
       {
         '@type': 'metadataSection',
@@ -98,7 +98,7 @@ describe('getAllBlocksAndSlateFields', () => {
   });
 
   it('handles metadata correctly', () => {
-    const properties = { '1': ['metadata test'] };
+    const properties = { 1: ['metadata test'] };
     const blocks = [
       {
         '@type': 'metadata',
