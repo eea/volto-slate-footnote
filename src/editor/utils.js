@@ -79,6 +79,14 @@ export const openAccordionOrTabIfContainsFootnoteReference = (footnoteId) => {
   return true;
 };
 
+/**
+ * Will open accordion if contains footnote reference
+ * @param {string} footnoteId
+ * @deprecated This function got renamed to {@link openAccordionOrTabIfContainsFootnoteReference}
+ */
+export const openAccordionIfContainsFootnoteReference =
+  openAccordionOrTabIfContainsFootnoteReference;
+
 const blockTypesOperations = {
   metadataSection: (block, properties) => {
     const fields = block?.fields || [];
