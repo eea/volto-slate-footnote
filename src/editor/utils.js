@@ -16,7 +16,7 @@ export const makeFootnote = (footnote) => {
   const formattedFootnote = footnote.replace(urlRegex, (url) => {
     return `<a href="${url}" target="_blank">${url}</a>`;
   });
-  console.log({ formattedFootnote });
+  
   return formattedFootnote;
 };
 /**
