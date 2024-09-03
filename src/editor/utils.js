@@ -8,7 +8,16 @@ import { getAllBlocks } from '@plone/volto-slate/utils';
  * @returns string
  */
 export const makeFootnote = (footnote) => {
-  return footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
+  if (!footnote) return '';
+
+  footnote = footnote.replace('<?xml version="1.0"?>', '');
+  const urlRegex = /https?:\/\/[^\s]+/g;
+
+  const formattedFootnote = footnote.replace(urlRegex, (url) => {
+    return `<a href="${url}" target="_blank">${url}</a>`;
+  });
+  console.log({ formattedFootnote });
+  return formattedFootnote;
 };
 /**
  * retrive all slate children of nested objects
