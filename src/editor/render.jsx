@@ -144,7 +144,6 @@ export const FootnoteElement = (props) => {
                                   <UniversalLink
                                     href={url}
                                     openLinkInNewTab={false}
-                                    style={{ zIndex: 2, position: 'relative' }} // Added position: relative
                                   >
                                     {url}
                                   </UniversalLink>
