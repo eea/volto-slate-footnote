@@ -3,14 +3,6 @@ import { Node } from 'slate';
 import { getAllBlocks } from '@plone/volto-slate/utils';
 
 /**
- * remove <?xml version="1.0"?> from the string
- * @param {*} footnote - xml format
- * @returns string
- */
-export const makeFootnote = (footnote) => {
-  return footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
-};
-/**
  * retrive all slate children of nested objects
  * @param {object} path - the keys that we want to extract the slate children from
  * @param {*} value - the source that we want to extract the slate children from

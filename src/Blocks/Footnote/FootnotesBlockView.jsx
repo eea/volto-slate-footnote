@@ -3,13 +3,19 @@ import {
   openAccordionOrTabIfContainsFootnoteReference,
   getAllBlocksAndSlateFields,
   makeFootnoteListOfUniqueItems,
-  makeFootnote,
 } from '@eeacms/volto-slate-footnote/editor/utils';
 import './less/public.less';
+import { Api } from '@plone/volto/helpers';
 
+import { Provider } from 'react-intl-redux';
+import configureStore from '@plone/volto/store';
+import { ConnectedRouter } from 'connected-react-router';
 import { UniversalLink } from '@plone/volto/components';
+import { createBrowserHistory } from 'history';
+import ReactDOMServer from 'react-dom/server';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+const urlRegex = /https?:\/\/[^\s]+/g;
 
 /**
  * @summary The React component that displays the list of footnotes inserted
@@ -19,6 +25,7 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz';
  * @param {Object} props Contains the properties `data` and `properties` as
  * received from the Volto form.
  */
+
 const FootnotesBlockView = (props) => {
   const { data, properties, tabData, content } = props;
   const { title, global, placeholder = 'Footnotes' } = data;
@@ -85,6 +92,12 @@ const FootnotesBlockView = (props) => {
             const { uid, footnote, zoteroId, parentUid } = note;
             const { refs } = note;
             const refsList = refs ? Object.keys(refs) : null;
+            const history = createBrowserHistory();
+            const api = new Api();
+            const store = configureStore(window.__data, history, api);
+            const footnoteText = !footnote
+              ? ''
+              : footnote.replace('<?xml version="1.0"?>', '');
             return (
               <li
                 key={`footnote-${zoteroId || uid}`}
@@ -92,9 +105,20 @@ const FootnotesBlockView = (props) => {
               >
                 <div
                   dangerouslySetInnerHTML={{
-                    __html: makeFootnote(footnote),
+                    __html: footnoteText.replace(urlRegex, (url) => {
+                      return ReactDOMServer.renderToStaticMarkup(
+                        <Provider store={store}>
+                          <ConnectedRouter history={history}>
+                            <UniversalLink href={url} openLinkInNewTab={false}>
+                              {url}
+                            </UniversalLink>
+                          </ConnectedRouter>
+                        </Provider>,
+                      );
+                    }),
                   }}
                 />
+
                 {refsList ? (
                   <>
                     {/** some footnotes are never parent so we need the parent to reference */}

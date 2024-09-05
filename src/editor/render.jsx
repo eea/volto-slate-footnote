@@ -9,15 +9,20 @@ import {
 import { isEmpty } from 'lodash';
 import { useSelector } from 'react-redux';
 import { UniversalLink } from '@plone/volto/components';
+import { ConnectedRouter } from 'connected-react-router';
+import { createBrowserHistory } from 'history';
+import ReactDOMServer from 'react-dom/server';
+import { Provider } from 'react-intl-redux';
+import { Api } from '@plone/volto/helpers';
+import configureStore from '@plone/volto/store';
 
 /**
  * Removes '<?xml version="1.0"?>' from footnote
  * @param {string} footnote
  * @returns {string} formatted footnote
  */
-const makeFootnote = (footnote) => {
-  return footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
-};
+
+const urlRegex = /https?:\/\/[^\s]+/g;
 
 export const FootnoteElement = (props) => {
   const { attributes, children, element, mode, extras } = props;
@@ -37,7 +42,7 @@ export const FootnoteElement = (props) => {
   const notesObjResult = isEmpty(metadata)
     ? makeFootnoteListOfUniqueItems(storeBlocks)
     : makeFootnoteListOfUniqueItems(blocks);
-  // will cosider zotero citations and footnote
+  // will consider zotero citations and footnote
   // notesObjResult contains all zotero/footnote as unique, and contain refs for other zotero/footnote
   const indiceIfZoteroId = data.extra
     ? [
@@ -76,12 +81,16 @@ export const FootnoteElement = (props) => {
     Object.keys(notesObjResult).find(
       (noteKey) => notesObjResult[noteKey].uid === uid,
     ) ||
-    // if not found in parent, search in refs, it might be a footnote references multiple times
+    // if not found in parent, search in refs, it might be a footnote referenced multiple times
     Object.keys(notesObjResult).find(
       (noteKey) =>
         notesObjResult[noteKey].uid === uid ||
         (notesObjResult[noteKey].refs && notesObjResult[noteKey].refs[uid]),
     );
+
+  const footnoteText = !data.footnote
+    ? ''
+    : data.footnote.replace('<?xml version="1.0"?>', '');
 
   return (
     <>
@@ -109,7 +118,6 @@ export const FootnoteElement = (props) => {
             <Popup.Content>
               <List divided relaxed selection>
                 <List.Item
-                  as={UniversalLink}
                   href={`#footnote-${citationRefId}`}
                   onClick={() =>
                     openAccordionOrTabIfContainsFootnoteReference(
@@ -122,35 +130,79 @@ export const FootnoteElement = (props) => {
                     <List.Description>
                       <div
                         dangerouslySetInnerHTML={{
-                          __html: makeFootnote(data.footnote),
+                          __html: footnoteText.replace(urlRegex, (url) => {
+                            const history = createBrowserHistory();
+                            const api = new Api();
+                            const store = configureStore(
+                              window.__data,
+                              history,
+                              api,
+                            );
+                            return ReactDOMServer.renderToStaticMarkup(
+                              <Provider store={store}>
+                                <ConnectedRouter history={history}>
+                                  <UniversalLink
+                                    href={url}
+                                    openLinkInNewTab={false}
+                                    style={{ zIndex: 2, position: 'relative' }} // Added position: relative
+                                  >
+                                    {url}
+                                  </UniversalLink>
+                                </ConnectedRouter>
+                              </Provider>,
+                            );
+                          }),
                         }}
-                      />{' '}
+                      />
                     </List.Description>
                   </List.Content>
                 </List.Item>
                 {data.extra &&
-                  data.extra.map((item) => (
-                    <List.Item
-                      as={UniversalLink}
-                      href={`#footnote-${item.zoteroId || item.uid}`}
-                      onClick={() =>
-                        openAccordionOrTabIfContainsFootnoteReference(
-                          `#footnote-${item.zoteroId || item.uid}`,
-                        )
-                      }
-                      key={`#footnote-${item.zoteroId || item.uid}`}
-                    >
-                      <List.Content>
-                        <List.Description>
-                          <div
-                            dangerouslySetInnerHTML={{
-                              __html: makeFootnote(item.footnote),
-                            }}
-                          />{' '}
-                        </List.Description>
-                      </List.Content>
-                    </List.Item>
-                  ))}
+                  data.extra.map((item) => {
+                    const footnoteText = !item.footnote
+                      ? ''
+                      : item.footnote.replace('<?xml version="1.0"?>', '');
+                    const history = createBrowserHistory();
+                    const api = new Api();
+                    const store = configureStore(window.__data, history, api);
+                    return (
+                      <List.Item
+                        href={`#footnote-${item.zoteroId || item.uid}`}
+                        onClick={() =>
+                          openAccordionOrTabIfContainsFootnoteReference(
+                            `#footnote-${item.zoteroId || item.uid}`,
+                          )
+                        }
+                        key={`#footnote-${item.zoteroId || item.uid}`}
+                      >
+                        <List.Content>
+                          <List.Description>
+                            <div
+                              dangerouslySetInnerHTML={{
+                                __html: footnoteText.replace(
+                                  urlRegex,
+                                  (url) => {
+                                    return ReactDOMServer.renderToStaticMarkup(
+                                      <Provider store={store}>
+                                        <ConnectedRouter history={history}>
+                                          <UniversalLink
+                                            href={url}
+                                            openLinkInNewTab={false}
+                                          >
+                                            {url}
+                                          </UniversalLink>
+                                        </ConnectedRouter>
+                                      </Provider>,
+                                    );
+                                  },
+                                ),
+                              }}
+                            />
+                          </List.Description>
+                        </List.Content>
+                      </List.Item>
+                    );
+                  })}
               </List>
             </Popup.Content>
           </Popup>
@@ -173,7 +225,6 @@ export const FootnoteElement = (props) => {
           <Popup.Content>
             <List divided relaxed selection>
               <List.Item
-                as={UniversalLink}
                 href={`#footnote-${citationRefId}`}
                 onClick={() =>
                   openAccordionOrTabIfContainsFootnoteReference(
@@ -186,16 +237,35 @@ export const FootnoteElement = (props) => {
                   <List.Description>
                     <div
                       dangerouslySetInnerHTML={{
-                        __html: makeFootnote(data.footnote),
+                        __html: footnoteText.replace(urlRegex, (url) => {
+                          const history = createBrowserHistory();
+                          const api = new Api();
+                          const store = configureStore(
+                            window.__data,
+                            history,
+                            api,
+                          );
+                          return ReactDOMServer.renderToStaticMarkup(
+                            <Provider store={store}>
+                              <ConnectedRouter history={history}>
+                                <UniversalLink
+                                  href={url}
+                                  openLinkInNewTab={false}
+                                >
+                                  {url}
+                                </UniversalLink>
+                              </ConnectedRouter>
+                            </Provider>,
+                          );
+                        }),
                       }}
-                    />{' '}
+                    />
                   </List.Description>
                 </List.Content>
               </List.Item>
               {data.extra &&
                 data.extra.map((item) => (
                   <List.Item
-                    as={UniversalLink}
                     href={`#footnote-${item.zoteroId || item.uid}`}
                     onClick={() =>
                       openAccordionOrTabIfContainsFootnoteReference(
@@ -208,9 +278,29 @@ export const FootnoteElement = (props) => {
                       <List.Description>
                         <div
                           dangerouslySetInnerHTML={{
-                            __html: makeFootnote(item.footnote),
+                            __html: item.footnote.replace(urlRegex, (url) => {
+                              const history = createBrowserHistory();
+                              const api = new Api();
+                              const store = configureStore(
+                                window.__data,
+                                history,
+                                api,
+                              );
+                              return ReactDOMServer.renderToStaticMarkup(
+                                <Provider store={store}>
+                                  <ConnectedRouter history={history}>
+                                    <UniversalLink
+                                      href={url}
+                                      openLinkInNewTab={false}
+                                    >
+                                      {url}
+                                    </UniversalLink>
+                                  </ConnectedRouter>
+                                </Provider>,
+                              );
+                            }),
                           }}
-                        />{' '}
+                        />
                       </List.Description>
                     </List.Content>
                   </List.Item>
