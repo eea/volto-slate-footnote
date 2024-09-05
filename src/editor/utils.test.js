@@ -1,5 +1,4 @@
 import {
-  makeFootnote,
   openAccordionOrTabIfContainsFootnoteReference,
   getAllBlocksAndSlateFields,
 } from './utils';
@@ -8,19 +7,6 @@ import { getAllBlocks } from '@plone/volto-slate/utils';
 jest.mock('@plone/volto-slate/utils', () => ({
   getAllBlocks: jest.fn(),
 }));
-
-describe('makeFootnote', () => {
-  it('should remove xml version string from footnote', () => {
-    const xmlString = '<?xml version="1.0"?>Test text';
-    const expectedResult = 'Test text';
-    expect(makeFootnote(xmlString)).toEqual(expectedResult);
-  });
-
-  it('should return empty string when footnote is null or undefined', () => {
-    expect(makeFootnote(null)).toEqual('');
-    expect(makeFootnote(undefined)).toEqual('');
-  });
-});
 
 describe('openAccordionOrTabIfContainsFootnoteReference', () => {
   it('should open accordion if it contains footnote reference', () => {
