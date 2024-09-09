@@ -5,15 +5,8 @@ import {
   makeFootnoteListOfUniqueItems,
 } from '@eeacms/volto-slate-footnote/editor/utils';
 import './less/public.less';
-import { Api } from '@plone/volto/helpers';
 
-import { isInternalURL } from '@plone/volto/helpers';
-import { Provider } from 'react-intl-redux';
-import configureStore from '@plone/volto/store';
-import { ConnectedRouter } from 'connected-react-router';
 import { UniversalLink } from '@plone/volto/components';
-import { createBrowserHistory } from 'history';
-import ReactDOMServer from 'react-dom/server';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const urlRegex = /https?:\/\/[^\s]+/g;
@@ -82,25 +75,16 @@ const FootnotesBlockView = (props) => {
         });
     startList = citationIndice;
   }
-  console.log(isInternalURL('http://localhost:3000/en'));
 
   const renderTextWithLinks = (text) => {
     if (!text) return null;
-
-    // Împarte textul în fragmente: text simplu și linkuri
     const parts = text.split(urlRegex);
-
-    // Găsește toate linkurile din text
     const links = text.match(urlRegex);
-
-    // Array pentru a combina text și linkuri
     let result = [];
 
     parts.forEach((part, index) => {
-      // Adaugă text simplu
       result.push(<span key={`text-${index}`}>{part}</span>);
 
-      // Adaugă link, dacă există unul la acest index
       if (links && links[index]) {
         result.push(
           <UniversalLink

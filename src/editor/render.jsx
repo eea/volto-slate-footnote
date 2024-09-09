@@ -53,21 +53,12 @@ export const FootnoteElement = (props) => {
 
   const renderTextWithLinks = (text) => {
     if (!text) return null;
-
-    // Împarte textul în fragmente: text simplu și linkuri
     const parts = text.split(urlRegex);
-
-    // Găsește toate linkurile din text
     const links = text.match(urlRegex);
-
-    // Array pentru a combina text și linkuri
     let result = [];
 
     parts.forEach((part, index) => {
-      // Adaugă text simplu
       result.push(<span key={`text-${index}`}>{part}</span>);
-
-      // Adaugă link, dacă există unul la acest index
       if (links && links[index]) {
         result.push(
           <UniversalLink
