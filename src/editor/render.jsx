@@ -9,12 +9,6 @@ import {
 import { isEmpty } from 'lodash';
 import { useSelector } from 'react-redux';
 import { UniversalLink } from '@plone/volto/components';
-import { ConnectedRouter } from 'connected-react-router';
-import { createBrowserHistory } from 'history';
-import ReactDOMServer from 'react-dom/server';
-import { Provider } from 'react-intl-redux';
-import { Api } from '@plone/volto/helpers';
-import configureStore from '@plone/volto/store';
 
 /**
  * Removes '<?xml version="1.0"?>' from footnote
@@ -57,6 +51,38 @@ export const FootnoteElement = (props) => {
     : // no extra citations (no multiples)
       `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`;
 
+  const renderTextWithLinks = (text) => {
+    if (!text) return null;
+
+    // Împarte textul în fragmente: text simplu și linkuri
+    const parts = text.split(urlRegex);
+
+    // Găsește toate linkurile din text
+    const links = text.match(urlRegex);
+
+    // Array pentru a combina text și linkuri
+    let result = [];
+
+    parts.forEach((part, index) => {
+      // Adaugă text simplu
+      result.push(<span key={`text-${index}`}>{part}</span>);
+
+      // Adaugă link, dacă există unul la acest index
+      if (links && links[index]) {
+        result.push(
+          <UniversalLink
+            key={`link-${index}`}
+            href={links[index]}
+            openLinkInNewTab={false}
+          >
+            {links[index]}
+          </UniversalLink>,
+        );
+      }
+    });
+
+    return result;
+  };
   const citationIndice = zoteroId // ZOTERO
     ? indiceIfZoteroId
     : // FOOTNOTES
@@ -128,31 +154,7 @@ export const FootnoteElement = (props) => {
                 >
                   <List.Content>
                     <List.Description>
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: footnoteText.replace(urlRegex, (url) => {
-                            const history = createBrowserHistory();
-                            const api = new Api();
-                            const store = configureStore(
-                              window.__data,
-                              history,
-                              api,
-                            );
-                            return ReactDOMServer.renderToStaticMarkup(
-                              <Provider store={store}>
-                                <ConnectedRouter history={history}>
-                                  <UniversalLink
-                                    href={url}
-                                    openLinkInNewTab={false}
-                                  >
-                                    {url}
-                                  </UniversalLink>
-                                </ConnectedRouter>
-                              </Provider>,
-                            );
-                          }),
-                        }}
-                      />
+                      {renderTextWithLinks(footnoteText)}
                     </List.Description>
                   </List.Content>
                 </List.Item>
@@ -161,9 +163,7 @@ export const FootnoteElement = (props) => {
                     const footnoteText = !item.footnote
                       ? ''
                       : item.footnote.replace('<?xml version="1.0"?>', '');
-                    const history = createBrowserHistory();
-                    const api = new Api();
-                    const store = configureStore(window.__data, history, api);
+
                     return (
                       <List.Item
                         href={`#footnote-${item.zoteroId || item.uid}`}
@@ -176,27 +176,7 @@ export const FootnoteElement = (props) => {
                       >
                         <List.Content>
                           <List.Description>
-                            <div
-                              dangerouslySetInnerHTML={{
-                                __html: footnoteText.replace(
-                                  urlRegex,
-                                  (url) => {
-                                    return ReactDOMServer.renderToStaticMarkup(
-                                      <Provider store={store}>
-                                        <ConnectedRouter history={history}>
-                                          <UniversalLink
-                                            href={url}
-                                            openLinkInNewTab={false}
-                                          >
-                                            {url}
-                                          </UniversalLink>
-                                        </ConnectedRouter>
-                                      </Provider>,
-                                    );
-                                  },
-                                ),
-                              }}
-                            />
+                            {renderTextWithLinks(footnoteText)}
                           </List.Description>
                         </List.Content>
                       </List.Item>
@@ -234,31 +214,7 @@ export const FootnoteElement = (props) => {
               >
                 <List.Content>
                   <List.Description>
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: footnoteText.replace(urlRegex, (url) => {
-                          const history = createBrowserHistory();
-                          const api = new Api();
-                          const store = configureStore(
-                            window.__data,
-                            history,
-                            api,
-                          );
-                          return ReactDOMServer.renderToStaticMarkup(
-                            <Provider store={store}>
-                              <ConnectedRouter history={history}>
-                                <UniversalLink
-                                  href={url}
-                                  openLinkInNewTab={false}
-                                >
-                                  {url}
-                                </UniversalLink>
-                              </ConnectedRouter>
-                            </Provider>,
-                          );
-                        }),
-                      }}
-                    />
+                    {renderTextWithLinks(footnoteText)}
                   </List.Description>
                 </List.Content>
               </List.Item>
@@ -275,31 +231,7 @@ export const FootnoteElement = (props) => {
                   >
                     <List.Content>
                       <List.Description>
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: item.footnote.replace(urlRegex, (url) => {
-                              const history = createBrowserHistory();
-                              const api = new Api();
-                              const store = configureStore(
-                                window.__data,
-                                history,
-                                api,
-                              );
-                              return ReactDOMServer.renderToStaticMarkup(
-                                <Provider store={store}>
-                                  <ConnectedRouter history={history}>
-                                    <UniversalLink
-                                      href={url}
-                                      openLinkInNewTab={false}
-                                    >
-                                      {url}
-                                    </UniversalLink>
-                                  </ConnectedRouter>
-                                </Provider>,
-                              );
-                            }),
-                          }}
-                        />
+                        {renderTextWithLinks(item.footnote)}
                       </List.Description>
                     </List.Content>
                   </List.Item>

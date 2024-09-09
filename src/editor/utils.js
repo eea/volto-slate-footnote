@@ -1,7 +1,6 @@
 import config from '@plone/volto/registry';
 import { Node } from 'slate';
 import { getAllBlocks } from '@plone/volto-slate/utils';
-
 /**
  * retrive all slate children of nested objects
  * @param {object} path - the keys that we want to extract the slate children from

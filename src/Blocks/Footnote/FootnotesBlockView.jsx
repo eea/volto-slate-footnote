@@ -7,6 +7,7 @@ import {
 import './less/public.less';
 import { Api } from '@plone/volto/helpers';
 
+import { isInternalURL } from '@plone/volto/helpers';
 import { Provider } from 'react-intl-redux';
 import configureStore from '@plone/volto/store';
 import { ConnectedRouter } from 'connected-react-router';
@@ -81,7 +82,40 @@ const FootnotesBlockView = (props) => {
         });
     startList = citationIndice;
   }
+  console.log(isInternalURL('http://localhost:3000/en'));
 
+  const renderTextWithLinks = (text) => {
+    if (!text) return null;
+
+    // Împarte textul în fragmente: text simplu și linkuri
+    const parts = text.split(urlRegex);
+
+    // Găsește toate linkurile din text
+    const links = text.match(urlRegex);
+
+    // Array pentru a combina text și linkuri
+    let result = [];
+
+    parts.forEach((part, index) => {
+      // Adaugă text simplu
+      result.push(<span key={`text-${index}`}>{part}</span>);
+
+      // Adaugă link, dacă există unul la acest index
+      if (links && links[index]) {
+        result.push(
+          <UniversalLink
+            key={`link-${index}`}
+            href={links[index]}
+            openLinkInNewTab={false}
+          >
+            {links[index]}
+          </UniversalLink>,
+        );
+      }
+    });
+
+    return result;
+  };
   return (
     <div className="footnotes-listing-block">
       <h3 title={placeholder}>{title}</h3>
@@ -92,9 +126,10 @@ const FootnotesBlockView = (props) => {
             const { uid, footnote, zoteroId, parentUid } = note;
             const { refs } = note;
             const refsList = refs ? Object.keys(refs) : null;
-            const history = createBrowserHistory();
-            const api = new Api();
-            const store = configureStore(window.__data, history, api);
+
+            // const history = createBrowserHistory();
+            // const api = new Api();
+            // const store = configureStore(window.__data, history, api);
             const footnoteText = !footnote
               ? ''
               : footnote.replace('<?xml version="1.0"?>', '');
@@ -103,22 +138,7 @@ const FootnotesBlockView = (props) => {
                 key={`footnote-${zoteroId || uid}`}
                 id={`footnote-${zoteroId || uid}`}
               >
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: footnoteText.replace(urlRegex, (url) => {
-                      return ReactDOMServer.renderToStaticMarkup(
-                        <Provider store={store}>
-                          <ConnectedRouter history={history}>
-                            <UniversalLink href={url} openLinkInNewTab={false}>
-                              {url}
-                            </UniversalLink>
-                          </ConnectedRouter>
-                        </Provider>,
-                      );
-                    }),
-                  }}
-                />
-
+                <div>{renderTextWithLinks(footnoteText)}</div>
                 {refsList ? (
                   <>
                     {/** some footnotes are never parent so we need the parent to reference */}
