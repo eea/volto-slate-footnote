@@ -3,13 +3,13 @@ import {
   openAccordionOrTabIfContainsFootnoteReference,
   getAllBlocksAndSlateFields,
   makeFootnoteListOfUniqueItems,
-  makeFootnote,
 } from '@eeacms/volto-slate-footnote/editor/utils';
 import './less/public.less';
 
 import { UniversalLink } from '@plone/volto/components';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+const urlRegex = /https?:\/\/[^\s]+/g;
 
 /**
  * @summary The React component that displays the list of footnotes inserted
@@ -19,6 +19,7 @@ const alphabet = 'abcdefghijklmnopqrstuvwxyz';
  * @param {Object} props Contains the properties `data` and `properties` as
  * received from the Volto form.
  */
+
 const FootnotesBlockView = (props) => {
   const { data, properties, tabData, content } = props;
   const { title, global, placeholder = 'Footnotes' } = data;
@@ -75,6 +76,30 @@ const FootnotesBlockView = (props) => {
     startList = citationIndice;
   }
 
+  const renderTextWithLinks = (text) => {
+    if (!text) return null;
+    const parts = text.split(urlRegex);
+    const links = text.match(urlRegex);
+    let result = [];
+
+    parts.forEach((part, index) => {
+      result.push(<span key={`text-${index}`}>{part}</span>);
+
+      if (links && links[index]) {
+        result.push(
+          <UniversalLink
+            key={`link-${index}`}
+            href={links[index]}
+            openLinkInNewTab={false}
+          >
+            {links[index]}
+          </UniversalLink>,
+        );
+      }
+    });
+
+    return result;
+  };
   return (
     <div className="footnotes-listing-block">
       <h3 title={placeholder}>{title}</h3>
@@ -85,16 +110,19 @@ const FootnotesBlockView = (props) => {
             const { uid, footnote, zoteroId, parentUid } = note;
             const { refs } = note;
             const refsList = refs ? Object.keys(refs) : null;
+
+            // const history = createBrowserHistory();
+            // const api = new Api();
+            // const store = configureStore(window.__data, history, api);
+            const footnoteText = !footnote
+              ? ''
+              : footnote.replace('<?xml version="1.0"?>', '');
             return (
               <li
                 key={`footnote-${zoteroId || uid}`}
                 id={`footnote-${zoteroId || uid}`}
               >
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html: makeFootnote(footnote),
-                  }}
-                />
+                <div>{renderTextWithLinks(footnoteText)}</div>
                 {refsList ? (
                   <>
                     {/** some footnotes are never parent so we need the parent to reference */}
