@@ -15,9 +15,8 @@ import { UniversalLink } from '@plone/volto/components';
  * @param {string} footnote
  * @returns {string} formatted footnote
  */
-const makeFootnote = (footnote) => {
-  return footnote ? footnote.replace('<?xml version="1.0"?>', '') : '';
-};
+
+const urlRegex = /https?:\/\/[^\s]+/g;
 
 export const FootnoteElement = (props) => {
   const { attributes, children, element, mode, extras } = props;
@@ -37,7 +36,7 @@ export const FootnoteElement = (props) => {
   const notesObjResult = isEmpty(metadata)
     ? makeFootnoteListOfUniqueItems(storeBlocks)
     : makeFootnoteListOfUniqueItems(blocks);
-  // will cosider zotero citations and footnote
+  // will consider zotero citations and footnote
   // notesObjResult contains all zotero/footnote as unique, and contain refs for other zotero/footnote
   const indiceIfZoteroId = data.extra
     ? [
@@ -52,6 +51,29 @@ export const FootnoteElement = (props) => {
     : // no extra citations (no multiples)
       `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`;
 
+  const renderTextWithLinks = (text) => {
+    if (!text) return null;
+    const parts = text.split(urlRegex);
+    const links = text.match(urlRegex);
+    let result = [];
+
+    parts.forEach((part, index) => {
+      result.push(<span key={`text-${index}`}>{part}</span>);
+      if (links && links[index]) {
+        result.push(
+          <UniversalLink
+            key={`link-${index}`}
+            href={links[index]}
+            openLinkInNewTab={false}
+          >
+            {links[index]}
+          </UniversalLink>,
+        );
+      }
+    });
+
+    return result;
+  };
   const citationIndice = zoteroId // ZOTERO
     ? indiceIfZoteroId
     : // FOOTNOTES
@@ -76,12 +98,16 @@ export const FootnoteElement = (props) => {
     Object.keys(notesObjResult).find(
       (noteKey) => notesObjResult[noteKey].uid === uid,
     ) ||
-    // if not found in parent, search in refs, it might be a footnote references multiple times
+    // if not found in parent, search in refs, it might be a footnote referenced multiple times
     Object.keys(notesObjResult).find(
       (noteKey) =>
         notesObjResult[noteKey].uid === uid ||
         (notesObjResult[noteKey].refs && notesObjResult[noteKey].refs[uid]),
     );
+
+  const footnoteText = !data.footnote
+    ? ''
+    : data.footnote.replace('<?xml version="1.0"?>', '');
 
   return (
     <>
@@ -109,7 +135,6 @@ export const FootnoteElement = (props) => {
             <Popup.Content>
               <List divided relaxed selection>
                 <List.Item
-                  as={UniversalLink}
                   href={`#footnote-${citationRefId}`}
                   onClick={() =>
                     openAccordionOrTabIfContainsFootnoteReference(
@@ -120,37 +145,34 @@ export const FootnoteElement = (props) => {
                 >
                   <List.Content>
                     <List.Description>
-                      <div
-                        dangerouslySetInnerHTML={{
-                          __html: makeFootnote(data.footnote),
-                        }}
-                      />{' '}
+                      {renderTextWithLinks(footnoteText)}
                     </List.Description>
                   </List.Content>
                 </List.Item>
                 {data.extra &&
-                  data.extra.map((item) => (
-                    <List.Item
-                      as={UniversalLink}
-                      href={`#footnote-${item.zoteroId || item.uid}`}
-                      onClick={() =>
-                        openAccordionOrTabIfContainsFootnoteReference(
-                          `#footnote-${item.zoteroId || item.uid}`,
-                        )
-                      }
-                      key={`#footnote-${item.zoteroId || item.uid}`}
-                    >
-                      <List.Content>
-                        <List.Description>
-                          <div
-                            dangerouslySetInnerHTML={{
-                              __html: makeFootnote(item.footnote),
-                            }}
-                          />{' '}
-                        </List.Description>
-                      </List.Content>
-                    </List.Item>
-                  ))}
+                  data.extra.map((item) => {
+                    const footnoteText = !item.footnote
+                      ? ''
+                      : item.footnote.replace('<?xml version="1.0"?>', '');
+
+                    return (
+                      <List.Item
+                        href={`#footnote-${item.zoteroId || item.uid}`}
+                        onClick={() =>
+                          openAccordionOrTabIfContainsFootnoteReference(
+                            `#footnote-${item.zoteroId || item.uid}`,
+                          )
+                        }
+                        key={`#footnote-${item.zoteroId || item.uid}`}
+                      >
+                        <List.Content>
+                          <List.Description>
+                            {renderTextWithLinks(footnoteText)}
+                          </List.Description>
+                        </List.Content>
+                      </List.Item>
+                    );
+                  })}
               </List>
             </Popup.Content>
           </Popup>
@@ -173,7 +195,6 @@ export const FootnoteElement = (props) => {
           <Popup.Content>
             <List divided relaxed selection>
               <List.Item
-                as={UniversalLink}
                 href={`#footnote-${citationRefId}`}
                 onClick={() =>
                   openAccordionOrTabIfContainsFootnoteReference(
@@ -184,18 +205,13 @@ export const FootnoteElement = (props) => {
               >
                 <List.Content>
                   <List.Description>
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: makeFootnote(data.footnote),
-                      }}
-                    />{' '}
+                    {renderTextWithLinks(footnoteText)}
                   </List.Description>
                 </List.Content>
               </List.Item>
               {data.extra &&
                 data.extra.map((item) => (
                   <List.Item
-                    as={UniversalLink}
                     href={`#footnote-${item.zoteroId || item.uid}`}
                     onClick={() =>
                       openAccordionOrTabIfContainsFootnoteReference(
@@ -206,11 +222,7 @@ export const FootnoteElement = (props) => {
                   >
                     <List.Content>
                       <List.Description>
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: makeFootnote(item.footnote),
-                          }}
-                        />{' '}
+                        {renderTextWithLinks(item.footnote)}
                       </List.Description>
                     </List.Content>
                   </List.Item>
