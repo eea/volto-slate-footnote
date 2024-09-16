@@ -83,7 +83,13 @@ const FootnotesBlockView = (props) => {
     let result = [];
 
     parts.forEach((part, index) => {
-      result.push(<span key={`text-${index}`}>{part}</span>);
+      result.push(
+        <div
+          dangerouslySetInnerHTML={{
+            __html: part,
+          }}
+        />,
+      );
 
       if (links && links[index]) {
         result.push(
@@ -97,7 +103,6 @@ const FootnotesBlockView = (props) => {
         );
       }
     });
-
     return result;
   };
   return (
