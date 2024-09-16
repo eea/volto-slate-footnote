@@ -7,7 +7,6 @@ import {
 import './less/public.less';
 
 import { UniversalLink } from '@plone/volto/components';
-import { isHTML } from '../../editor/utils';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const urlRegex = /https?:\/\/[^\s]+/g;
