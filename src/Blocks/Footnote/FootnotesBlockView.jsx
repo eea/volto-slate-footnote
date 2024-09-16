@@ -7,6 +7,7 @@ import {
 import './less/public.less';
 
 import { UniversalLink } from '@plone/volto/components';
+import { isHTML } from '../../editor/utils';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 const urlRegex = /https?:\/\/[^\s]+/g;
@@ -83,7 +84,13 @@ const FootnotesBlockView = (props) => {
     let result = [];
 
     parts.forEach((part, index) => {
-      result.push(<span key={`text-${index}`}>{part}</span>);
+      result.push(
+        <div
+          dangerouslySetInnerHTML={{
+            __html: part,
+          }}
+        />,
+      );
 
       if (links && links[index]) {
         result.push(
@@ -97,7 +104,6 @@ const FootnotesBlockView = (props) => {
         );
       }
     });
-
     return result;
   };
   return (

@@ -58,7 +58,14 @@ export const FootnoteElement = (props) => {
     let result = [];
 
     parts.forEach((part, index) => {
-      result.push(<span key={`text-${index}`}>{part}</span>);
+      result.push(
+        <div
+          dangerouslySetInnerHTML={{
+            __html: part,
+          }}
+        />,
+      );
+
       if (links && links[index]) {
         result.push(
           <UniversalLink
@@ -71,7 +78,6 @@ export const FootnoteElement = (props) => {
         );
       }
     });
-
     return result;
   };
   const citationIndice = zoteroId // ZOTERO
