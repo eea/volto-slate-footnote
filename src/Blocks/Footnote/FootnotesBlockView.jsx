@@ -1,4 +1,5 @@
 import React from 'react';
+import { escapeRegExp } from 'lodash';
 import {
   openAccordionOrTabIfContainsFootnoteReference,
   getAllBlocksAndSlateFields,
@@ -9,7 +10,8 @@ import './less/public.less';
 import { UniversalLink } from '@plone/volto/components';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-const urlRegex = /https?:\/\/[^\s]+/g;
+const urlRegex =
+  /\b((http|https|ftp):\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s]*)?\b/g;
 
 /**
  * @summary The React component that displays the list of footnotes inserted
@@ -78,32 +80,44 @@ const FootnotesBlockView = (props) => {
 
   const renderTextWithLinks = (text) => {
     if (!text) return null;
-    const parts = text.split(urlRegex);
     const links = text.match(urlRegex);
-    let result = [];
-
-    parts.forEach((part, index) => {
-      result.push(
+    if (!links) {
+      return (
         <div
+          dangerouslySetInnerHTML={{
+            __html: text,
+          }}
+        />
+      );
+    }
+    let result = [];
+    const parts = text.split(
+      new RegExp(`(${links.map((link) => escapeRegExp(link)).join('|')})`),
+    );
+    parts.forEach((part, index) => {
+      if (links.includes(part)) {
+        result.push(
+          <UniversalLink
+            key={`link-${index}`}
+            href={part}
+            openLinkInNewTab={false}
+          >
+            {part}
+          </UniversalLink>,
+        );
+        return;
+      }
+
+      result.push(
+        <span
           dangerouslySetInnerHTML={{
             __html: part,
           }}
         />,
       );
-
-      if (links && links[index]) {
-        result.push(
-          <UniversalLink
-            key={`link-${index}`}
-            href={links[index]}
-            openLinkInNewTab={false}
-          >
-            {links[index]}
-          </UniversalLink>,
-        );
-      }
     });
-    return result;
+
+    return <div>{result}</div>;
   };
   return (
     <div className="footnotes-listing-block">
