@@ -11,22 +11,52 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
+#. Default: "Edit footnote"
 #: editor/index
-# defaultMessage: Edit footnote
 msgid "Edit footnote"
 msgstr ""
 
+#. Default: "No options"
 #: editor/MultiSelectSearchWidget
-# defaultMessage: No options
 msgid "No options"
 msgstr ""
 
+#. Default: "Remove footnote"
 #: editor/index
-# defaultMessage: Remove footnote
 msgid "Remove footnote"
 msgstr ""
 
+#. Default: "Select…"
 #: editor/MultiSelectSearchWidget
-# defaultMessage: Select…
 msgid "Select…"
+msgstr ""
+
+#. Default: "Block title"
+#: Blocks/Footnote/schema
+msgid "blockTitle"
+msgstr ""
+
+#. Default: "Friendly name to be displayed as block title"
+#: Blocks/Footnote/schema
+msgid "blockTitleDescription"
+msgstr ""
+
+#. Default: "Default"
+#: Blocks/Footnote/schema
+msgid "default"
+msgstr ""
+
+#. Default: "Entire document"
+#: Blocks/Footnote/schema
+msgid "entireDocument"
+msgstr ""
+
+#. Default: "Lookup citation references on the entire document"
+#: Blocks/Footnote/schema
+msgid "entireDocumentDescription"
+msgstr ""
+
+#. Default: "Footnote block"
+#: Blocks/Footnote/schema
+msgid "footnoteBlock"
 msgstr ""

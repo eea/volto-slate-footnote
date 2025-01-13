@@ -18,6 +18,8 @@ const FootnotesBlockEdit = (props) => {
     instructions = props.formDescription;
   }
 
+  const blockSchema = schema(props.intl)
+
   return (
     <>
       <FootnotesBlockView {...props} properties={properties} />
@@ -29,8 +31,8 @@ const FootnotesBlockEdit = (props) => {
         )}
         {!data?.readOnlySettings && (
           <InlineForm
-            schema={schema}
-            title={schema.title}
+            schema={blockSchema}
+            title={blockSchema.title}
             onChangeField={(id, value) => {
               onChangeBlock(block, {
                 ...data,
