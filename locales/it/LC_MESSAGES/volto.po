@@ -16,6 +16,11 @@ msgstr ""
 msgid "Edit footnote"
 msgstr ""
 
+#. Default: "Footnotes"
+#: index
+msgid "Footnotes"
+msgstr ""
+
 #. Default: "No options"
 #: editor/MultiSelectSearchWidget
 msgid "No options"

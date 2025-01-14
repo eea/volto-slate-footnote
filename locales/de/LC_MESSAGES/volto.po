@@ -16,6 +16,11 @@ msgstr ""
 msgid "Edit footnote"
 msgstr "Fußnote bearbeiten"
 
+#. Default: "Footnotes"
+#: index
+msgid "Footnotes"
+msgstr "Fußnoten"
+
 #. Default: "No options"
 #: editor/MultiSelectSearchWidget
 msgid "No options"
@@ -59,4 +64,4 @@ msgstr "Nachschlagen von Zitierangaben im gesamten Dokument"
 #. Default: "Footnote block"
 #: Blocks/Footnote/schema
 msgid "footnoteBlock"
-msgstr "Fußnotenblock"
+msgstr "Fußnoten-Block"
