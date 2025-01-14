@@ -6,6 +6,14 @@ import FootnotesBlockSchema from './Blocks/Footnote/FootnotesBlockSchema';
 import { FOOTNOTE } from './constants';
 import installFootnoteEditor from './editor';
 import SearchWidget from '@eeacms/volto-slate-footnote/editor/MultiSelectSearchWidget';
+import { defineMessages } from 'react-intl';
+
+defineMessages({
+  footnotes: {
+    id: 'Footnotes',
+    defaultMessage: 'Footnotes',
+  },
+});
 
 /**
  * @summary Called from Volto to configure new or existing Volto block types.
