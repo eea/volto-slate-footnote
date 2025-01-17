@@ -18,7 +18,7 @@ const FootnotesBlockEdit = (props) => {
     instructions = props.formDescription;
   }
 
-  const blockSchema = schema(props.intl)
+  const blockSchema = schema(props.intl);
 
   return (
     <>

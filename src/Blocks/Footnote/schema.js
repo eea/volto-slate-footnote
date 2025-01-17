@@ -24,8 +24,8 @@ const messages = defineMessages({
   entireDocumentDescription: {
     id: 'entireDocumentDescription',
     defaultMessage: 'Lookup citation references on the entire document',
-  }
-})
+  },
+});
 
 export const FootnoteBlockSchema = (intl) => ({
   title: intl.formatMessage(messages.footnoteBlock),
