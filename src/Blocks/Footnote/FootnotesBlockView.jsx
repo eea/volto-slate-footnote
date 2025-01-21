@@ -82,13 +82,7 @@ const FootnotesBlockView = (props) => {
     if (!text) return null;
     const links = text.match(urlRegex);
     if (!links) {
-      return (
-        <div
-          dangerouslySetInnerHTML={{
-            __html: text,
-          }}
-        />
-      );
+      return text;
     }
     let result = [];
     const parts = text.split(
@@ -108,13 +102,7 @@ const FootnotesBlockView = (props) => {
         return;
       }
 
-      result.push(
-        <span
-          dangerouslySetInnerHTML={{
-            __html: part,
-          }}
-        />,
-      );
+      result.push(part);
     });
 
     return <div>{result}</div>;
