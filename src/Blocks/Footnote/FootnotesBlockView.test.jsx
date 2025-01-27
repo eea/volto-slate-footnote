@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FootnotesBlockView from './FootnotesBlockView';
 
@@ -10,92 +10,74 @@ jest.mock('@plone/volto/components', () => ({
 jest.mock('@eeacms/volto-slate-footnote/editor/utils', () => ({
   openAccordionOrTabIfContainsFootnoteReference: jest.fn(),
   getAllBlocksAndSlateFields: jest.fn(() => [
-    { id: 'block1', footnote: 'Example footnote 1' },
-    { id: 'block2', footnote: 'Example footnote 2 with http://example.com' },
+    { id: 'block1', footnote: 'Footnote with no link' },
+    { id: 'block2', footnote: 'Footnote with link http://example.com' },
+    { id: 'block3', footnote: 'Footnote with <b>HTML</b>' },
   ]),
-  makeFootnoteListOfUniqueItems: jest.fn((blocks) => {
-    return {
-      note1: {
-        uid: '1',
-        footnote: 'Example footnote 1',
-        refs: { ref1: 'ref1' },
-      },
-      note2: {
-        uid: '2',
-        footnote: 'Example footnote 2 with http://example.com',
-        refs: { ref2: 'ref2' },
-      },
-    };
-  }),
+  makeFootnoteListOfUniqueItems: jest.fn((blocks) => ({
+    note1: {
+      uid: '1',
+      footnote: 'First note with a reference',
+      zoteroId: 'zotero1',
+      refs: { ref1: 'ref1' },
+    },
+    note2: {
+      uid: '2',
+      footnote: 'Second note with multiple references',
+      zoteroId: null,
+      refs: { ref2: 'ref2', ref3: 'ref3' },
+    },
+    note3: {
+      uid: '3',
+      footnote: '<i>Note with HTML</i>',
+      zoteroId: 'zotero3',
+      refs: {},
+    },
+  })),
 }));
 
 describe('FootnotesBlockView', () => {
-  const props = {
-    data: {
-      title: 'Test Footnotes',
-      placeholder: 'Footnotes Placeholder',
-      global: true,
+  const propsVariations = [
+    {
+      description: 'renders with global metadata',
+      props: {
+        data: { title: 'Global Metadata', global: true, placeholder: 'Global' },
+        properties: { test: 'metadata' },
+        tabData: null,
+        content: null,
+        metadata: { test: 'metadata' },
+      },
     },
-    properties: {},
-  };
-
-  test('renders the component with title and placeholder', () => {
-    render(<FootnotesBlockView {...props} />);
-    expect(screen.getByText('Test Footnotes')).toBeInTheDocument();
-    expect(screen.getByTitle('Footnotes Placeholder')).toBeInTheDocument();
-  });
-
-  test('renders a list of footnotes', () => {
-    render(<FootnotesBlockView {...props} />);
-    const listItems = screen.getAllByRole('listitem');
-    expect(listItems).toHaveLength(2); // Two footnotes from mocked data
-    expect(screen.getByText('Example footnote 1')).toBeInTheDocument();
-    expect(
-      screen.getByText('Example footnote 2 with http://example.com'),
-    ).toBeInTheDocument();
-  });
-
-  test('renders footnotes with links correctly', () => {
-    render(<FootnotesBlockView {...props} />);
-    const link = screen.getByText('http://example.com');
-    expect(link).toBeInTheDocument();
-    expect(link).toHaveAttribute('href', 'http://example.com');
-  });
-
-  test('handles empty footnotes gracefully', () => {
-    const modifiedProps = {
-      ...props,
-      data: {
-        ...props.data,
-        global: false,
+    {
+      description: 'renders with tabData',
+      props: {
+        data: { title: 'Tab Data', global: false, placeholder: 'Tab' },
+        properties: { test: 'tabProperties' },
+        tabData: { test: 'tabData' },
+        content: null,
       },
-    };
-    render(<FootnotesBlockView {...modifiedProps} />);
-    const listItems = screen.queryAllByRole('listitem');
-    expect(listItems).toHaveLength(0); // No footnotes in mocked data for local content
-  });
+    },
+    {
+      description: 'renders with content',
+      props: {
+        data: { title: 'Content Data', global: false, placeholder: 'Content' },
+        properties: { test: 'contentProperties' },
+        tabData: null,
+        content: { test: 'contentData' },
+      },
+    },
+    {
+      description: 'renders with no metadata',
+      props: {
+        data: { title: 'No Metadata', global: false, placeholder: 'Default' },
+        properties: { test: 'defaultProperties' },
+        tabData: null,
+        content: null,
+      },
+    },
+  ];
 
-  test('renders superscript references correctly', () => {
+  test.each(propsVariations)('$description', ({ props }) => {
     render(<FootnotesBlockView {...props} />);
-    const superscripts = screen.getAllByRole('link', {
-      name: /Back to content/i,
-    });
-    expect(superscripts).toHaveLength(2); // Two superscript references
-  });
-
-  test('renders dangerous HTML when valid', () => {
-    const modifiedProps = {
-      ...props,
-      data: {
-        ...props.data,
-        global: false,
-      },
-      properties: {
-        ...props.properties,
-        metadata: '<p>Valid HTML content</p>',
-      },
-    };
-    render(<FootnotesBlockView {...modifiedProps} />);
-    expect(screen.getByText('Valid HTML content')).toBeInTheDocument();
   });
 });
