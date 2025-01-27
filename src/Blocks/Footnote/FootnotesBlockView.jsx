@@ -10,8 +10,9 @@ import './less/public.less';
 import { UniversalLink } from '@plone/volto/components';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
+
 const urlRegex =
-  /\b((http|https|ftp):\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s]*)?\b/g;
+  /\b((http|https|ftp):\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s<>)]*)?(?=\s|$|<|>|\))/g;
 
 /**
  * @summary The React component that displays the list of footnotes inserted
@@ -78,18 +79,44 @@ const FootnotesBlockView = (props) => {
     startList = citationIndice;
   }
 
-  const renderTextWithLinks = (text) => {
+  function isValidHTML(htmlString) {
+    const parser = new DOMParser();
+    const parsedDocument = parser.parseFromString(htmlString, 'text/html');
+    const errors = parsedDocument.querySelectorAll('parsererror');
+    return errors.length === 0;
+  }
+
+  const renderTextWithLinks = (text, zoteroId) => {
     if (!text) return null;
+
     const links = text.match(urlRegex);
+    let isValid = false;
+    if (zoteroId && isValidHTML(text)) isValid = true;
+
     if (!links) {
-      return text;
+      if (isValid)
+        return (
+          <span
+            style={{ display: 'inline', whiteSpace: 'normal' }}
+            dangerouslySetInnerHTML={{
+              __html: text,
+            }}
+          />
+        );
+      else return text;
     }
     let result = [];
     const parts = text.split(
       new RegExp(`(${links.map((link) => escapeRegExp(link)).join('|')})`),
     );
     parts.forEach((part, index) => {
-      if (links.includes(part)) {
+      if (links.includes(part) && zoteroId) {
+        result.push(`
+          <a key=link-${index} href=${part} rel="noopener">
+            ${part}
+          </a>`);
+        return;
+      } else if (links.includes(part)) {
         result.push(
           <UniversalLink
             key={`link-${index}`}
@@ -100,12 +127,19 @@ const FootnotesBlockView = (props) => {
           </UniversalLink>,
         );
         return;
-      }
-
-      result.push(part);
+      } else result.push(part);
     });
 
-    return <div>{result}</div>;
+    if (isValid)
+      return (
+        <span
+          style={{ display: 'inline', whiteSpace: 'normal' }}
+          dangerouslySetInnerHTML={{
+            __html: result.reduce((acc, c) => acc + c, ''),
+          }}
+        />
+      );
+    else return <div>{result}</div>;
   };
   return (
     <div className="footnotes-listing-block">
@@ -129,7 +163,7 @@ const FootnotesBlockView = (props) => {
                 key={`footnote-${zoteroId || uid}`}
                 id={`footnote-${zoteroId || uid}`}
               >
-                <div>{renderTextWithLinks(footnoteText)}</div>
+                <div>{renderTextWithLinks(footnoteText, zoteroId)}</div>
                 {refsList ? (
                   <>
                     {/** some footnotes are never parent so we need the parent to reference */}
