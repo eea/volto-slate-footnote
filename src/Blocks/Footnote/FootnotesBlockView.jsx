@@ -132,7 +132,6 @@ const FootnotesBlockView = (props) => {
     if (isValid)
       return (
         <span
-          style={{ display: 'inline', whiteSpace: 'normal' }}
           dangerouslySetInnerHTML={{
             __html: result.reduce((acc, c) => acc + c, ''),
           }}
