@@ -80,10 +80,18 @@ const FootnotesBlockView = (props) => {
   }
 
   function isValidHTML(htmlString) {
-    const parser = new DOMParser();
-    const parsedDocument = parser.parseFromString(htmlString, 'text/html');
-    const errors = parsedDocument.querySelectorAll('parsererror');
-    return errors.length === 0;
+    if (
+      __CLIENT__ &&
+      typeof window !== 'undefined' &&
+      typeof DOMParser !== 'undefined'
+    ) {
+      // The environment is client-side, and DOMParser is available
+      const parser = new DOMParser();
+      const parsedDocument = parser.parseFromString(htmlString, 'text/html');
+      const errors = parsedDocument.querySelectorAll('parsererror');
+      return errors.length === 0;
+    }
+    return false;
   }
 
   const renderTextWithLinks = (text, zoteroId) => {
