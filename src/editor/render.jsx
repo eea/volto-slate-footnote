@@ -1,6 +1,7 @@
 import React from 'react';
 import { Popup, List } from 'semantic-ui-react';
 import { useEditorContext } from '@plone/volto-slate/hooks';
+import { escapeRegExp } from 'lodash';
 import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
 import {
   makeFootnoteListOfUniqueItems,
@@ -16,7 +17,8 @@ import { UniversalLink } from '@plone/volto/components';
  * @returns {string} formatted footnote
  */
 
-const urlRegex = /https?:\/\/[^\s]+/g;
+const urlRegex =
+  /\b((http|https|ftp):\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s<>)]*)?(?=\s|$|<|>|\))/g;
 
 export const FootnoteElement = (props) => {
   const { attributes, children, element, mode, extras } = props;
@@ -51,34 +53,73 @@ export const FootnoteElement = (props) => {
     : // no extra citations (no multiples)
       `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`;
 
-  const renderTextWithLinks = (text) => {
+  function isValidHTML(htmlString) {
+    if (
+      __CLIENT__ &&
+      typeof window !== 'undefined' &&
+      typeof DOMParser !== 'undefined'
+    ) {
+      // The environment is client-side, and DOMParser is available
+      const parser = new DOMParser();
+      const parsedDocument = parser.parseFromString(htmlString, 'text/html');
+      const errors = parsedDocument.querySelectorAll('parsererror');
+      return errors.length === 0;
+    }
+    return false;
+  }
+
+  const renderTextWithLinks = (text, zoteroId) => {
     if (!text) return null;
-    const parts = text.split(urlRegex);
+
     const links = text.match(urlRegex);
+    let isValid = false;
+    if (zoteroId && isValidHTML(text)) isValid = true;
+
+    if (!links) {
+      if (isValid)
+        return (
+          <span
+            dangerouslySetInnerHTML={{
+              __html: text,
+            }}
+          />
+        );
+      else return text;
+    }
     let result = [];
-
+    const parts = text.split(
+      new RegExp(`(${links.map((link) => escapeRegExp(link)).join('|')})`),
+    );
     parts.forEach((part, index) => {
-      result.push(
-        <div
-          dangerouslySetInnerHTML={{
-            __html: part,
-          }}
-        />,
-      );
-
-      if (links && links[index]) {
+      if (links.includes(part) && zoteroId) {
+        result.push(`
+            <a key=link-${index} href=${part} rel="noopener">
+              ${part}
+            </a>`);
+        return;
+      } else if (links.includes(part)) {
         result.push(
           <UniversalLink
             key={`link-${index}`}
-            href={links[index]}
+            href={part}
             openLinkInNewTab={false}
           >
-            {links[index]}
+            {part}
           </UniversalLink>,
         );
-      }
+        return;
+      } else result.push(part);
     });
-    return result;
+
+    if (isValid)
+      return (
+        <span
+          dangerouslySetInnerHTML={{
+            __html: result.reduce((acc, c) => acc + c, ''),
+          }}
+        />
+      );
+    else return <div>{result}</div>;
   };
   const citationIndice = zoteroId // ZOTERO
     ? indiceIfZoteroId
@@ -151,7 +192,7 @@ export const FootnoteElement = (props) => {
                 >
                   <List.Content>
                     <List.Description>
-                      {renderTextWithLinks(footnoteText)}
+                      {renderTextWithLinks(footnoteText, zoteroId)}
                     </List.Description>
                   </List.Content>
                 </List.Item>
@@ -173,7 +214,7 @@ export const FootnoteElement = (props) => {
                       >
                         <List.Content>
                           <List.Description>
-                            {renderTextWithLinks(footnoteText)}
+                            {renderTextWithLinks(footnoteText, item.zoteroId)}
                           </List.Description>
                         </List.Content>
                       </List.Item>
