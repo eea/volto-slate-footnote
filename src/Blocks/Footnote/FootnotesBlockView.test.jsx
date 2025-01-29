@@ -9,6 +9,7 @@ jest.mock('@plone/volto/components', () => ({
 
 jest.mock('@eeacms/volto-slate-footnote/editor/utils', () => ({
   openAccordionOrTabIfContainsFootnoteReference: jest.fn(),
+  renderTextWithLinks: jest.fn(),
   getAllBlocksAndSlateFields: jest.fn(() => [
     { id: 'block1', footnote: 'Footnote with no link' },
     { id: 'block2', footnote: 'Footnote with link http://example.com' },
