@@ -1,6 +1,11 @@
 import config from '@plone/volto/registry';
 import { Node } from 'slate';
 import { getAllBlocks } from '@plone/volto-slate/utils';
+import { escapeRegExp } from 'lodash';
+import { UniversalLink } from '@plone/volto/components';
+const urlRegex =
+  /\b((http|https|ftp):\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s<>)]*)?(?=\s|$|<|>|\))/g;
+
 /**
  * retrive all slate children of nested objects
  * @param {object} path - the keys that we want to extract the slate children from
@@ -275,4 +280,73 @@ const iterateFootnoteObj = (notesObjResultTemp, node, parentUid) => {
       [uid]: true,
     };
   }
+};
+
+function isValidHTML(htmlString) {
+  if (
+    __CLIENT__ &&
+    typeof window !== 'undefined' &&
+    typeof DOMParser !== 'undefined'
+  ) {
+    // The environment is client-side, and DOMParser is available
+    const parser = new DOMParser();
+    const parsedDocument = parser.parseFromString(htmlString, 'text/html');
+    const errors = parsedDocument.querySelectorAll('parsererror');
+    return errors.length === 0;
+  }
+  return false;
+}
+
+export const renderTextWithLinks = (text, zoteroId) => {
+  if (!text) return null;
+
+  const links = text.match(urlRegex);
+  let isValid = false;
+  if (zoteroId && isValidHTML(text)) isValid = true;
+
+  if (!links) {
+    if (isValid)
+      return (
+        <span
+          dangerouslySetInnerHTML={{
+            __html: text,
+          }}
+        />
+      );
+    else return text;
+  }
+  let result = [];
+  const parts = text.split(
+    new RegExp(`(${links.map((link) => escapeRegExp(link)).join('|')})`),
+  );
+  parts.forEach((part, index) => {
+    if (links.includes(part) && zoteroId) {
+      result.push(`
+          <a key=link-${index} href=${part} rel="noopener">
+            ${part}
+          </a>`);
+      return;
+    } else if (links.includes(part)) {
+      result.push(
+        <UniversalLink
+          key={`link-${index}`}
+          href={part}
+          openLinkInNewTab={false}
+        >
+          {part}
+        </UniversalLink>,
+      );
+      return;
+    } else result.push(part);
+  });
+
+  if (isValid)
+    return (
+      <span
+        dangerouslySetInnerHTML={{
+          __html: result.reduce((acc, c) => acc + c, ''),
+        }}
+      />
+    );
+  else return <div>{result}</div>;
 };
