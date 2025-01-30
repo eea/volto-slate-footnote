@@ -282,7 +282,7 @@ const iterateFootnoteObj = (notesObjResultTemp, node, parentUid) => {
   }
 };
 
-function isValidHTML(htmlString) {
+export function isValidHTML(htmlString) {
   if (
     __CLIENT__ &&
     typeof window !== 'undefined' &&
