@@ -116,8 +116,6 @@ export const FootnoteElement = (props) => {
                 <List.Item
                   href={`#footnote-${citationRefId}`}
                   onClick={(e) => {
-                    console.log(e);
-
                     openAccordionOrTabIfContainsFootnoteReference(
                       `#footnote-${citationRefId}`,
                     );
@@ -144,7 +142,6 @@ export const FootnoteElement = (props) => {
                       <List.Item
                         href={`#footnote-${item.zoteroId || item.uid}`}
                         onClick={(e) => {
-                          console.log(e);
                           openAccordionOrTabIfContainsFootnoteReference(
                             `#footnote-${item.zoteroId || item.uid}`,
                           );
@@ -189,7 +186,6 @@ export const FootnoteElement = (props) => {
               <List.Item
                 href={`#footnote-${citationRefId}`}
                 onClick={(e) => {
-                  console.log(e);
                   openAccordionOrTabIfContainsFootnoteReference(
                     `#footnote-${citationRefId}`,
                   );
@@ -211,7 +207,6 @@ export const FootnoteElement = (props) => {
                   <List.Item
                     href={`#footnote-${item.zoteroId || item.uid}`}
                     onClick={(e) => {
-                      console.log(e);
                       openAccordionOrTabIfContainsFootnoteReference(
                         `#footnote-${item.zoteroId || item.uid}`,
                       );
