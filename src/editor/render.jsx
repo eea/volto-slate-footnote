@@ -11,6 +11,7 @@ import { isEmpty } from 'lodash';
 import { useSelector } from 'react-redux';
 
 import { renderTextWithLinks } from './utils';
+import { useHistory } from 'react-router-dom';
 
 /**
  * Removes '<?xml version="1.0"?>' from footnote
@@ -24,6 +25,7 @@ export const FootnoteElement = (props) => {
   const { uid, zoteroId } = data;
   const editor = useEditorContext();
   const ref = React.useRef();
+  const history = useHistory();
 
   const initialFormData = useSelector((state) => state?.content?.data || {});
   const blockProps = editor?.getBlockProps ? editor.getBlockProps() : null;
@@ -113,11 +115,13 @@ export const FootnoteElement = (props) => {
               <List divided relaxed selection>
                 <List.Item
                   href={`#footnote-${citationRefId}`}
-                  onClick={() =>
+                  onClick={(e) => {
                     openAccordionOrTabIfContainsFootnoteReference(
                       `#footnote-${citationRefId}`,
-                    )
-                  }
+                    );
+                    e.preventDefault();
+                    history.push(`#footnote-${citationRefId}`);
+                  }}
                   key={`#footnote-${citationRefId}`}
                 >
                   <List.Content>
@@ -135,11 +139,15 @@ export const FootnoteElement = (props) => {
                     return (
                       <List.Item
                         href={`#footnote-${item.zoteroId || item.uid}`}
-                        onClick={() =>
+                        onClick={(e) => {
                           openAccordionOrTabIfContainsFootnoteReference(
                             `#footnote-${item.zoteroId || item.uid}`,
-                          )
-                        }
+                          );
+                          e.preventDefault();
+                          history.push(
+                            `#footnote-${item.zoteroId || item.uid}`,
+                          );
+                        }}
                         key={`#footnote-${item.zoteroId || item.uid}`}
                       >
                         <List.Content>
@@ -173,11 +181,13 @@ export const FootnoteElement = (props) => {
             <List divided relaxed selection>
               <List.Item
                 href={`#footnote-${citationRefId}`}
-                onClick={() =>
+                onClick={(e) => {
                   openAccordionOrTabIfContainsFootnoteReference(
                     `#footnote-${citationRefId}`,
-                  )
-                }
+                  );
+                  e.preventDefault();
+                  history.push(`#footnote-${citationRefId}`);
+                }}
                 key={`#footnote-${citationRefId}`}
               >
                 <List.Content>
@@ -190,11 +200,13 @@ export const FootnoteElement = (props) => {
                 data.extra.map((item) => (
                   <List.Item
                     href={`#footnote-${item.zoteroId || item.uid}`}
-                    onClick={() =>
+                    onClick={(e) => {
                       openAccordionOrTabIfContainsFootnoteReference(
                         `#footnote-${item.zoteroId || item.uid}`,
-                      )
-                    }
+                      );
+                      e.preventDefault();
+                      history.push(`#footnote-${citationRefId}`);
+                    }}
                     key={`#footnote-${item.zoteroId || item.uid}`}
                   >
                     <List.Content>
