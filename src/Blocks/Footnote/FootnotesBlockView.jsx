@@ -1,5 +1,5 @@
 import React from 'react';
-import { escapeRegExp } from 'lodash';
+
 import {
   openAccordionOrTabIfContainsFootnoteReference,
   getAllBlocksAndSlateFields,
@@ -8,10 +8,9 @@ import {
 import './less/public.less';
 
 import { UniversalLink } from '@plone/volto/components';
+import { renderTextWithLinks } from '../../editor/utils';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
-const urlRegex =
-  /\b((http|https|ftp):\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s]*)?\b/g;
 
 /**
  * @summary The React component that displays the list of footnotes inserted
@@ -78,47 +77,6 @@ const FootnotesBlockView = (props) => {
     startList = citationIndice;
   }
 
-  const renderTextWithLinks = (text) => {
-    if (!text) return null;
-    const links = text.match(urlRegex);
-    if (!links) {
-      return (
-        <div
-          dangerouslySetInnerHTML={{
-            __html: text,
-          }}
-        />
-      );
-    }
-    let result = [];
-    const parts = text.split(
-      new RegExp(`(${links.map((link) => escapeRegExp(link)).join('|')})`),
-    );
-    parts.forEach((part, index) => {
-      if (links.includes(part)) {
-        result.push(
-          <UniversalLink
-            key={`link-${index}`}
-            href={part}
-            openLinkInNewTab={false}
-          >
-            {part}
-          </UniversalLink>,
-        );
-        return;
-      }
-
-      result.push(
-        <span
-          dangerouslySetInnerHTML={{
-            __html: part,
-          }}
-        />,
-      );
-    });
-
-    return <div>{result}</div>;
-  };
   return (
     <div className="footnotes-listing-block">
       <h3 title={placeholder}>{title}</h3>
@@ -141,7 +99,7 @@ const FootnotesBlockView = (props) => {
                 key={`footnote-${zoteroId || uid}`}
                 id={`footnote-${zoteroId || uid}`}
               >
-                <div>{renderTextWithLinks(footnoteText)}</div>
+                <div>{renderTextWithLinks(footnoteText, zoteroId)}</div>
                 {refsList ? (
                   <>
                     {/** some footnotes are never parent so we need the parent to reference */}
