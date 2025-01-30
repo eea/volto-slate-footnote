@@ -1,6 +1,7 @@
 import {
   openAccordionOrTabIfContainsFootnoteReference,
   getAllBlocksAndSlateFields,
+  isValidHTML,
 } from './utils';
 import { getAllBlocks } from '@plone/volto-slate/utils';
 
@@ -195,5 +196,31 @@ describe('getAllBlocksAndSlateFields', () => {
     const result = getAllBlocksAndSlateFields(properties);
 
     expect(result).toEqual(expected);
+  });
+});
+
+describe('isValidHTML', () => {
+  beforeAll(() => {
+    global.DOMParser = class {
+      parseFromString(str, type) {
+        const doc = {
+          querySelectorAll: (selector) => {
+            if (selector === 'parsererror' && str.includes('<error>')) {
+              return [{}]; // Simulate an error
+            }
+            return [];
+          },
+        };
+        return doc;
+      }
+    };
+  });
+
+  test('returns true for valid HTML', () => {
+    expect(isValidHTML('<div>Hello</div>')).toBe(true);
+  });
+
+  test('returns false for invalid HTML', () => {
+    expect(isValidHTML('<error>Invalid HTML</error>')).toBe(false);
   });
 });
