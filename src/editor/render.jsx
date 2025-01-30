@@ -1,6 +1,7 @@
 import React from 'react';
 import { Popup, List } from 'semantic-ui-react';
 import { useEditorContext } from '@plone/volto-slate/hooks';
+
 import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
 import {
   makeFootnoteListOfUniqueItems,
@@ -8,7 +9,9 @@ import {
 } from './utils';
 import { isEmpty } from 'lodash';
 import { useSelector } from 'react-redux';
-import { UniversalLink } from '@plone/volto/components';
+
+import { renderTextWithLinks } from './utils';
+import { useHistory } from 'react-router-dom';
 
 /**
  * Removes '<?xml version="1.0"?>' from footnote
@@ -16,14 +19,13 @@ import { UniversalLink } from '@plone/volto/components';
  * @returns {string} formatted footnote
  */
 
-const urlRegex = /https?:\/\/[^\s]+/g;
-
 export const FootnoteElement = (props) => {
   const { attributes, children, element, mode, extras } = props;
   const { data = {} } = element;
   const { uid, zoteroId } = data;
   const editor = useEditorContext();
   const ref = React.useRef();
+  const history = useHistory();
 
   const initialFormData = useSelector((state) => state?.content?.data || {});
   const blockProps = editor?.getBlockProps ? editor.getBlockProps() : null;
@@ -51,35 +53,6 @@ export const FootnoteElement = (props) => {
     : // no extra citations (no multiples)
       `[${Object.keys(notesObjResult).indexOf(zoteroId) + 1}]`;
 
-  const renderTextWithLinks = (text) => {
-    if (!text) return null;
-    const parts = text.split(urlRegex);
-    const links = text.match(urlRegex);
-    let result = [];
-
-    parts.forEach((part, index) => {
-      result.push(
-        <div
-          dangerouslySetInnerHTML={{
-            __html: part,
-          }}
-        />,
-      );
-
-      if (links && links[index]) {
-        result.push(
-          <UniversalLink
-            key={`link-${index}`}
-            href={links[index]}
-            openLinkInNewTab={false}
-          >
-            {links[index]}
-          </UniversalLink>,
-        );
-      }
-    });
-    return result;
-  };
   const citationIndice = zoteroId // ZOTERO
     ? indiceIfZoteroId
     : // FOOTNOTES
@@ -142,16 +115,20 @@ export const FootnoteElement = (props) => {
               <List divided relaxed selection>
                 <List.Item
                   href={`#footnote-${citationRefId}`}
-                  onClick={() =>
+                  onClick={(e) => {
                     openAccordionOrTabIfContainsFootnoteReference(
                       `#footnote-${citationRefId}`,
-                    )
-                  }
+                    );
+                    if (e.target.tagName !== 'A') {
+                      e.preventDefault();
+                      history.push(`#footnote-${citationRefId}`);
+                    }
+                  }}
                   key={`#footnote-${citationRefId}`}
                 >
                   <List.Content>
                     <List.Description>
-                      {renderTextWithLinks(footnoteText)}
+                      {renderTextWithLinks(footnoteText, zoteroId)}
                     </List.Description>
                   </List.Content>
                 </List.Item>
@@ -164,16 +141,22 @@ export const FootnoteElement = (props) => {
                     return (
                       <List.Item
                         href={`#footnote-${item.zoteroId || item.uid}`}
-                        onClick={() =>
+                        onClick={(e) => {
                           openAccordionOrTabIfContainsFootnoteReference(
                             `#footnote-${item.zoteroId || item.uid}`,
-                          )
-                        }
+                          );
+                          if (e.target.tagName !== 'A') {
+                            e.preventDefault();
+                            history.push(
+                              `#footnote-${item.zoteroId || item.uid}`,
+                            );
+                          }
+                        }}
                         key={`#footnote-${item.zoteroId || item.uid}`}
                       >
                         <List.Content>
                           <List.Description>
-                            {renderTextWithLinks(footnoteText)}
+                            {renderTextWithLinks(footnoteText, item.zoteroId)}
                           </List.Description>
                         </List.Content>
                       </List.Item>
@@ -202,11 +185,15 @@ export const FootnoteElement = (props) => {
             <List divided relaxed selection>
               <List.Item
                 href={`#footnote-${citationRefId}`}
-                onClick={() =>
+                onClick={(e) => {
                   openAccordionOrTabIfContainsFootnoteReference(
                     `#footnote-${citationRefId}`,
-                  )
-                }
+                  );
+                  if (e.target.tagName !== 'A') {
+                    e.preventDefault();
+                    history.push(`#footnote-${citationRefId}`);
+                  }
+                }}
                 key={`#footnote-${citationRefId}`}
               >
                 <List.Content>
@@ -219,11 +206,15 @@ export const FootnoteElement = (props) => {
                 data.extra.map((item) => (
                   <List.Item
                     href={`#footnote-${item.zoteroId || item.uid}`}
-                    onClick={() =>
+                    onClick={(e) => {
                       openAccordionOrTabIfContainsFootnoteReference(
                         `#footnote-${item.zoteroId || item.uid}`,
-                      )
-                    }
+                      );
+                      if (e.target.tagName !== 'A') {
+                        e.preventDefault();
+                        history.push(`#footnote-${citationRefId}`);
+                      }
+                    }}
                     key={`#footnote-${item.zoteroId || item.uid}`}
                   >
                     <List.Content>

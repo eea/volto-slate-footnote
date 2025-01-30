@@ -1,6 +1,8 @@
 import {
   openAccordionOrTabIfContainsFootnoteReference,
   getAllBlocksAndSlateFields,
+  isValidHTML,
+  retriveValuesOfSlateFromNestedPath,
 } from './utils';
 import { getAllBlocks } from '@plone/volto-slate/utils';
 
@@ -8,6 +10,47 @@ jest.mock('@plone/volto-slate/utils', () => ({
   getAllBlocks: jest.fn(),
 }));
 
+describe('retriveValuesOfSlateFromNestedPath', () => {
+  test('should return values for a given string path in an object', () => {
+    const obj = { key: ['value1', 'value2'] };
+    expect(retriveValuesOfSlateFromNestedPath('key', obj)).toEqual([
+      'value1',
+      'value2',
+    ]);
+  });
+
+  test('should return an empty array when the path is not found', () => {
+    const obj = { key: [] };
+    expect(retriveValuesOfSlateFromNestedPath('key', obj)).toEqual([]);
+  });
+
+  test('should return values from an array of objects', () => {
+    const objArray = [{ key: ['value1'] }, { key: ['value2'] }];
+    expect(retriveValuesOfSlateFromNestedPath('key', objArray)).toEqual([
+      'value1',
+      'value2',
+    ]);
+  });
+
+  test('should handle nested object paths', () => {
+    const obj = { level1: { level2: ['value'] } };
+    expect(
+      retriveValuesOfSlateFromNestedPath({ level1: 'level2' }, obj),
+    ).toEqual(['value']);
+  });
+
+  test('should return an empty array for invalid inputs', () => {
+    expect(retriveValuesOfSlateFromNestedPath('key', null)).toEqual([]);
+    expect(retriveValuesOfSlateFromNestedPath('key', undefined)).toEqual([]);
+    expect(retriveValuesOfSlateFromNestedPath({}, {})).toEqual([]);
+  });
+
+  test('should return empty array if given an empty path object', () => {
+    expect(retriveValuesOfSlateFromNestedPath({}, { key: 'value' })).toEqual(
+      [],
+    );
+  });
+});
 describe('openAccordionOrTabIfContainsFootnoteReference', () => {
   it('should open accordion if it contains footnote reference', () => {
     document.body.innerHTML = `
@@ -195,5 +238,31 @@ describe('getAllBlocksAndSlateFields', () => {
     const result = getAllBlocksAndSlateFields(properties);
 
     expect(result).toEqual(expected);
+  });
+});
+
+describe('isValidHTML', () => {
+  beforeAll(() => {
+    global.DOMParser = class {
+      parseFromString(str, type) {
+        const doc = {
+          querySelectorAll: (selector) => {
+            if (selector === 'parsererror' && str.includes('<error>')) {
+              return [{}]; // Simulate an error
+            }
+            return [];
+          },
+        };
+        return doc;
+      }
+    };
+  });
+
+  test('returns true for valid HTML', () => {
+    expect(isValidHTML('<div>Hello</div>')).toBe(true);
+  });
+
+  test('returns false for invalid HTML', () => {
+    expect(isValidHTML('<error>Invalid HTML</error>')).toBe(false);
   });
 });
