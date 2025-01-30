@@ -14,7 +14,7 @@ const urlRegex =
  * path:{items:'value'}
  * @returns string
  */
-const retriveValuesOfSlateFromNestedPath = (path, value) => {
+export const retriveValuesOfSlateFromNestedPath = (path, value) => {
   if (Array.isArray(value)) {
     let allSlateValue = [];
     value.forEach((element) => {

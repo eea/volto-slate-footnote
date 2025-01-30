@@ -67,12 +67,6 @@ describe('Slate citations', () => {
   });
 
   it('Add Footnotes block and create multiple citations', () => {
-    // Add block
-    cy.get('.ui.basic.icon.button.block-add-button').first().click();
-    cy.get(".blocks-chooser .ui.form .field.searchbox input[type='text']").type(
-      'Footnotes',
-    );
-    cy.get('.slateFootnotes').click();
     // Complete chained commands
     cy.getSlateEditorAndType('Colorless green ideas sleep furiously.')
       .type('{selectAll}')
