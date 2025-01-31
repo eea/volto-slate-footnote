@@ -198,7 +198,7 @@ export const FootnoteElement = (props) => {
               >
                 <List.Content>
                   <List.Description>
-                    {renderTextWithLinks(footnoteText)}
+                    {renderTextWithLinks(footnoteText, zoteroId)}
                   </List.Description>
                 </List.Content>
               </List.Item>
@@ -219,7 +219,7 @@ export const FootnoteElement = (props) => {
                   >
                     <List.Content>
                       <List.Description>
-                        {renderTextWithLinks(item.footnote)}
+                        {renderTextWithLinks(item.footnote, item.zoteroId)}
                       </List.Description>
                     </List.Content>
                   </List.Item>
