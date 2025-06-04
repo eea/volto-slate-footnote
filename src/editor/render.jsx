@@ -87,11 +87,15 @@ export const FootnoteElement = (props) => {
   const footnoteText = !data.footnote
     ? ''
     : data.footnote.replace('<?xml version="1.0"?>', '');
-
   return (
     <>
       {mode === 'view' ? (
-        <span id={`ref-${uid}`} aria-describedby="footnote-label" ref={ref}>
+        <span
+          id={`ref-${uid}`}
+          aria-describedby={`footnote-desc-${uid}`}
+          ref={ref}
+          className="footnote-span"
+        >
           <Popup
             position="bottom left"
             pinned={true}
@@ -165,6 +169,10 @@ export const FootnoteElement = (props) => {
               </List>
             </Popup.Content>
           </Popup>
+          {/* Visually hidden but used by screen readers */}
+          <span id={`footnote-desc-${uid}`} className="sr-only">
+            {stripTags(footnoteText)}
+          </span>
         </span>
       ) : (
         <Popup
@@ -231,3 +239,9 @@ export const FootnoteElement = (props) => {
     </>
   );
 };
+
+function stripTags(html) {
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+  return tempDiv.textContent || tempDiv.innerText || '';
+}
