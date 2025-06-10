@@ -241,7 +241,10 @@ export const FootnoteElement = (props) => {
 };
 
 function stripTags(html) {
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML = html;
-  return tempDiv.textContent || tempDiv.innerText || '';
+  if (__CLIENT__) {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent || tempDiv.innerText || '';
+  }
+  return html.replace(/<[^>]+>/g, '');
 }
