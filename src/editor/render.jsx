@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Popup, List } from 'semantic-ui-react';
 import { useEditorContext } from '@plone/volto-slate/hooks';
 
@@ -23,14 +23,26 @@ export const FootnoteElement = (props) => {
   const { attributes, children, element, mode, extras } = props;
   const { data = {} } = element;
   const { uid, zoteroId } = data;
-  const [isRefSet, setIsRefSet] = React.useState(false);
+  const [isRefSet, setIsRefSet] = useState(false);
+  const [open, setOpen] = useState(false);
   const editor = useEditorContext();
-  const ref = React.useRef();
-  React.useEffect(() => {
+  const ref = useRef();
+  useEffect(() => {
     if (ref) {
       setIsRefSet(true);
     }
   }, [ref]);
+  const closeIfNoFocus = () => {
+    requestAnimationFrame(() => {
+      if (__CLIENT__) {
+        const active = document.activeElement;
+        const hasFocus = ref.current?.contains(active);
+        if (!hasFocus) {
+          setOpen(false);
+        }
+      }
+    });
+  };
   const history = useHistory();
 
   const initialFormData = useSelector((state) => state?.content?.data || {});
@@ -101,9 +113,14 @@ export const FootnoteElement = (props) => {
           aria-describedby={`footnote-desc-${uid}`}
           ref={ref}
           className="footnote-span"
+          onFocus={() => setOpen(true)}
+          onBlur={closeIfNoFocus}
         >
           {isRefSet && (
             <Popup
+              open={open}
+              onOpen={() => setOpen(true)}
+              onClose={() => setOpen(false)}
               position="bottom left"
               pinned={true}
               mountNode={ref.current}
