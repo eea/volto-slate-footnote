@@ -177,11 +177,6 @@ export const FootnoteElement = (props) => {
               </Popup.Content>
             </Popup>
           )}
-
-          {/* Visually hidden but used by some screen readers */}
-          <span id={`footnote-desc-${uid}`} className="sr-only">
-            {stripTags(footnoteText)}
-          </span>
         </span>
       ) : (
         <Popup
@@ -248,12 +243,3 @@ export const FootnoteElement = (props) => {
     </>
   );
 };
-
-function stripTags(html) {
-  if (__CLIENT__) {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = html;
-    return tempDiv.textContent || tempDiv.innerText || '';
-  }
-  return html.replace(/<[^>]+>/g, '');
-}
