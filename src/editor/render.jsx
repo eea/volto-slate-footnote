@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Popup, List } from 'semantic-ui-react';
 import { useEditorContext } from '@plone/volto-slate/hooks';
 
@@ -23,8 +23,26 @@ export const FootnoteElement = (props) => {
   const { attributes, children, element, mode, extras } = props;
   const { data = {} } = element;
   const { uid, zoteroId } = data;
+  const [isRefSet, setIsRefSet] = useState(false);
+  const [open, setOpen] = useState(false);
   const editor = useEditorContext();
-  const ref = React.useRef();
+  const ref = useRef();
+  useEffect(() => {
+    if (ref) {
+      setIsRefSet(true);
+    }
+  }, [ref]);
+  const closeIfNoFocus = () => {
+    requestAnimationFrame(() => {
+      if (__CLIENT__) {
+        const active = document.activeElement;
+        const hasFocus = ref.current?.contains(active);
+        if (!hasFocus) {
+          setOpen(false);
+        }
+      }
+    });
+  };
   const history = useHistory();
 
   const initialFormData = useSelector((state) => state?.content?.data || {});
@@ -87,84 +105,95 @@ export const FootnoteElement = (props) => {
   const footnoteText = !data.footnote
     ? ''
     : data.footnote.replace('<?xml version="1.0"?>', '');
-
   return (
     <>
       {mode === 'view' ? (
-        <span id={`ref-${uid}`} aria-describedby="footnote-label" ref={ref}>
-          <Popup
-            position="bottom left"
-            pinned={true}
-            mountNode={ref.current}
-            on={['click', 'hover', 'focus']}
-            trigger={
-              <span
-                id={`cite_ref-${uid}`}
-                {...attributes}
-                className="citation-item"
-                data-footnote-indice={citationIndice}
-                tabIndex={0}
-                role={'presentation'}
-              >
-                {children}
-              </span>
-            }
-            hoverable
-          >
-            <Popup.Content>
-              <List divided relaxed selection>
-                <List.Item
-                  href={`#footnote-${citationRefId}`}
-                  onClick={(e) => {
-                    openAccordionOrTabIfContainsFootnoteReference(
-                      `#footnote-${citationRefId}`,
-                    );
-                    if (e.target.tagName !== 'A') {
-                      e.preventDefault();
-                      history.push(`#footnote-${citationRefId}`);
-                    }
-                  }}
-                  key={`#footnote-${citationRefId}`}
+        <span
+          id={`ref-${uid}`}
+          aria-describedby={`footnote-desc-${uid}`}
+          ref={ref}
+          className="footnote-span"
+          onFocus={() => setOpen(true)}
+          onBlur={closeIfNoFocus}
+        >
+          {isRefSet && (
+            <Popup
+              open={open}
+              onOpen={() => setOpen(true)}
+              onClose={() => setOpen(false)}
+              position="bottom left"
+              pinned={true}
+              mountNode={ref.current}
+              on={['click', 'hover', 'focus']}
+              trigger={
+                <span
+                  id={`cite_ref-${uid}`}
+                  {...attributes}
+                  className="citation-item"
+                  data-footnote-indice={citationIndice}
+                  tabIndex={0}
+                  role={'presentation'}
                 >
-                  <List.Content>
-                    <List.Description>
-                      {renderTextWithLinks(footnoteText, zoteroId)}
-                    </List.Description>
-                  </List.Content>
-                </List.Item>
-                {data.extra &&
-                  data.extra.map((item) => {
-                    const footnoteText = !item.footnote
-                      ? ''
-                      : item.footnote.replace('<?xml version="1.0"?>', '');
+                  {children}
+                </span>
+              }
+              hoverable
+            >
+              <Popup.Content>
+                <List divided relaxed selection>
+                  <List.Item
+                    href={`#footnote-${citationRefId}`}
+                    onClick={(e) => {
+                      openAccordionOrTabIfContainsFootnoteReference(
+                        `#footnote-${citationRefId}`,
+                      );
+                      if (e.target.tagName !== 'A') {
+                        e.preventDefault();
+                        history.push(`#footnote-${citationRefId}`);
+                      }
+                    }}
+                    key={`#footnote-${citationRefId}`}
+                  >
+                    <List.Content>
+                      <List.Description>
+                        {renderTextWithLinks(footnoteText, zoteroId)}
+                      </List.Description>
+                    </List.Content>
+                  </List.Item>
+                  {data.extra &&
+                    data.extra.map((item) => {
+                      const footnoteText = !item.footnote
+                        ? ''
+                        : item.footnote.replace('<?xml version="1.0"?>', '');
 
-                    return (
-                      <List.Item
-                        href={`#footnote-${item.zoteroId || item.uid}`}
-                        onClick={(e) => {
-                          openAccordionOrTabIfContainsFootnoteReference(
-                            `#footnote-${item.zoteroId || item.uid}`,
-                          );
-                          if (e.target.tagName !== 'A') {
-                            e.preventDefault();
-                            history.push(
+                      return (
+                        <List.Item
+                          href={`#footnote-${item.zoteroId || item.uid}`}
+                          onClick={(e) => {
+                            openAccordionOrTabIfContainsFootnoteReference(
                               `#footnote-${item.zoteroId || item.uid}`,
                             );
-                          }
-                        }}
-                        key={`#footnote-${item.zoteroId || item.uid}`}
-                      >
-                        <List.Content>
-                          <List.Description>
-                            {renderTextWithLinks(footnoteText, item.zoteroId)}
-                          </List.Description>
-                        </List.Content>
-                      </List.Item>
-                    );
-                  })}
-              </List>
-            </Popup.Content>
-          </Popup>
+                            if (e.target.tagName !== 'A') {
+                              e.preventDefault();
+                              history.push(
+                                `#footnote-${item.zoteroId || item.uid}`,
+                              );
+                            }
+                          }}
+                          key={`#footnote-${item.zoteroId || item.uid}`}
+                        >
+                          <List.Content>
+                            <List.Description>
+                              {renderTextWithLinks(footnoteText, item.zoteroId)}
+                            </List.Description>
+                          </List.Content>
+                        </List.Item>
+                      );
+                    })}
+                </List>
+              </Popup.Content>
+            </Popup>
+          )}
         </span>
       ) : (
         <Popup
