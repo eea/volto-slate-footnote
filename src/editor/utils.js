@@ -5,7 +5,7 @@ import { escapeRegExp } from 'lodash';
 import { UniversalLink } from '@plone/volto/components';
 // Matches URLs - allows spaces in entire path if it ends with common file extensions
 const urlRegex =
-  /\b((http|https|ftp):\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^<>]*\.(?:pdf|doc|docx|xls|xlsx|png|jpg|jpeg|gif|htm|html|xml|txt|csv|zip|ppt|pptx)|\/[^\s<>]*)?(\?[^\s<>]*)?(?=\s|$|<|>|[,;.!?])/gi;
+  /\b((http|https|ftp):\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^<>]*\.(?:pdf|doc|docx|xls|xlsx|png|jpg|jpeg|gif|htm|html|xml|txt|csv|zip|ppt|pptx)(?=[,;.!?\s]|$)|\/[^\s<>]*)?(\?[^\s<>]*)?(?=[\s,;.!?]|$)/gi;
 /**
  * retrive all slate children of nested objects
  * @param {object} path - the keys that we want to extract the slate children from
