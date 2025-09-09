@@ -1,13 +1,50 @@
+import React from 'react';
 import {
   openAccordionOrTabIfContainsFootnoteReference,
   getAllBlocksAndSlateFields,
   isValidHTML,
   retriveValuesOfSlateFromNestedPath,
+  renderTextWithLinks,
+  makeFootnoteListOfUniqueItems,
 } from './utils';
 import { getAllBlocks } from '@plone/volto-slate/utils';
+import { UniversalLink } from '@plone/volto/components';
 
 jest.mock('@plone/volto-slate/utils', () => ({
   getAllBlocks: jest.fn(),
+}));
+
+jest.mock('@plone/volto/components', () => ({
+  UniversalLink: jest.fn(({ href, children }) => <a href={href}>{children}</a>),
+}));
+
+jest.mock('@plone/volto/registry', () => ({
+  __esModule: true,
+  default: {
+    settings: {
+      footnotes: ['citation', 'footnote'],
+      blocksWithFootnotesSupport: {
+        slate: ['value'],
+        slateTable: ['table'],
+      },
+    },
+  },
+}));
+
+// Mock Slate's Node module
+jest.mock('slate', () => ({
+  Node: {
+    elements: function* (node) {
+      // Simple implementation for testing
+      if (node && node.children) {
+        for (const child of node.children) {
+          if (child.type) {
+            yield [child, []];
+          }
+        }
+      }
+    },
+  },
 }));
 
 describe('retriveValuesOfSlateFromNestedPath', () => {
@@ -244,7 +281,7 @@ describe('getAllBlocksAndSlateFields', () => {
 describe('isValidHTML', () => {
   beforeAll(() => {
     global.DOMParser = class {
-      parseFromString(str, type) {
+      parseFromString(str) {
         const doc = {
           querySelectorAll: (selector) => {
             if (selector === 'parsererror' && str.includes('<error>')) {
@@ -266,3 +303,261 @@ describe('isValidHTML', () => {
     expect(isValidHTML('<error>Invalid HTML</error>')).toBe(false);
   });
 });
+
+describe('renderTextWithLinks', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should return null for empty text', () => {
+    expect(renderTextWithLinks(null)).toBeNull();
+    expect(renderTextWithLinks('')).toBeNull();
+  });
+
+  it('should return plain text when no links are found', () => {
+    const text = 'This is plain text without links';
+    expect(renderTextWithLinks(text)).toBe(text);
+  });
+
+  it('should detect and render simple HTTP URL', () => {
+    const text = 'Visit http://example.com for info';
+    const result = renderTextWithLinks(text);
+    expect(result).toBeDefined();
+    expect(result.type).toBe('div');
+    expect(result.props.children).toBeDefined();
+    expect(result.props.children.length).toBeGreaterThan(0);
+  });
+
+  it('should detect and render simple HTTPS URL', () => {
+    const text = 'Visit https://example.com for info';
+    const result = renderTextWithLinks(text);
+    expect(result).toBeDefined();
+    expect(result.type).toBe('div');
+    expect(result.props.children).toBeDefined();
+  });
+
+  it('should handle URL with file extension', () => {
+    const text = 'Download https://example.com/file.pdf';
+    const result = renderTextWithLinks(text);
+    expect(result).toBeDefined();
+    expect(result.type).toBe('div');
+  });
+
+  it('should handle URL wrapped in parentheses', () => {
+    const text = '(https://example.com/page) for details';
+    const result = renderTextWithLinks(text);
+    expect(result).toBeDefined();
+    expect(result.type).toBe('div');
+  });
+
+  it('should handle multiple URLs', () => {
+    const text = 'Visit https://example.com and http://test.org';
+    const result = renderTextWithLinks(text);
+    expect(result).toBeDefined();
+    expect(result.type).toBe('div');
+    expect(
+      result.props.children.filter((c) => c && c.type === UniversalLink).length,
+    ).toBe(2);
+  });
+
+  it('should render HTML when zoteroId is provided', () => {
+    global.__CLIENT__ = true;
+    global.DOMParser = class {
+      parseFromString() {
+        return { querySelectorAll: () => [] };
+      }
+    };
+    const text = '<em>Test</em> content';
+    const result = renderTextWithLinks(text, 'zotero123');
+    expect(result).toBeDefined();
+    expect(result.type).toBe('span');
+  });
+
+  it('should handle URL without protocol', () => {
+    const text = 'Visit example.com';
+    const result = renderTextWithLinks(text);
+    expect(result).toBeDefined();
+    expect(result.type).toBe('div');
+  });
+});
+
+describe('makeFootnoteListOfUniqueItems', () => {
+  it('should return empty object for empty blocks', () => {
+    const result = makeFootnoteListOfUniqueItems([]);
+    expect(result).toEqual({});
+  });
+
+  it('should handle blocks without footnote support', () => {
+    const blocks = [{ '@type': 'unsupported', value: 'test' }];
+    const result = makeFootnoteListOfUniqueItems(blocks);
+    expect(result).toEqual({});
+  });
+
+  it('should process slate blocks with citations', () => {
+    const blocks = [
+      {
+        '@type': 'slate',
+        value: [
+          {
+            children: [
+              {
+                type: 'citation',
+                data: {
+                  zoteroId: 'zot123',
+                  uid: 'uid1',
+                  footnote: 'Citation text',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    const result = makeFootnoteListOfUniqueItems(blocks);
+    expect(result).toHaveProperty('zot123');
+    expect(result.zot123.uid).toBe('uid1');
+  });
+
+  it('should handle multiple references to same zoteroId', () => {
+    const blocks = [
+      {
+        '@type': 'slate',
+        value: [
+          {
+            children: [
+              {
+                type: 'citation',
+                data: {
+                  zoteroId: 'zot123',
+                  uid: 'uid1',
+                  footnote: 'Citation text',
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        '@type': 'slate',
+        value: [
+          {
+            children: [
+              {
+                type: 'citation',
+                data: {
+                  zoteroId: 'zot123',
+                  uid: 'uid2',
+                  footnote: 'Citation text',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    const result = makeFootnoteListOfUniqueItems(blocks);
+    expect(result.zot123.refs).toBeDefined();
+    expect(result.zot123.refs).toHaveProperty('uid1');
+    expect(result.zot123.refs).toHaveProperty('uid2');
+  });
+
+  it('should handle footnotes with extra citations', () => {
+    const blocks = [
+      {
+        '@type': 'slate',
+        value: [
+          {
+            children: [
+              {
+                type: 'citation',
+                data: {
+                  zoteroId: 'zot123',
+                  uid: 'uid1',
+                  footnote: 'Main citation',
+                  extra: [
+                    {
+                      zoteroId: 'zot456',
+                      uid: 'uid2',
+                      footnote: 'Extra citation',
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    const result = makeFootnoteListOfUniqueItems(blocks);
+    expect(result).toHaveProperty('zot123');
+    expect(result).toHaveProperty('zot456');
+    expect(result.zot456.uid).toBe('uid1');
+  });
+
+  it('should handle regular footnotes without zoteroId', () => {
+    const blocks = [
+      {
+        '@type': 'slate',
+        value: [
+          {
+            children: [
+              {
+                type: 'footnote',
+                data: {
+                  uid: 'uid1',
+                  footnote: 'Footnote text',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    const result = makeFootnoteListOfUniqueItems(blocks);
+    expect(result).toHaveProperty('uid1');
+    expect(result.uid1.footnote).toBe('Footnote text');
+  });
+
+  it('should handle identical footnote texts', () => {
+    const blocks = [
+      {
+        '@type': 'slate',
+        value: [
+          {
+            children: [
+              {
+                type: 'footnote',
+                data: {
+                  uid: 'uid1',
+                  footnote: 'Same text',
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        '@type': 'slate',
+        value: [
+          {
+            children: [
+              {
+                type: 'footnote',
+                data: {
+                  uid: 'uid2',
+                  footnote: 'Same text',
+                },
+              },
+            ],
+          },
+        ],
+      },
+    ];
+    const result = makeFootnoteListOfUniqueItems(blocks);
+    const keys = Object.keys(result);
+    expect(keys.length).toBe(1);
+    expect(result[keys[0]].refs).toBeDefined();
+  });
+});
+
+// Removed test for deprecated openAccordionIfContainsFootnoteReference alias
