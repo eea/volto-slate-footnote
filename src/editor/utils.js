@@ -317,7 +317,7 @@ const cleanUrls = (urls, text) => {
     // Remove trailing punctuation if it's followed by whitespace or end of string
     const trailingPunctuationMatch = url.match(/^(.+?)([.!?;,]+)$/);
     if (trailingPunctuationMatch) {
-      const [, urlPart] = trailingPunctuationMatch;
+      const [, urlPart, punctuation] = trailingPunctuationMatch;
       const urlIndex = text.indexOf(url);
       const afterUrl = text.substring(urlIndex + url.length);
 
