@@ -9,10 +9,9 @@ const domain = '([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}';
 const port = '(:\\d+)?';
 const fileExtensions =
   'pdf|doc|docx|xls|xlsx|png|jpg|jpeg|gif|htm|html|xml|txt|csv|zip|ppt|pptx';
-// Allow spaces in paths that end with file extensions, but not in regular paths
 const pathWithFile = `(\\/[^<>]*\\.(${fileExtensions})(?=[,;.!?\\s)]|$)|\\/[^\\s<>]*)?`;
 const queryString = '(\\?[^\\s<>]*)?';
-const trailingPunctuation = '(?=[\\s,;.!?]|\\)\\s|\\)[,;.!?]|\\)$|$)';
+const trailingPunctuation = '(?=[\\s,;.!?]|$|\\)[\\s,;.!?]|\\)$)';
 
 const urlRegex = new RegExp(
   `\\b${protocol}${domain}${port}${pathWithFile}${queryString}${trailingPunctuation}`,
@@ -312,7 +311,24 @@ export function isValidHTML(htmlString) {
 export const renderTextWithLinks = (text, zoteroId) => {
   if (!text) return null;
 
-  const links = text.match(urlRegex);
+  let links = text.match(urlRegex);
+
+  // Post-process to handle URLs wrapped in parentheses
+  if (links) {
+    links = links.map((link) => {
+      // If URL ends with ) and doesn't contain (, check if it's wrapped
+      if (link.endsWith(')') && !link.includes('(')) {
+        const linkIndex = text.indexOf(link);
+        // Check if there's an opening ( before this URL
+        if (linkIndex > 0 && text[linkIndex - 1] === '(') {
+          // Remove trailing ) as it belongs to the wrapper, not the URL
+          return link.slice(0, -1);
+        }
+      }
+      return link;
+    });
+  }
+
   let isValid = false;
   if (zoteroId && isValidHTML(text)) isValid = true;
 
