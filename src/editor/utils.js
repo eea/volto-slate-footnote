@@ -17,6 +17,7 @@ const urlRegex = new RegExp(
   `\\b${protocol}${domain}${port}${pathWithFile}${queryString}${trailingPunctuation}`,
   'gi',
 );
+
 /**
  * retrive all slate children of nested objects
  * @param {object} path - the keys that we want to extract the slate children from
@@ -308,26 +309,49 @@ export function isValidHTML(htmlString) {
   return false;
 }
 
+const cleanUrls = (urls, text) => {
+  if (!urls) return urls;
+
+  return urls.map((url) => {
+    // Handle URLs ending with punctuation that should not be part of the URL
+    // Remove trailing punctuation if it's followed by whitespace or end of string
+    const trailingPunctuationMatch = url.match(/^(.+?)([.!?;,]+)$/);
+    if (trailingPunctuationMatch) {
+      const [, urlPart] = trailingPunctuationMatch;
+      const urlIndex = text.indexOf(url);
+      const afterUrl = text.substring(urlIndex + url.length);
+
+      // If punctuation is followed by whitespace or end of string, remove it
+      if (afterUrl.match(/^\s/) || afterUrl === '') {
+        return urlPart;
+      }
+    }
+
+    // Handle URLs that end with unmatched closing parenthesis
+    // This happens when a URL is wrapped in parentheses like "(https://example.com)"
+    if (url.endsWith(')')) {
+      const urlIndex = text.indexOf(url);
+      const beforeUrl = text.substring(0, urlIndex);
+
+      // Check if this closing parenthesis is unmatched (URL is wrapped in parentheses)
+      const openParensInUrl = (url.match(/\(/g) || []).length;
+      const closeParensInUrl = (url.match(/\)/g) || []).length;
+
+      // If there's an extra closing parenthesis and the URL is preceded by an opening parenthesis
+      if (closeParensInUrl > openParensInUrl && beforeUrl.endsWith('(')) {
+        return url.slice(0, -1); // Remove the trailing closing parenthesis
+      }
+    }
+
+    return url;
+  });
+};
+
 export const renderTextWithLinks = (text, zoteroId) => {
   if (!text) return null;
 
-  let links = text.match(urlRegex);
-
-  // Post-process to handle URLs wrapped in parentheses
-  if (links) {
-    links = links.map((link) => {
-      // If URL ends with ) and doesn't contain (, check if it's wrapped
-      if (link.endsWith(')') && !link.includes('(')) {
-        const linkIndex = text.indexOf(link);
-        // Check if there's an opening ( before this URL
-        if (linkIndex > 0 && text[linkIndex - 1] === '(') {
-          // Remove trailing ) as it belongs to the wrapper, not the URL
-          return link.slice(0, -1);
-        }
-      }
-      return link;
-    });
-  }
+  const rawLinks = text.match(urlRegex);
+  const links = cleanUrls(rawLinks, text);
 
   let isValid = false;
   if (zoteroId && isValidHTML(text)) isValid = true;
