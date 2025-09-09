@@ -3,8 +3,20 @@ import { Node } from 'slate';
 import { getAllBlocks } from '@plone/volto-slate/utils';
 import { escapeRegExp } from 'lodash';
 import { UniversalLink } from '@plone/volto/components';
-const urlRegex =
-  /\b((http|https|ftp):\/\/)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(:\d+)?(\/[^\s<>)]*)?(?=\s|$|<|>|\))/g;
+
+const protocol = '((http|https|ftp):\\/\\/)?';
+const domain = '([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}';
+const port = '(:\\d+)?';
+const fileExtensions =
+  'pdf|doc|docx|xls|xlsx|png|jpg|jpeg|gif|htm|html|xml|txt|csv|zip|ppt|pptx';
+const pathWithFile = `(\\/[^<>]*\\.(${fileExtensions})(?=[,;.!?\\s)]|$)|\\/[^\\s<>]*)?`;
+const queryString = '(\\?[^\\s<>]*)?';
+const trailingPunctuation = '(?=[\\s,;.!?]|$|\\)[\\s,;.!?]|\\)$)';
+
+const urlRegex = new RegExp(
+  `\\b${protocol}${domain}${port}${pathWithFile}${queryString}${trailingPunctuation}`,
+  'gi',
+);
 
 /**
  * retrive all slate children of nested objects
@@ -297,10 +309,50 @@ export function isValidHTML(htmlString) {
   return false;
 }
 
+const cleanUrls = (urls, text) => {
+  if (!urls) return urls;
+
+  return urls.map((url) => {
+    // Handle URLs ending with punctuation that should not be part of the URL
+    // Remove trailing punctuation if it's followed by whitespace or end of string
+    const trailingPunctuationMatch = url.match(/^(.+?)([.!?;,]+)$/);
+    if (trailingPunctuationMatch) {
+      const [, urlPart] = trailingPunctuationMatch;
+      const urlIndex = text.indexOf(url);
+      const afterUrl = text.substring(urlIndex + url.length);
+
+      // If punctuation is followed by whitespace or end of string, remove it
+      if (afterUrl.match(/^\s/) || afterUrl === '') {
+        return urlPart;
+      }
+    }
+
+    // Handle URLs that end with unmatched closing parenthesis
+    // This happens when a URL is wrapped in parentheses like "(https://example.com)"
+    if (url.endsWith(')')) {
+      const urlIndex = text.indexOf(url);
+      const beforeUrl = text.substring(0, urlIndex);
+
+      // Check if this closing parenthesis is unmatched (URL is wrapped in parentheses)
+      const openParensInUrl = (url.match(/\(/g) || []).length;
+      const closeParensInUrl = (url.match(/\)/g) || []).length;
+
+      // If there's an extra closing parenthesis and the URL is preceded by an opening parenthesis
+      if (closeParensInUrl > openParensInUrl && beforeUrl.endsWith('(')) {
+        return url.slice(0, -1); // Remove the trailing closing parenthesis
+      }
+    }
+
+    return url;
+  });
+};
+
 export const renderTextWithLinks = (text, zoteroId) => {
   if (!text) return null;
 
-  const links = text.match(urlRegex);
+  const rawLinks = text.match(urlRegex);
+  const links = cleanUrls(rawLinks, text);
+
   let isValid = false;
   if (zoteroId && isValidHTML(text)) isValid = true;
 
