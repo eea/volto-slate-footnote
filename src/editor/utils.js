@@ -400,5 +400,5 @@ export const renderTextWithLinks = (text, zoteroId) => {
         }}
       />
     );
-  else return <div>{result}</div>;
+  else return <div className="description-content">{result}</div>;
 };
