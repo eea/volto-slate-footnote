@@ -121,8 +121,6 @@ export const FootnoteElement = (props) => {
               open={open}
               onOpen={() => setOpen(true)}
               onClose={() => setOpen(false)}
-              position="bottom left"
-              pinned={true}
               mountNode={ref.current}
               on={['click', 'hover', 'focus']}
               trigger={
