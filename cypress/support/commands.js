@@ -378,6 +378,7 @@ Cypress.Commands.add(
 
 Cypress.Commands.add('getSlateEditorAndType', (type) => {
   cy.get('.content-area .slate-editor [contenteditable=true]')
+    .last()
     .focus()
     .click()
     .wait(1000)
