@@ -77,6 +77,11 @@ const visitPageView = () => {
   cy.waitForResourceToLoad('my-page');
 };
 
+const visitPageEdit = () => {
+  cy.navigate('/cypress/my-page/edit');
+  cy.waitForResourceToLoad('@schema');
+};
+
 describe('Slate citations', () => {
   beforeEach(slateBeforeEach);
   afterEach(slateAfterEach);
@@ -111,5 +116,14 @@ describe('Slate citations', () => {
     cy.contains('Footnotes');
     cy.contains('Citation');
     cy.contains('Yet another citation');
+  });
+
+  it('renders citation node in editor', () => {
+    setFootnoteBlocks({ footnote: 'Citation' });
+    visitPageEdit();
+
+    cy.get('.block.slate').should('exist');
+    cy.get('#toolbar-save').click();
+    cy.url().should('include', '/cypress/my-page');
   });
 });
