@@ -23,7 +23,11 @@ const buildFootnoteNode = ({ footnote, extra = [] }) => ({
   children: [{ text: 'green' }],
 });
 
-const setFootnoteBlocks = ({ footnote = null, extra = [], title = 'Footnotes' }) => {
+const setFootnoteBlocks = ({
+  footnote = null,
+  extra = [],
+  title = 'Footnotes',
+}) => {
   const blocks = {
     title: {
       '@type': 'title',
@@ -56,63 +60,179 @@ const setFootnoteBlocks = ({ footnote = null, extra = [], title = 'Footnotes' })
     };
   }
 
-  return cy.request({
-    method: 'PATCH',
-    url: `${API_PATH}/cypress/my-page`,
-    headers: {
-      Accept: 'application/json',
-    },
-    auth: AUTH,
-    body: {
-      blocks,
-      blocks_layout: {
-        items: Object.keys(blocks),
+  return cy
+    .request({
+      method: 'POST',
+      url: `${API_PATH}/++api++/cypress/my-page/@lock`,
+      headers: {
+        Accept: 'application/json',
       },
-    },
+      auth: AUTH,
+      body: {},
+    })
+    .then((lockResponse) =>
+      cy.request({
+        method: 'PATCH',
+        url: `${API_PATH}/cypress/my-page`,
+        headers: {
+          Accept: 'application/json',
+          'Lock-Token': lockResponse.body.token,
+        },
+        auth: AUTH,
+        body: {
+          blocks,
+          blocks_layout: {
+            items: Object.keys(blocks),
+          },
+        },
+      }),
+    );
+};
+
+const getVisibleSlateToolbarButton = (title) =>
+  cy.get('body').then(($body) => {
+    const buttons = $body
+      .find(`.slate-inline-toolbar .button-wrapper a[title="${title}"]`)
+      .filter(':visible');
+
+    expect(
+      buttons.length,
+      `visible "${title}" slate toolbar button`,
+    ).to.be.greaterThan(0);
+
+    return cy.wrap(buttons.last());
+  });
+
+const triggerVisibleSlateToolbarButton = (title) =>
+  getVisibleSlateToolbarButton(title).trigger('mousedown', { force: true });
+
+const getFootnotePopup = () =>
+  cy.contains('h2', 'Footnote entry').closest('header');
+
+const openFootnotePopup = () => {
+  triggerVisibleSlateToolbarButton('Footnote');
+  cy.wait(300);
+  cy.get('body').then(($body) => {
+    if ($body.text().includes('Footnote entry')) {
+      return;
+    }
+
+    const editButton = $body.find(
+      '.slate-inline-toolbar:visible .button-wrapper a[title="Edit footnote"]',
+    );
+
+    if (editButton.length) {
+      cy.wrap(editButton.last()).trigger('mousedown', { force: true });
+    }
+  });
+  getFootnotePopup().should('exist');
+};
+
+const setFootnoteReferences = (references) => {
+  cy.get(
+    '#blockform-fieldset-default .field-wrapper-footnote .react-select-container',
+  )
+    .last()
+    .click();
+
+  references.forEach((reference, index) => {
+    if (index > 0) {
+      cy.get(
+        '#blockform-fieldset-default .field-wrapper-footnote .react-select-container',
+      )
+        .last()
+        .click();
+    }
+
+    cy.focused().type(`${reference}{enter}`, { force: true });
   });
 };
 
-const visitPageView = () => {
-  cy.visit('/cypress/my-page');
-  cy.waitForResourceToLoad('my-page');
+const saveFootnotePopup = () => {
+  getFootnotePopup().find('button').first().click();
+};
+
+const cancelFootnotePopup = () => {
+  getFootnotePopup().find('button').last().click();
+};
+
+const addFootnotesBlock = ({ title = 'Footnotes', global = true } = {}) => {
+  cy.getSlateEditorAndType('{enter}');
+  cy.get('.ui.basic.icon.button.block-add-button').first().click();
+  cy.get('.blocks-chooser .title').contains('Text').click();
+  cy.get('.blocks-chooser .content.active .button')
+    .contains('Footnotes')
+    .click();
+
+  cy.contains('Footnote block').should('exist');
+  cy.get('input[name="title"]').last().clear().type(title);
+
+  if (global) {
+    cy.get('#field-global').last().click({ force: true });
+  }
 };
 
 const visitPageEdit = () => {
-  cy.navigate('/cypress/my-page/edit');
-  cy.waitForResourceToLoad('@schema');
+  cy.visit('/cypress/my-page/edit');
+  cy.get('.block.title h1').should('exist');
 };
 
 describe('Slate citations', () => {
   beforeEach(slateBeforeEach);
   afterEach(slateAfterEach);
 
-  it('renders a single citation and footnotes block', () => {
-    setFootnoteBlocks({ footnote: 'Citation' });
-    visitPageView();
+  it('allows adding a footnote and footnotes block', () => {
+    cy.getSlateEditorAndType('Colorless green ideas sleep furiously.')
+      .type('{selectAll}')
+      .dblclick();
 
-    cy.get('span.citation-item').contains('green');
+    cy.setSlateCursor('Colorless').dblclick();
+    cy.setSlateSelection('Colorless', 'green');
+    openFootnotePopup();
+    setFootnoteReferences(['Citation']);
+    saveFootnotePopup();
+
+    addFootnotesBlock();
+    cy.toolbarSave();
+
+    cy.get('span.citation-item').contains('Colorless green');
     cy.contains('Footnotes');
     cy.contains('Citation');
     cy.get('[aria-label="Back to content"]').first().click();
   });
 
-  it('does not render footnotes when no citation is saved', () => {
-    setFootnoteBlocks({});
-    visitPageView();
+  it('allows canceling a footnote edit', () => {
+    cy.getSlateEditorAndType('Colorless green ideas sleep furiously.')
+      .type('{selectAll}')
+      .dblclick();
 
+    cy.setSlateCursor('Colorless').dblclick();
+    cy.setSlateSelection('Colorless', 'green');
+    openFootnotePopup();
+    setFootnoteReferences(['Citation']);
+    cancelFootnotePopup();
+
+    cy.toolbarSave();
     cy.contains('My Page');
     cy.get('span.citation-item').should('not.exist');
     cy.contains('Footnotes').should('not.exist');
   });
 
-  it('renders multiple citations for the same reference', () => {
-    setFootnoteBlocks({
-      footnote: 'Citation',
-      extra: ['Yet another citation'],
-    });
-    visitPageView();
+  it('allows adding multiple citations for the same footnote', () => {
+    cy.getSlateEditorAndType('Colorless green ideas sleep furiously.')
+      .type('{selectAll}')
+      .dblclick();
 
-    cy.get('span.citation-item').contains('green');
+    cy.setSlateCursor('Colorless').dblclick();
+    cy.setSlateSelection('Colorless', 'green');
+    openFootnotePopup();
+    setFootnoteReferences(['Citation', 'Yet another citation']);
+    saveFootnotePopup();
+
+    addFootnotesBlock();
+    cy.toolbarSave();
+
+    cy.get('span.citation-item').contains('Colorless green');
     cy.contains('Footnotes');
     cy.contains('Citation');
     cy.contains('Yet another citation');

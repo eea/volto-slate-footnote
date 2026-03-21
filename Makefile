@@ -23,10 +23,12 @@ SHELL:=bash
 .DELETE_ON_ERROR:
 MAKEFLAGS+=--warn-undefined-variables
 MAKEFLAGS+=--no-builtin-rules
+TERM?=dumb
+export TERM
 
 # Colors
 # OK=Green, warn=yellow, error=red
-ifeq ($(TERM),)
+ifneq ($(shell test -n "$$TERM" && command -v tput >/dev/null 2>&1 && echo yes),yes)
 # no colors if not in terminal
         MARK_COLOR=
         OK_COLOR=
@@ -34,11 +36,11 @@ ifeq ($(TERM),)
         ERROR_COLOR=
         NO_COLOR=
 else
-        MARK_COLOR=`tput setaf 6`
-        OK_COLOR=`tput setaf 2`
-        WARN_COLOR=`tput setaf 3`
-        ERROR_COLOR=`tput setaf 1`
-        NO_COLOR=`tput sgr0`
+        MARK_COLOR:=$(shell tput setaf 6 2>/dev/null || true)
+        OK_COLOR:=$(shell tput setaf 2 2>/dev/null || true)
+        WARN_COLOR:=$(shell tput setaf 3 2>/dev/null || true)
+        ERROR_COLOR:=$(shell tput setaf 1 2>/dev/null || true)
+        NO_COLOR:=$(shell tput sgr0 2>/dev/null || true)
 endif
 
 ##############################################################################
@@ -82,11 +84,11 @@ shell:			## Start a shell in the frontend container
 
 .PHONY: cypress-open
 cypress-open:		## Open cypress integration tests
-	CYPRESS_API_PATH="${RAZZLE_DEV_PROXY_API_PATH}" NODE_ENV=development  $(NODE_MODULES)/cypress/bin/cypress open
+	TERM="$${TERM:-dumb}" CYPRESS_API_PATH="${RAZZLE_DEV_PROXY_API_PATH}" NODE_ENV=development  $(NODE_MODULES)/cypress/bin/cypress open
 
 .PHONY: cypress-run
 cypress-run:	## Run cypress integration tests
-	CYPRESS_API_PATH="${RAZZLE_DEV_PROXY_API_PATH}" NODE_ENV=development  $(NODE_MODULES)/cypress/bin/cypress run
+	TERM="$${TERM:-dumb}" CYPRESS_API_PATH="${RAZZLE_DEV_PROXY_API_PATH}" NODE_ENV=development  $(NODE_MODULES)/cypress/bin/cypress run
 
 .PHONY: test
 test:			## Run jest tests
@@ -162,4 +164,4 @@ check-ci:
 .PHONY: cypress-ci
 cypress-ci:
 	$(NODE_MODULES)/.bin/wait-on -t 240000  http://localhost:3000
-	CYPRESS_API_PATH="${RAZZLE_DEV_PROXY_API_PATH}" NODE_ENV=development  $(NODE_MODULES)/cypress/bin/cypress run --browser chromium
+	TERM="$${TERM:-dumb}" CYPRESS_API_PATH="${RAZZLE_DEV_PROXY_API_PATH}" NODE_ENV=development  $(NODE_MODULES)/cypress/bin/cypress run --browser chromium

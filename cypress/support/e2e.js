@@ -37,6 +37,7 @@ export const slateBeforeEach = (contentType = 'Document') => {
   cy.visit('/cypress/my-page');
   cy.waitForResourceToLoad('my-page');
   cy.navigate('/cypress/my-page/edit');
+  cy.get('.block.title h1').should('exist');
 };
 
 export const slateAfterEach = () => {
