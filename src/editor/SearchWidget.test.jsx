@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import SearchWidget from './SearchWidget';
-import '@testing-library/jest-dom/extend-expect';
+import '@testing-library/jest-dom';
 
 jest.mock('semantic-ui-react', () => {
   const Card = ({ children }) => <div>{children}</div>;
