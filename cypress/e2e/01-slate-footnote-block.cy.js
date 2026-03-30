@@ -1,94 +1,5 @@
 import { slateBeforeEach, slateAfterEach } from '../support/e2e';
 
-const API_PATH = Cypress.env('API_PATH') || 'http://localhost:8080/Plone';
-const AUTH = {
-  user: 'admin',
-  pass: 'admin',
-};
-
-const buildFootnoteNode = ({ footnote, extra = [] }) => ({
-  type: 'footnote',
-  data: {
-    uid: 'uid1',
-    footnote,
-    ...(extra.length
-      ? {
-          extra: extra.map((citation, index) => ({
-            uid: `uid${index + 2}`,
-            footnote: citation,
-          })),
-        }
-      : {}),
-  },
-  children: [{ text: 'green' }],
-});
-
-const setFootnoteBlocks = ({
-  footnote = null,
-  extra = [],
-  title = 'Footnotes',
-}) => {
-  const blocks = {
-    title: {
-      '@type': 'title',
-    },
-    slate: {
-      '@type': 'slate',
-      plaintext: footnote
-        ? 'Colorless green ideas sleep furiously.'
-        : 'Colorless ideas sleep furiously.',
-      value: [
-        {
-          type: 'p',
-          children: footnote
-            ? [
-                { text: 'Colorless ' },
-                buildFootnoteNode({ footnote, extra }),
-                { text: ' ideas sleep furiously.' },
-              ]
-            : [{ text: 'Colorless ideas sleep furiously.' }],
-        },
-      ],
-    },
-  };
-
-  if (footnote) {
-    blocks.footnotes = {
-      '@type': 'slateFootnotes',
-      title,
-      global: true,
-    };
-  }
-
-  return cy
-    .request({
-      method: 'POST',
-      url: `${API_PATH}/++api++/cypress/my-page/@lock`,
-      headers: {
-        Accept: 'application/json',
-      },
-      auth: AUTH,
-      body: {},
-    })
-    .then((lockResponse) =>
-      cy.request({
-        method: 'PATCH',
-        url: `${API_PATH}/cypress/my-page`,
-        headers: {
-          Accept: 'application/json',
-          'Lock-Token': lockResponse.body.token,
-        },
-        auth: AUTH,
-        body: {
-          blocks,
-          blocks_layout: {
-            items: Object.keys(blocks),
-          },
-        },
-      }),
-    );
-};
-
 const getVisibleSlateToolbarButton = (title) =>
   cy.get('body').then(($body) => {
     const buttons = $body
@@ -173,7 +84,7 @@ const addFootnotesBlock = ({ title = 'Footnotes', global = true } = {}) => {
 };
 
 const visitPageEdit = () => {
-  cy.visit('/cypress/my-page/edit');
+  cy.navigate('/cypress/my-page/edit');
   cy.get('.block.title h1').should('exist');
 };
 
@@ -238,12 +149,28 @@ describe('Slate citations', () => {
     cy.contains('Yet another citation');
   });
 
-  it('renders citation node in editor', () => {
-    setFootnoteBlocks({ footnote: 'Citation' });
+  it('renders an existing citation node in edit mode through the UI', () => {
+    cy.getSlateEditorAndType('Colorless green ideas sleep furiously.')
+      .type('{selectAll}')
+      .dblclick();
+
+    cy.setSlateCursor('Colorless').dblclick();
+    cy.setSlateSelection('Colorless', 'green');
+    openFootnotePopup();
+    setFootnoteReferences(['Citation']);
+    saveFootnotePopup();
+
+    addFootnotesBlock();
+    cy.toolbarSave();
+
     visitPageEdit();
 
-    cy.get('.block.slate').should('exist');
-    cy.get('#toolbar-save').click();
-    cy.url().should('include', '/cypress/my-page');
+    cy.get('[id^="cite_ref-"]').should('exist');
+    cy.contains('Colorless green').should('exist');
+    cy.contains('Footnotes').should('exist');
+    cy.contains('Citation').should('exist');
+
+    cy.toolbarSave();
+    cy.contains('Citation');
   });
 });
