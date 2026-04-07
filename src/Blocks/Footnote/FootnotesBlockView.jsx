@@ -7,7 +7,7 @@ import {
 } from '@eeacms/volto-slate-footnote/editor/utils';
 import './less/public.less';
 
-import { UniversalLink } from '@plone/volto/components';
+import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 import { renderTextWithLinks } from '../../editor/utils';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
@@ -30,10 +30,10 @@ const FootnotesBlockView = (props) => {
   const localMetadata = global
     ? metadata
     : content
-    ? content
-    : tabData
-    ? tabData
-    : properties;
+      ? content
+      : tabData
+        ? tabData
+        : properties;
 
   const blocks = getAllBlocksAndSlateFields(localMetadata);
   const notesObj = makeFootnoteListOfUniqueItems(blocks);

@@ -4,7 +4,7 @@ import { v4 as uuid } from 'uuid';
 import {
   getBlocksFieldname,
   getBlocksLayoutFieldname,
-} from '@plone/volto/helpers';
+} from '@plone/volto/helpers/Blocks/Blocks';
 import { makeInlineElementPlugin } from '@plone/volto-slate/elementEditor';
 import { _insertElement } from '@plone/volto-slate/elementEditor/utils';
 import { FootnoteEditorSchema } from './schema';
