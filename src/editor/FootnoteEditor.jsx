@@ -1,15 +1,19 @@
-import { isEqual, isEmpty } from 'lodash';
+import isEqual from 'lodash/isEqual';
+import isEmpty from 'lodash/isEmpty';
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReactEditor } from 'slate-react';
 import { setPluginOptions } from '@plone/volto-slate/actions';
-import { Icon as VoltoIcon, InlineForm } from '@plone/volto/components';
+import VoltoIcon from '@plone/volto/components/theme/Icon/Icon';
+import InlineForm from '@plone/volto/components/manage/Form/InlineForm';
 import briefcaseSVG from '@plone/volto/icons/briefcase.svg';
 import checkSVG from '@plone/volto/icons/check.svg';
 import clearSVG from '@plone/volto/icons/clear.svg';
 import { Node } from 'slate';
 import { getAllBlocksAndSlateFields } from '@eeacms/volto-slate-footnote/editor/utils';
 import config from '@plone/volto/registry';
+
+const EMPTY_OBJECT = Object.freeze({});
 
 const FootnoteEditor = (props) => {
   const {
@@ -27,7 +31,9 @@ const FootnoteEditor = (props) => {
   const pid = `${editor.uid}-${pluginId}`;
   const [formData, setFormData] = React.useState({});
   const active = getActiveElement(editor);
-  const initialFormData = useSelector((state) => state?.content?.data || {});
+  const initialFormData = useSelector(
+    (state) => state?.content?.data ?? EMPTY_OBJECT,
+  );
 
   if (!active) {
     /* eslint no-console: 0 */
@@ -36,8 +42,10 @@ const FootnoteEditor = (props) => {
   const [elementNode] = active;
   const isElement = isActiveElement(editor);
 
-  const blockProps = editor?.getBlockProps ? editor.getBlockProps() : {};
-  const metadata = blockProps.metadata || blockProps.properties || {};
+  const blockProps = editor?.getBlockProps
+    ? editor.getBlockProps()
+    : EMPTY_OBJECT;
+  const metadata = blockProps.metadata || blockProps.properties || EMPTY_OBJECT;
   const metadataBlocks = getAllBlocksAndSlateFields(metadata);
   const storeBlocks = getAllBlocksAndSlateFields(initialFormData);
   const uniqueFootnoteBlocks = [];

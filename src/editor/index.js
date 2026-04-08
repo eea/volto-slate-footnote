@@ -4,12 +4,12 @@ import { v4 as uuid } from 'uuid';
 import {
   getBlocksFieldname,
   getBlocksLayoutFieldname,
-} from '@plone/volto/helpers';
+} from '@plone/volto/helpers/Blocks/Blocks';
 import { makeInlineElementPlugin } from '@plone/volto-slate/elementEditor';
 import { _insertElement } from '@plone/volto-slate/elementEditor/utils';
 import { FootnoteEditorSchema } from './schema';
 import { withFootnote, withBeforeInsertFragment } from './extensions';
-import { FOOTNOTE } from '../constants';
+import { FOOTNOTE } from '@eeacms/volto-slate-footnote/constants';
 import { FootnoteElement } from './render';
 import FootnoteEditor from './FootnoteEditor';
 

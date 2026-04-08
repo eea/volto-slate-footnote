@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Search, Card, Segment } from 'semantic-ui-react';
-import { escapeRegExp, filter } from 'lodash';
+import escapeRegExp from 'lodash/escapeRegExp';
+import filter from 'lodash/filter';
 
 const SearchWidget = (props) => {
   const [results, setResults] = useState([]);
