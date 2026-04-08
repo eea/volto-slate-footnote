@@ -9,7 +9,7 @@ import { makeInlineElementPlugin } from '@plone/volto-slate/elementEditor';
 import { _insertElement } from '@plone/volto-slate/elementEditor/utils';
 import { FootnoteEditorSchema } from './schema';
 import { withFootnote, withBeforeInsertFragment } from './extensions';
-import { FOOTNOTE } from '../constants';
+import { FOOTNOTE } from '@eeacms/volto-slate-footnote/constants';
 import { FootnoteElement } from './render';
 import FootnoteEditor from './FootnoteEditor';
 
