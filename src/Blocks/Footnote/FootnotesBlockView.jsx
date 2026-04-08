@@ -8,7 +8,7 @@ import {
 import './less/public.less';
 
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
-import { renderTextWithLinks } from '../../editor/utils';
+import { renderTextWithLinks } from '@eeacms/volto-slate-footnote/editor/utils';
 
 const alphabet = 'abcdefghijklmnopqrstuvwxyz';
 
