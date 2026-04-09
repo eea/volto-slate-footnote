@@ -7,11 +7,19 @@ import {
   makeFootnoteListOfUniqueItems,
   openAccordionOrTabIfContainsFootnoteReference,
 } from './utils';
-import { isEmpty } from 'lodash';
+import isEmpty from 'lodash/isEmpty';
 import { useSelector } from 'react-redux';
 
 import { renderTextWithLinks } from './utils';
 import { useHistory } from 'react-router-dom';
+
+/**
+ * Removes '<?xml version="1.0"?>' from footnote
+ * @param {string} footnote
+ * @returns {string} formatted footnote
+ */
+
+const EMPTY_OBJECT = Object.freeze({});
 
 /**
  * Removes '<?xml version="1.0"?>' from footnote
@@ -45,11 +53,13 @@ export const FootnoteElement = (props) => {
   };
   const history = useHistory();
 
-  const initialFormData = useSelector((state) => state?.content?.data || {});
+  const initialFormData = useSelector(
+    (state) => state?.content?.data ?? EMPTY_OBJECT,
+  );
   const blockProps = editor?.getBlockProps ? editor.getBlockProps() : null;
   const metadata = blockProps
-    ? blockProps.metadata || blockProps.properties
-    : extras?.metadata || {};
+    ? blockProps.metadata || blockProps.properties || EMPTY_OBJECT
+    : extras?.metadata || EMPTY_OBJECT;
   const blocks = getAllBlocksAndSlateFields(metadata);
   const storeBlocks = getAllBlocksAndSlateFields(initialFormData);
 

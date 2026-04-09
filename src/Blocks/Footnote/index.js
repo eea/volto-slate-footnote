@@ -1,8 +1,8 @@
 import codeSVG from '@plone/volto/icons/code.svg';
+import { FOOTNOTE } from '@eeacms/volto-slate-footnote/constants';
 
 import FootnotesBlockView from './FootnotesBlockView';
 import FootnotesBlockEdit from './FootnotesBlockEdit';
-import { FOOTNOTE } from '@plone/volto-slate/constants';
 
 /**
  * @summary Called from Volto to configure new or existing Volto block types.

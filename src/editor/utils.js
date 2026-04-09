@@ -1,8 +1,8 @@
 import config from '@plone/volto/registry';
 import { Node } from 'slate';
 import { getAllBlocks } from '@plone/volto-slate/utils';
-import { escapeRegExp } from 'lodash';
-import { UniversalLink } from '@plone/volto/components';
+import escapeRegExp from 'lodash/escapeRegExp';
+import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 
 const protocol = '((http|https|ftp):\\/\\/)?';
 const domain = '([a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,}';

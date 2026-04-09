@@ -8,7 +8,7 @@ import {
   makeFootnoteListOfUniqueItems,
 } from './utils';
 import { getAllBlocks } from '@plone/volto-slate/utils';
-import { UniversalLink } from '@plone/volto/components';
+import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 
 jest.mock('@plone/volto-slate/utils', () => ({
   getAllBlocks: jest.fn(),

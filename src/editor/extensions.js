@@ -1,4 +1,4 @@
-import { FOOTNOTE } from '../constants';
+import { FOOTNOTE } from '@eeacms/volto-slate-footnote/constants';
 import { nanoid } from '@plone/volto-slate/utils';
 import { Transforms } from 'slate';
 

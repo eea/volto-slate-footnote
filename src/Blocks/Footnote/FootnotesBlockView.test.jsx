@@ -3,8 +3,9 @@ import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FootnotesBlockView from './FootnotesBlockView';
 
-jest.mock('@plone/volto/components', () => ({
-  UniversalLink: ({ children, href }) => <a href={href}>{children}</a>,
+jest.mock('@plone/volto/components/manage/UniversalLink/UniversalLink', () => ({
+  __esModule: true,
+  default: ({ children, href }) => <a href={href}>{children}</a>,
 }));
 
 jest.mock('@eeacms/volto-slate-footnote/editor/utils', () => ({
