@@ -279,28 +279,12 @@ describe('getAllBlocksAndSlateFields', () => {
 });
 
 describe('isValidHTML', () => {
-  beforeAll(() => {
-    global.DOMParser = class {
-      parseFromString(str) {
-        const doc = {
-          querySelectorAll: (selector) => {
-            if (selector === 'parsererror' && str.includes('<error>')) {
-              return [{}]; // Simulate an error
-            }
-            return [];
-          },
-        };
-        return doc;
-      }
-    };
-  });
-
   test('returns true for valid HTML', () => {
     expect(isValidHTML('<div>Hello</div>')).toBe(true);
   });
 
-  test('returns false for invalid HTML', () => {
-    expect(isValidHTML('<error>Invalid HTML</error>')).toBe(false);
+  test('returns false for plain text', () => {
+    expect(isValidHTML('Invalid HTML')).toBe(false);
   });
 });
 
@@ -361,12 +345,6 @@ describe('renderTextWithLinks', () => {
   });
 
   it('should render HTML when zoteroId is provided', () => {
-    global.__CLIENT__ = true;
-    global.DOMParser = class {
-      parseFromString() {
-        return { querySelectorAll: () => [] };
-      }
-    };
     const text = '<em>Test</em> content';
     const result = renderTextWithLinks(text, 'zotero123');
     expect(result).toBeDefined();
