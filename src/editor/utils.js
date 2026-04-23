@@ -295,18 +295,12 @@ const iterateFootnoteObj = (notesObjResultTemp, node, parentUid) => {
 };
 
 export function isValidHTML(htmlString) {
-  if (
-    __CLIENT__ &&
-    typeof window !== 'undefined' &&
-    typeof DOMParser !== 'undefined'
-  ) {
-    // The environment is client-side, and DOMParser is available
-    const parser = new DOMParser();
-    const parsedDocument = parser.parseFromString(htmlString, 'text/html');
-    const errors = parsedDocument.querySelectorAll('parsererror');
-    return errors.length === 0;
-  }
-  return false;
+  if (typeof htmlString !== 'string') return false;
+  const text = htmlString.trim();
+  if (!text) return false;
+  // Keep server/client output deterministic for hydration by using
+  // the same lightweight HTML detection in both environments.
+  return /<\/?[a-z][\s\S]*>/i.test(text);
 }
 
 const cleanUrls = (urls, text) => {
