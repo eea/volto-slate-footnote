@@ -1,9 +1,10 @@
+import { vi } from 'vitest';
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import SearchWidget from './SearchWidget';
 import '@testing-library/jest-dom';
 
-jest.mock('semantic-ui-react', () => {
+vi.mock('semantic-ui-react', () => {
   const Card = ({ children }) => <div>{children}</div>;
   Card.Content = ({ children }) => <div>{children}</div>;
   Card.Header = ({ children }) => <div>{children}</div>;
@@ -30,7 +31,7 @@ describe('SearchWidget', () => {
   ];
 
   it('renders the search widget', () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     render(<SearchWidget choices={choices} onChange={onChange} value="" />);
 
     expect(screen.getByRole('textbox')).toBeInTheDocument();
@@ -38,7 +39,7 @@ describe('SearchWidget', () => {
   });
 
   it('calls onChange when input changes', () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     render(<SearchWidget choices={choices} onChange={onChange} value="" />);
 
     const input = screen.getByRole('textbox');
@@ -48,7 +49,7 @@ describe('SearchWidget', () => {
   });
 
   it('displays initial value', () => {
-    const onChange = jest.fn();
+    const onChange = vi.fn();
     render(
       <SearchWidget choices={choices} onChange={onChange} value="Initial" />,
     );

@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import React from 'react';
 import {
   openAccordionOrTabIfContainsFootnoteReference,
@@ -10,15 +11,15 @@ import {
 import { getAllBlocks } from '@plone/volto-slate/utils';
 import UniversalLink from '@plone/volto/components/manage/UniversalLink/UniversalLink';
 
-jest.mock('@plone/volto-slate/utils', () => ({
-  getAllBlocks: jest.fn(),
+vi.mock('@plone/volto-slate/utils', () => ({
+  getAllBlocks: vi.fn(),
 }));
 
-jest.mock('@plone/volto/components', () => ({
-  UniversalLink: jest.fn(({ href, children }) => <a href={href}>{children}</a>),
+vi.mock('@plone/volto/components', () => ({
+  UniversalLink: vi.fn(({ href, children }) => <a href={href}>{children}</a>),
 }));
 
-jest.mock('@plone/volto/registry', () => ({
+vi.mock('@plone/volto/registry', () => ({
   __esModule: true,
   default: {
     settings: {
@@ -32,7 +33,7 @@ jest.mock('@plone/volto/registry', () => ({
 }));
 
 // Mock Slate's Node module
-jest.mock('slate', () => ({
+vi.mock('slate', () => ({
   Node: {
     elements: function* (node) {
       // Simple implementation for testing
@@ -98,7 +99,7 @@ describe('openAccordionOrTabIfContainsFootnoteReference', () => {
     `;
 
     const title = document.querySelector('.title');
-    title.click = jest.fn();
+    title.click = vi.fn();
 
     openAccordionOrTabIfContainsFootnoteReference('#footnote');
 
@@ -113,7 +114,7 @@ describe('openAccordionOrTabIfContainsFootnoteReference', () => {
     `;
 
     const title = document.querySelector('.title');
-    title.click = jest.fn();
+    title.click = vi.fn();
 
     openAccordionOrTabIfContainsFootnoteReference('#footnote');
 
@@ -123,7 +124,7 @@ describe('openAccordionOrTabIfContainsFootnoteReference', () => {
 
 describe('getAllBlocksAndSlateFields', () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('handles metadataSection correctly', () => {
@@ -290,7 +291,7 @@ describe('isValidHTML', () => {
 
 describe('renderTextWithLinks', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('should return null for empty text', () => {
