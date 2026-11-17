@@ -1,6 +1,7 @@
 {
   "name": "@eeacms/volto-slate-footnote-dev",
-  "version": "1.0.0-alpha.0",
+  "private": true,
+  "version": "9.0.0",
   "description": "volto-slate-footnote: Volto add-on",
   "author": "European Environment Agency: IDM2 A-Team",
   "homepage": "https://github.com/eea/volto-slate-footnote",
