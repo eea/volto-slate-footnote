@@ -14,6 +14,24 @@
 
 ## Upgrade
 
+### Upgrading to 9.x
+
+> This version requires `Volto 18` or `Volto 19` and Node.js 22.
+
+The footnote block keeps the same id, the same settings and the same stored rich text, so content
+created with 8.x keeps rendering unchanged. The release adds Volto 19 support and moves the
+repository to the Volto 19 layout, where the published package lives in
+`packages/volto-slate-footnote`.
+
+#### Breaking changes
+
+- **Node.js 22 or newer is required** (`engines.node >= 22`), 8.x declared no engine.
+- **React 18 is required.** The package declares `react` and `react-dom` as `^18.2.0` peers, 8.x
+  declared no peers.
+- **The package no longer ships the repository tooling.** The Cypress specs, the Jest setup
+  (`jest-addon.config.js`, `jest.setup.js`), the Docker and Jenkins files and the demo gif are gone.
+  The unit tests moved to Vitest and live next to the add-on, so nothing a site imports was removed.
+
 ### Upgrading to 6.x
 
 This version requires: `@plone/volto >= 16.0.0.alpha.15` (`volto-slate` part of Volto Core).
