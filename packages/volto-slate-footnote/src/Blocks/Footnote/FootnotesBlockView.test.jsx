@@ -1,22 +1,23 @@
+import { vi } from 'vitest';
 import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FootnotesBlockView from './FootnotesBlockView';
 
-jest.mock('@plone/volto/components/manage/UniversalLink/UniversalLink', () => ({
+vi.mock('@plone/volto/components/manage/UniversalLink/UniversalLink', () => ({
   __esModule: true,
   default: ({ children, href }) => <a href={href}>{children}</a>,
 }));
 
-jest.mock('@eeacms/volto-slate-footnote/editor/utils', () => ({
-  openAccordionOrTabIfContainsFootnoteReference: jest.fn(),
-  renderTextWithLinks: jest.fn(),
-  getAllBlocksAndSlateFields: jest.fn(() => [
+vi.mock('@eeacms/volto-slate-footnote/editor/utils', () => ({
+  openAccordionOrTabIfContainsFootnoteReference: vi.fn(),
+  renderTextWithLinks: vi.fn(),
+  getAllBlocksAndSlateFields: vi.fn(() => [
     { id: 'block1', footnote: 'Footnote with no link' },
     { id: 'block2', footnote: 'Footnote with link http://example.com' },
     { id: 'block3', footnote: 'Footnote with <b>HTML</b>' },
   ]),
-  makeFootnoteListOfUniqueItems: jest.fn((blocks) => ({
+  makeFootnoteListOfUniqueItems: vi.fn((blocks) => ({
     note1: {
       uid: '1',
       footnote: 'First note with a reference',
